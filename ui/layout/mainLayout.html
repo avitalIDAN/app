@@ -4,9 +4,11 @@
     <nav class="sidebar">
       <ul>
         <li data-screen="dashboard" onclick="navigate('dashboard')">דף הבית</li>
-        <li data-screen="cases" onclick="navigate('pullCases')">משיכת תיקים</li>
-        <li data-screen="SwitchingModes" onclick="navigate('stateTransition')">מעבר מצבים</li>
-        <li data-screen="routes" onclick="navigate('routesTable')">טבלאות</li>
+        <li data-screen="cases" onclick="handleMenuClick('cases')">משיכת תיקים</li>
+        <li data-screen="switchingModes" onclick="handleMenuClick('switchingModes')">מעבר מצבים</li>
+        <li data-screen="routes" onclick="handleMenuClick('routes')">טבלאות</li>
+        <!-- <li data-screen="SwitchingModes" onclick="handleMenuClick('stateTransition')">מעבר מצבים</li>
+        <li data-screen="routes" onclick="handleMenuClick('routesTable')">טבלאות</li> -->
       </ul>
     </nav>
   </div>

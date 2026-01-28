@@ -211,3 +211,8 @@ body {
 .recent-activity tr:hover {
   background-color: #f0f2f5;
 }
+
+.menu-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

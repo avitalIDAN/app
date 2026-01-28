@@ -1,19 +1,30 @@
 function navigate(screenName) {
+    if (!authService.isLoggedIn()) {
+    loadLogin();
+    return;
+  }
+
+  if (!authService.hasViewPermission(screenName)) {
+    document.getElementById("content").innerHTML =
+      `<h3>אין הרשאה לצפייה במסך זה</h3>`;
+    return;
+  }
+
   fetch(`ui/screens/${screenName}.html`)
     .then(res => res.text())
     .then(html => {
-      document.getElementById("app").innerHTML = html;
+      document.getElementById("content").innerHTML = html;
     });
 }
 
 function loadLogin() {
-    navigate("login");
-//   fetch("ui/screens/login.html")
-//     .then(res => res.text())
-//     .then(html => {
-//       //document.body.innerHTML = html;
-//       document.getElementById("app").innerHTML = html;
-//     });
+    //navigate("login");
+  fetch("ui/screens/login.html")
+    .then(res => res.text())
+    .then(html => {
+      //document.body.innerHTML = html;
+      document.getElementById("app").innerHTML = html;
+    });
 }
 
 function loadMainLayout() {
@@ -21,10 +32,36 @@ function loadMainLayout() {
   fetch("ui/layout/mainLayout.html")
     .then(res => res.text())
     .then(html => {
-      //document.body.innerHTML = html;
       document.getElementById("app").innerHTML = html;
+
+      applyMenuPermissions(); 
+      showUsername();  
+      navigate("dashboard");
     });
+
 }
+
+function showUsername() {
+  const username = authService.getCurrentUsername();
+
+  if (!username) return;
+
+  const el = document.getElementById("usernameDisplay");
+  if (el) {
+    el.innerText = `שלום, ${username}`;
+  }
+}
+
+function applyMenuPermissions() {
+  document.querySelectorAll("[data-screen]").forEach(item => {
+    const screen = item.dataset.screen;
+
+    if (!authService.hasViewPermission(screen)) {
+      item.classList.add("menu-disabled");
+    }
+  });
+}
+
 
 function handleLogout() {
   authService.logout();
@@ -44,4 +81,13 @@ async function handleLogin() {
   }
 
   loadMainLayout();
+}
+
+function handleMenuClick(screenName) {
+  if (!authService.hasViewPermission(screenName)) {
+    alert("אין לך הרשאה למסך זה");
+    return;
+  }
+
+  navigate(screenName);
 }
