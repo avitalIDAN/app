@@ -1,0 +1,4 @@
+[
+  { "key":1, "username": "admin", "password": "qwe12!", "roles": {"dashboard":1,"cases":1,"routes":1} },
+  { "key":0, "username": "user1", "password": "1111", "roles": {"dashboard":1,"cases":0,"routes":null} }
+]
