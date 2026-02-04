@@ -9,5 +9,38 @@
     "createdAt": "2025-01-10T09:00:00",
     "updatedAt": "2025-01-12T14:30:00",
     "debt": 1200
+  },
+    {
+    "key": 2,
+    "caseId": 22,
+    "externalCaseNumber": "C-22",
+    "routeId": 1,
+    "currentStatusId": 2,
+    "currentStatusName": "התראה ראשונה", 
+    "createdAt": "2025-01-10T09:00:00",
+    "updatedAt": "2025-01-12T14:30:00",
+    "debt": 433
+  },
+    {
+    "key": 3,
+    "caseId": 333,
+    "externalCaseNumber": "C-333",
+    "routeId": 1,
+    "currentStatusId": 2,
+    "currentStatusName": "התראה ראשונה", 
+    "createdAt": "2025-01-10T09:00:00",
+    "updatedAt": "2025-01-12T14:30:00",
+    "debt": 49.9
+  },
+    {
+    "key": 4,
+    "caseId": 4,
+    "externalCaseNumber": "C-4",
+    "routeId": 2,
+    "currentStatusId": 1,
+    "currentStatusName": "פתיחת תיק", 
+    "createdAt": "2025-01-10T09:00:00",
+    "updatedAt": "2025-01-12T14:30:00",
+    "debt": 11100
   }
 ]

@@ -1,7 +1,9 @@
+
 [
   {
     "key": 1,
     "statusId": 1,
+    "routeId": 1,
     "code": "OPEN_CASE",
     "name": "פתיחת תיק",
     "isActive": true
@@ -9,6 +11,7 @@
   {
     "key": 2,
     "statusId": 2,
+    "routeId": 1,
     "code": "FIRST_WARNING",
     "name": "התראה ראשונה",
     "isActive": true
@@ -16,6 +19,7 @@
   {
     "key": 3,
     "statusId": 3,
+    "routeId": 1,
     "code": "SECOND_WARNING",
     "name": "התראה שנייה",
     "isActive": true
@@ -23,6 +27,7 @@
   {
     "key": 4,
     "statusId": 4,
+    "routeId": 1,
     "code": "LIEN",
     "name": "עיקול",
     "isActive": true
@@ -30,6 +35,7 @@
   {
     "key": 5,
     "statusId": 5,
+    "routeId": 1,
     "code": "EXCLUDED",
     "name": "מוחרג",
     "isActive": true
@@ -37,6 +43,55 @@
     {
     "key": 6,
     "statusId": 0,
+    "routeId": 1,
+    "code": "OPEN_CASE",
+    "name": "פתיחת תיק",
+    "isActive": true
+  },
+    {
+    "key": 1,
+    "statusId": 1,
+    "routeId": 2,
+    "code": "OPEN_CASE",
+    "name": "פתיחת תיק",
+    "isActive": true
+  },
+  {
+    "key": 2,
+    "statusId": 2,
+    "routeId": 2,
+    "code": "FIRST_WARNING",
+    "name": "התראה ראשונה",
+    "isActive": true
+  },
+  {
+    "key": 3,
+    "statusId": 3,
+    "routeId": 2,
+    "code": "SECOND_WARNING",
+    "name": "התראה שנייה",
+    "isActive": true
+  },
+  {
+    "key": 4,
+    "statusId": 4,
+    "routeId": 2,
+    "code": "LIEN",
+    "name": "עיקול",
+    "isActive": true
+  },
+  {
+    "key": 5,
+    "statusId": 5,
+    "routeId": 2,
+    "code": "EXCLUDED",
+    "name": "מוחרג",
+    "isActive": true
+  },
+    {
+    "key": 6,
+    "statusId": 0,
+    "routeId": 2,
     "code": "OPEN_CASE",
     "name": "פתיחת תיק",
     "isActive": true

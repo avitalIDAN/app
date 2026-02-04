@@ -1,6 +1,6 @@
 async function renderCaseScreen(caseId) {
 
-  const data = caseId? await caseService.getCaseWithHistory(caseId):await caseService.getFirstCase();
+  const data = caseId? await caseService.getCaseById(caseId):await caseService.getFirstCase();
 
   document.getElementById("caseId").innerText = data.caseId;
   document.getElementById("caseStatus").innerText = data.currentStatusName;
@@ -27,41 +27,6 @@ async function renderCaseScreen(caseId) {
 
 window.renderCaseScreen = renderCaseScreen;
 
-
-// // ui/screens/case.js
-// async function renderCaseScreen(caseId) {
-
-//   const caseData = await caseService.getCaseWithHistory(caseId);
-//   if (!caseData) {
-//     document.getElementById("content").innerHTML = "תיק לא נמצא";
-//     return;
-//   }
-
-//   const status = await statusService.getById(caseData.currentStatusId);
-//   const route = await routeService.getById(caseData.routeId);
-
-//   document.getElementById("caseTitle").innerText =
-//     `תיק #${caseData.caseId}`;
-
-//   document.getElementById("currentStatus").innerText =
-//     status?.name || "לא ידוע";
-
-//   document.getElementById("routeName").innerText =
-//     route?.name || "—";
-
-//   document.getElementById("debtorName").innerText =
-//     caseData.debtorName;
-
-//   document.getElementById("debtAmount").innerText =
-//     `${caseData.debtAmount} ₪`;
-
-//   document.getElementById("createdAt").innerText =
-//     new Date(caseData.createdAt).toLocaleDateString();
-
-//   renderStatusTimeline(caseData.history);
-//   await renderNextStatuses(caseData.currentStatusId);
-// }
-
 function renderStatusTimeline(history) {
   const ul = document.getElementById("statusTimeline");
   ul.innerHTML = "";
@@ -78,6 +43,3 @@ function renderStatusTimeline(history) {
     ul.appendChild(li);
   });
 }
-
-
-//window.renderCaseScreen = renderCaseScreen;

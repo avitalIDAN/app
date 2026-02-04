@@ -10,8 +10,8 @@ async function renderSwitchingModes() {
       <td>${c.currentStatusName}</td>
       <td>${c.routeId}</td>
       <td>
-        <button onclick="renderCaseScreen(${c.caseId})">
-          שינוי מצב
+        <button onclick="toCaseScreen(${c.caseId})">
+          הצגת תיק
         </button>
       </td>
     `;
@@ -19,4 +19,8 @@ async function renderSwitchingModes() {
   });
 }
 
+function toCaseScreen(caseId){
+    const x = caseId;
+//הפנייה לתיק- מסך הצגת תיק
+}
 window.renderSwitchingModes = renderSwitchingModes;

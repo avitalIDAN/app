@@ -51,14 +51,6 @@ class HistoryService {
     return history.slice(-num).reverse();
   }
 
-
-
-
-  // async function getHistoryByCaseId(caseId) {
-  //   const history = await getAllHistory();
-  //   return history.filter(h => h.caseId === caseId);
-  // }
-
   /* ===== CREATE ===== */
   async logAction(oldvalue, newvalue, kodaction) {
     if (!authService.hasEditDBPermission("history")) {
@@ -88,22 +80,6 @@ class HistoryService {
     console.warn("⚠️ DB מדומה – הנתון לא נשמר פיזית", newRecord);
 
     return newRecord;
-    // history.push(
-    //   { 
-    //     // "key": 0,
-    //     oldvalue: oldvalue,
-    //     newvalue: newvalue,
-    //     user: username,
-    //     kodaction: kodaction,
-    //     action: ,
-    //     timestamp:  },
-      
-    //   {
-    //   caseId,
-    //   user: user.username,
-    //   action,
-    //   timestamp: new Date().toISOString()
-    // });
   }
 }
 

@@ -134,9 +134,7 @@ class CaseService{ //extends BaseService {
     }
 
     const cases = await this.getAllCases();
-    // const x = cases.filter(c => c.routeId == routeId);
-    // const y = cases.filter(c => c.routeId === routeId);
-    return cases.filter(c => c.routeId == routeId);
+    return cases.filter(c => c.routeId == routeId); // שניים או שלוש ==
   }
 
   async getCaseWithHistory(caseId) {
@@ -151,10 +149,6 @@ class CaseService{ //extends BaseService {
     const history = await this.getHisByCaseId(caseId);
 
     return history;
-    // {
-    //   ...caseData,
-    //   history
-    // };
   }
 
   async changeCaseStatus(caseId, newStatusId, changedBy, note = "") {
@@ -166,6 +160,7 @@ class CaseService{ //extends BaseService {
     const cases = await this.getAllCases();
     const caseItem = cases.find(c => c.caseId === caseId);
     if (!caseItem) throw new Error("Case not found");
+    const routeId = caseItem.routeId;
 
     caseItem.currentStatusId = newStatusId;
     caseItem.updatedAt = new Date().toISOString();
@@ -177,24 +172,12 @@ class CaseService{ //extends BaseService {
       key: history.length + 1,
       historyId: history.length + 1,
       caseId,
+      routeId,
       statusId: newStatusId,
       changedAt: new Date().toISOString(),
       changedBy,
       note
     });
-
-    // // הוספת היסטוריה
-    // const history = await window.caseStatusHistoryService.getAll();
-
-    // history.push({
-    //   key: history.length + 1,
-    //   historyId: history.length + 1,
-    //   caseId,
-    //   statusId: newStatusId,
-    //   changedAt: new Date().toISOString(),
-    //   changedBy,
-    //   note
-    // });
 
     console.log("STATUS CHANGED (mock):", caseItem);
   }

@@ -26,9 +26,6 @@ function navigate(screenName) {
     .then(html => {
       document.getElementById("content").innerHTML = html;
 
-      // if (screenName === "dashboard") {
-      //   renderDashboard();
-      // }
       const controller = screenControllers[screenName];
       if (controller?.onEnter) {
         controller.onEnter();
@@ -37,11 +34,9 @@ function navigate(screenName) {
 }
 
 function loadLogin() {
-    //navigate("login");
   fetch("ui/screens/login.html")
     .then(res => res.text())
     .then(html => {
-      //document.body.innerHTML = html;
       document.getElementById("app").innerHTML = html;
     });
 }
