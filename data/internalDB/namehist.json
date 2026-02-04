@@ -1,0 +1,8 @@
+[
+  { "key": 0, "kodaction":1, "action": "יצירת תיק"},
+  { "key": 1, "kodaction":2, "action": "עדכון חוב"},
+  { "key": 2, "kodaction":3, "action": "מעבר מצב"},
+  { "key": 3, "kodaction":4, "action": "הוצאת מכתב"},
+  { "key": 4, "kodaction":5, "action": "שינוי במסלול"},
+  { "key": 5, "kodaction":6, "action": "שינוי בקבוצת חיוב"}
+]

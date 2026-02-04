@@ -2,8 +2,8 @@ class AuthService {
   constructor() {
     this.USERS_PATH = "data/internalDB/users.json";
     this.users = [
-        { "key":1, "username": "admin", "password": "qwe12!", "roles": {"dashboard":1,"cases":1,"routes":1} },
-        { "key":0, "username": "user1", "password": "1111", "roles": {"dashboard":1,"cases":0,"routes":null} }
+        { "key":1, "username": "admin", "password": "qwe12!", "screens": {"dashboard":1,"history":1,"case":1,"cases":1,"routes":1, "switchingModes": 1, "report":1}, "db": {"history":1,"cases":1,"routes":1, "statuses": 1} },
+        { "key":0, "username": "user1", "password": "1111", "screens": {"dashboard":1,"history":1, "cases":0,"routes":null}, "db": {"history":1,"cases":0,"routes":null} }
     ]; 
   }
 
@@ -68,7 +68,7 @@ class AuthService {
     const user = this.#getCurrentUser();
     if (!user) return false;
 
-    const perm = user.roles[screenName] ?? null;
+    const perm = user.screens[screenName] ?? null;
     return perm === 0 || perm === 1;
   }
 
@@ -76,7 +76,22 @@ class AuthService {
     const user = this.#getCurrentUser();
     if (!user) return false;
 
-    return user.roles[screenName] === 1;
+    return user.screens[screenName] === 1;
+  }
+
+  hasViewDBPermission(DBName) {
+    const user = this.#getCurrentUser();
+    if (!user) return false;
+
+    const perm = user.db[DBName] ?? null;
+    return perm === 0 || perm === 1;
+  }
+
+  hasEditDBPermission(DBName) {
+    const user = this.#getCurrentUser();
+    if (!user) return false;
+
+    return user.db[DBName] === 1;
   }
 }
 

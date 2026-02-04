@@ -1,5 +1,15 @@
 <div class="dashboard-container">
-  <h2>ברוכים הבאים למערכת אכיפה</h2>
+  <div class="dashboard-header">
+  <svg viewBox="0 0 500 200" class="dashboard-title">
+    <path id="dashboardCurve" d="M100,150 Q250,90 400,150" fill="transparent"/>
+
+    <text>
+      <textPath href="#dashboardCurve" startOffset="50%" text-anchor="middle">
+        ברוכים הבאים למערכת אכיפה
+      </textPath>
+    </text>
+  </svg>
+</div>
 
   <div class="stats-cards">
     <div class="card">
@@ -18,12 +28,13 @@
 
   <div class="recent-activity">
     <h3>פעילות אחרונה</h3>
-    <table id="recentCases">
+    <table id="recentCases"  class="table table--compact table--hover">
       <thead>
         <tr>
-          <th>מספר תיק</th>
-          <th>ע"י משתמש</th>
           <th>פעולה</th>
+          <th>ע"י משתמש</th>
+          <th>ערך ישן</th>
+          <th>ערך חדש</th>
           <th>זמן</th>
         </tr>
       </thead>

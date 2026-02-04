@@ -7,11 +7,38 @@
 </head>
 <body>
  <div id="app"></div>
-  <script src="js/services/authService.js"></script>
-  <script src="js/app.js"></script>
+  <!-- <script src="./js/services/authService.js"></script>
+  <script src="./js/services/historyService.js"></script>
+  <script src="./js/screensjs/dashboard.js"></script>
+  <script src="./js/screensjs/history.js"></script>
+  <script src="./js/app.js"></script> -->
+
+  <!-- Services -->
+  <script src="./js/services/BaseService.js"></script>
+  <script src="./js/services/authService.js"></script>
+  <script src="./js/services/historyService.js"></script>
+  <script src="./js/services/caseService.js"></script>
+  <script src="./js/services/statusService.js"></script>
+  <script src="./js/services/routeService.js"></script>
+
+  <!-- Screens -->
+  <script src="./js/screensjs/dashboard.js"></script>
+  <script src="./js/screensjs/history.js"></script>
+  <script src="./js/screensjs/case.js"></script>
+  <script src="./js/screensjs/routes.js"></script>
+  <script src="./js/screensjs/switchingModes.js"></script>
+
+  <!-- App / Router -->
+  <script src="./js/app.js"></script>
+
+
+<!-- StatusService.js
+RouteService.js
+CaseService.js
+CaseStatusHistoryService.js -->
 
   <script>
-    if (!authService.isLoggedIn()) {//??
+    if (!authService.isLoggedIn()) { //??
       loadLogin();
     } else{
       loadMainLayout();

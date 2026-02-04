@@ -1,0 +1,22 @@
+[
+  {
+    "key": 1,
+    "historyId": 1,
+    "caseId": 101,
+    "statusId": 1,
+    "currentStatusName": "התראה ראשונה", 
+    "changedAt": "2025-01-10T09:00:00",
+    "changedBy": "user123",
+    "note": "פתיחת תיק"
+  },
+  {
+    "key": 2,
+    "historyId": 2,
+    "caseId": 101,
+    "statusId": 2,
+    "currentStatusName": "פתיחת תיק", 
+    "changedAt": "2025-01-11T10:15:00",
+    "changedBy": "system",
+    "note": "שליחת התראה ראשונה"
+  }
+]

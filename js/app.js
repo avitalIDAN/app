@@ -1,3 +1,14 @@
+const screenControllers = {
+  dashboard: { onEnter: renderDashboard},
+  // cases: { onEnter: renderCases},
+  case: { onEnter: renderCaseScreen},
+  history: { onEnter: renderHistory},
+  
+  routes: { onEnter: renderRouteTable},
+  switchingModes: { onEnter: renderSwitchingModes}
+};
+
+
 function navigate(screenName) {
     if (!authService.isLoggedIn()) {
     loadLogin();
@@ -14,6 +25,14 @@ function navigate(screenName) {
     .then(res => res.text())
     .then(html => {
       document.getElementById("content").innerHTML = html;
+
+      // if (screenName === "dashboard") {
+      //   renderDashboard();
+      // }
+      const controller = screenControllers[screenName];
+      if (controller?.onEnter) {
+        controller.onEnter();
+      }
     });
 }
 
@@ -48,7 +67,7 @@ function showUsername() {
 
   const el = document.getElementById("usernameDisplay");
   if (el) {
-    el.innerText = `שלום, ${username}`;
+    el.innerText = `${username}`; /// `שלום, ${username}`;
   }
 }
 

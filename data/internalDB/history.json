@@ -1,0 +1,5 @@
+[
+  { "key": 0, "oldvalue": 0, "newvalue": 1001, "user": "admin", "kodaction":1, "action": "יצירת תיק", "note": "", "timestamp": "2026-01-22T10:15:00" },
+  { "key": 1, "oldvalue": 66.9, "newvalue": 2287, "user": "user1", "kodaction":2, "action": "עדכון חוב", "note": "", "timestamp": "2026-01-22T11:20:00" },
+  { "key": 2, "oldvalue": 3, "newvalue": 5, "user": "admin", "kodaction":3, "action": "מעבר מצב", "note": "מעבר מצב: התראה שנייה", "timestamp": "2026-01-22T12:05:00" }
+]

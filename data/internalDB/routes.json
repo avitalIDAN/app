@@ -1,0 +1,16 @@
+[
+  {
+    "key": 1,
+    "routeId": 1,
+    "code": "FAST",
+    "name": "מסלול מהיר",
+    "isActive": true
+  },
+  {
+    "key": 2,
+    "routeId": 2,
+    "code": "REGULAR",
+    "name": "מסלול רגיל",
+    "isActive": true
+  }
+]

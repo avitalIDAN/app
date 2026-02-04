@@ -1,0 +1,36 @@
+<div class="history-container">
+  <h2>היסטוריית פעולות</h2>
+
+  <!-- 🔍 אזור סינון -->
+  <div class="history-filters">
+    <select id="filterUser">
+      <option value="">כל המשתמשים</option>
+    </select>
+
+    <select id="filterAction">
+      <option value="">כל הפעולות</option>
+    </select>
+
+    <input type="date" id="filterFromDate">
+    <input type="date" id="filterToDate">
+
+    <button onclick="applyHistoryFilters()">סינון</button>
+    <button onclick="resetHistoryFilters()">איפוס</button>
+  </div>
+
+  <!-- 📋 טבלה -->
+  <!-- <table class="history-table"> -->
+  <table class="table table--history table--striped table--hover">
+    <thead>
+      <tr>
+        <th>פעולה</th>
+        <th>משתמש</th>
+        <th>ערך קודם</th>
+        <th>ערך חדש</th>
+        <th>זמן</th>
+      </tr>
+    </thead>
+    <tbody id="historyTableBody">
+    </tbody>
+  </table>
+</div>
