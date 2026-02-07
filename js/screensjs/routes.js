@@ -1,27 +1,22 @@
-async function renderRouteTable() {
+async function renderRoutes() {
   const routes = await routeService.getAll();
-  const select = document.getElementById("routeSelect");
+  const tbody = document.getElementById("routesTable");
+  tbody.innerHTML = "";
 
-  select.innerHTML = `<option value="">בחר מסלול</option>`;
+  if (!routes.length) {
+    tbody.innerHTML = `
+      <tr><td colspan="3">לא נמצאו מסלולים</td></tr>`;
+    return;
+  }
+
   routes.forEach(r => {
-    select.innerHTML += `<option value="${r.routeId}">${r.name}</option>`;
+    tbody.innerHTML += `
+      <tr>
+        <td>${r.routeId}</td>
+        <td>${r.name}</td>
+        <td>${r.description ?? ""}</td>
+      </tr>`;
   });
-
-  select.onchange = async () => {
-    const cases = await caseService.getCasesByRoute(select.value); //מאיפה הערך ואם תואם
-    const tbody = document.getElementById("routeCases");
-    tbody.innerHTML = "";
-
-    cases.forEach(c => {
-      tbody.innerHTML += `
-        <tr>
-          <td>${c.caseId}</td>
-          <td>${c.currentStatusName}</td>
-          <td>${c.updatedAt}</td>
-        </tr>
-      `;
-    });
-  };
 }
 
-window.renderRouteTable = renderRouteTable;
+window.renderRoutes = renderRoutes;

@@ -137,6 +137,52 @@ class CaseService{ //extends BaseService {
     return cases.filter(c => c.routeId == routeId); // שניים או שלוש ==
   }
 
+  
+async getCasesByStatus(statusId, routeId = null) {
+  if (!authService.hasViewDBPermission("cases")) {
+    return [];
+      // החזרת שגיאה "אין הרשאה" י
+  }
+
+  const cases = await this.getAllCases();
+
+  // return cases.filter(c => {
+  //   if (c.currentStatusId !== statusId) return false;
+  //   if (routeId && c.routeId !== routeId) return false;
+  //   return true;
+  // });
+    return cases.filter(c => (c.routeId == routeId)&&(c.currentStatusId == statusId));
+}
+
+// CaseService.js
+async getCasesFiltered({ routeId = null, statusId = null } = {}) {
+  if (!authService.hasViewDBPermission("cases")) {
+    return [];
+  }
+
+  const cases = await this.getAllCases();
+
+  return cases.filter(c => {
+    if (routeId && c.routeId !== routeId) return false;
+    if (statusId && c.currentStatusId !== statusId) return false;
+    return true;
+  });
+}
+
+// async getCasesFiltered({ routeId = null, statusId = null } = {}) {
+//   if (!authService.hasViewDBPermission("cases")) {
+//     return [];
+//   }
+
+//   if(!routeId && !statusId){
+
+//   }
+//   else if (!routeId) {
+    
+//   } else {
+    
+//   }
+// }
   async getCaseWithHistory(caseId) {
     if (!authService.hasViewDBPermission("cases")) {
       return [];  // או NULL

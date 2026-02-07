@@ -92,6 +92,48 @@ body {
   color: #fff;
 }
 
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu-item {
+  cursor: pointer;
+}
+
+.menu-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+}
+
+.arrow {
+  transition: transform 0.2s ease;
+}
+
+.submenu {
+  display: none;
+  padding-right: 15px;
+}
+
+.submenu li {
+  padding: 8px 10px;
+  font-size: 0.9em;
+}
+
+/* מצב פתוח */
+.menu-item.open .submenu {
+  display: block;
+}
+
+.menu-item.open .arrow {
+  transform: rotate(90deg);
+}
+/* ב */
+
+
 .topbar {
   height: 50px;
   background: #f4f4f4;
@@ -300,4 +342,50 @@ body {
 
 .table--striped tbody tr:nth-child(even) {
   background-color: #fafafa;
+}
+
+/* מסלולים */
+.select-wrapper {
+  position: relative;
+  width: 280px;
+  margin-bottom: 16px;
+}
+
+.select-wrapper select {
+  width: 100%;
+  padding: 10px 36px 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  background-color: white;
+  appearance: none;
+  cursor: pointer;
+}
+
+.select-wrapper::after {
+  content: "▾";
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #555;
+}
+
+.filters-bar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.filters-bar select,
+.filters-bar button {
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+
+select:disabled {
+  background-color: #f2f2f2;
+  cursor: not-allowed;
+  opacity: 0.7;
 }

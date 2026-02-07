@@ -2,7 +2,7 @@ class AuthService {
   constructor() {
     this.USERS_PATH = "data/internalDB/users.json";
     this.users = [
-        { "key":1, "username": "admin", "password": "qwe12!", "screens": {"dashboard":1,"history":1,"case":1,"cases":1,"routes":1, "switchingModes": 1}, "db": {"history":1,"cases":1,"routes":1, "statuses": 1} },
+        { "key":1, "username": "admin", "password": "qwe12!", "screens": {"dashboard":1,"history":1,"case":1,"cases":1,"routes":1, "switchingModes": 1, "allCases": 1, "statusesInRoute": 1, "casesInRoute":1}, "db": {"history":1,"cases":1,"routes":1, "statuses": 1} },
         // , "report":1
         { "key":0, "username": "user1", "password": "1111", "screens": {"dashboard":1,"history":1, "cases":0,"routes":null}, "db": {"history":1,"cases":0,"routes":null} }
     ]; 

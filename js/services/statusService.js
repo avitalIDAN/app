@@ -27,7 +27,7 @@ class StatusService{ // extends BaseService {
       // החזרת שגיאה "אין הרשאה" י
     }
     const statusAll = await this.getAll();
-    return statusAll.find(s => s.routeId === routeId);
+    return statusAll.filter(s => s.routeId == routeId);
   }
 
   async getById(statusId, routeId) {   

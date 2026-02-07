@@ -1,12 +1,24 @@
 <h2>מעבר מצבים</h2>
 
+<div class="filters-bar">
+  <select id="routeFilter">
+    <option value="">כל המסלולים</option>
+  </select>
+
+  <select id="statusFilter" disabled>
+    <!-- <option value="">כל המצבים</option> -->
+  </select>
+
+  <!-- <button id="clearFilters">נקה סינון</button> -->
+</div>
+
 <table class="table table--switch table--striped table--hover">
   <thead>
     <tr>
       <th>מספר תיק</th>
       <th>סטטוס נוכחי</th>
       <th>מסלול</th>
-      <th></th>
+      <th>מעבר לתיק</th>
     </tr>
   </thead>
   <tbody id="casesTable"></tbody>

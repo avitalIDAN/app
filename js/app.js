@@ -4,7 +4,10 @@ const screenControllers = {
   case: { onEnter: renderCaseScreen},
   history: { onEnter: renderHistory},
   
-  routes: { onEnter: renderRouteTable},
+  casesInRoute: { onEnter: rendercasesInRouteTable},
+  //routes: { onEnter: renderRouteTable},
+    routes: { onEnter: renderRoutes},
+  statusesInRoute: { onEnter: renderStatusesInRoute },
   switchingModes: { onEnter: renderSwitchingModes}
 };
 
@@ -105,3 +108,9 @@ function handleMenuClick(screenName) {
 
   navigate(screenName);
 }
+
+function toggleSubmenu(element) {
+  const menuItem = element.parentElement;
+  menuItem.classList.toggle("open");
+}
+
