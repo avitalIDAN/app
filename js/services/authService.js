@@ -39,6 +39,13 @@ class AuthService {
     return this.#getUserByUsername(username);
   }
 
+  getCurrentUser() { //??
+    const username = this.#getUsernameFromCookie();
+    if (!username) return null;
+
+    return this.#getUserByUsername(username);
+  }
+
   /* ========= PUBLIC API ========= */
 
   login(username, password) {

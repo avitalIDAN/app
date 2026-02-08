@@ -37,7 +37,7 @@ class StatusService{ // extends BaseService {
     }
 
     const statuses = await this.getAll();
-    return statuses.find(s => (s.statusId === statusId)&&s.routeId === routeId);
+    return statuses.find(s => (s.statusId == statusId)&&(s.routeId == routeId));
   }
 
   // async getByCode(code) {

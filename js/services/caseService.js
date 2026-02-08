@@ -277,7 +277,7 @@ async getCasesFiltered({ routeId = null, statusId = null } = {}) {
     return history;
   }
 
-  async changeCaseStatus(caseId, newStatusId, changedBy, note = "") {
+  async changeCaseStatus(caseId, newStatusId, changedBy = authService.getCurrentUser, note = "") {
     if (!authService.hasEditDBPermission("cases")) {
       return;
       // החזרת שגיאה "אין הרשאה" י
@@ -289,23 +289,29 @@ async getCasesFiltered({ routeId = null, statusId = null } = {}) {
     const routeId = caseItem.routeId;
 
     caseItem.currentStatusId = newStatusId;
+    const currentStatus = await statusService.getById(newStatusId, routeId);
+    caseItem.currentStatusName = currentStatus.name;
     caseItem.updatedAt = new Date().toISOString();
 
     // הוספת היסטוריה
     const history = await this.getAllCasesHis();
-
-    addToStatusHis.push({
+    const caseItemH = {
       key: history.length + 1,
       historyId: history.length + 1,
       caseId,
       routeId,
       statusId: newStatusId,
-      changedAt: new Date().toISOString(),
+      statusName: 1,
+      changedAt: new Date().toISOString(), //caseItem.updatedAt
       changedBy,
       note
-    });
+    };
+
+
+    this.addToStatusHis(caseItemH);
 
     console.log("STATUS CHANGED (mock):", caseItem);
+    console.log("in hist:", caseItemH);
   }
 }
 

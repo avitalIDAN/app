@@ -1,16 +1,33 @@
 <h2>מעבר מצבים</h2>
 
 <div class="filters-bar">
-  <select id="routeFilter">
-    <option value="">כל המסלולים</option>
-  </select>
-
-  <select id="statusFilter" disabled>
-    <!-- <option value="">כל המצבים</option> -->
-  </select>
-
-  <!-- <button id="clearFilters">נקה סינון</button> -->
+    <select id="routeFilter">
+        <!-- <option value="">כל המסלולים</option> -->
+    </select>
 </div>
+<div>
+    <p><b> מצב נוכחי </b> <select id="statusFilter" disabled></select></p>
+
+    <p><b> מצב חדש </b> <select id="newStatusSelect" disabled></select></p>
+
+    <button onclick="changeCaseStatus()">שינוי מצב בתיקים</button>
+</div>
+
+
+<!-- <button id="clearFilters">נקה סינון</button> -->
+
+<!-- 
+<div class="filters">
+  <div class="select-wrapper">
+    <select id="routeSelect"></select>
+  </div>
+
+  <div class="select-wrapper">
+    <select id="statusSelect" disabled>
+      <option value="">בחר מצב</option>
+    </select>
+  </div>
+</div> -->
 
 <table class="table table--switch table--striped table--hover">
   <thead>

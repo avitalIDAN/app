@@ -1,11 +1,13 @@
 async function renderSwitchingModes() {
   const routeSelect = document.getElementById("routeFilter");
   const statusSelect = document.getElementById("statusFilter");
+  const newStatusSelect = document.getElementById("newStatusSelect");
   const tbody = document.getElementById("casesTable");
 
   await loadRoutes(routeSelect);
 
   statusSelect.disabled = true;
+  newStatusSelect.disabled = true;
 
   routeSelect.onchange = async () => {
     resetTable();
@@ -13,7 +15,7 @@ async function renderSwitchingModes() {
 
     if (!routeSelect.value) return;
 
-    await loadStatuses(statusSelect, routeSelect.value);
+    await loadStatuses(statusSelect,newStatusSelect, routeSelect.value);
     // await loadCases();
     const cases = await caseService.getCasesByRoute(routeSelect.value);
     renderCases(cases);
@@ -49,18 +51,25 @@ async function renderSwitchingModes() {
     });
   }
 
-  async function loadStatuses(statusSelect, routeId) {
+  async function loadStatuses(statusSelect, newStatusSelect, routeId) {
     const statuses = await statusService.getAllByRoute(routeId);
     statusSelect.innerHTML = `<option value="">כל המצבים</option>`;
+    newStatusSelect.innerHTML = `<option value="">כל המצבים</option>`;
 
     statuses.forEach(s => {
       statusSelect.innerHTML += `
         <option value="${s.statusId}">
           ${s.name}
         </option>`;
+
+       newStatusSelect.innerHTML += `
+        <option value="${s.statusId}">
+          ${s.name}
+        </option>`;
     });
 
     statusSelect.disabled = false;
+    newStatusSelect.disabled = false;
   }
 
 //   async function loadCases() {
@@ -116,6 +125,76 @@ async function renderSwitchingModes() {
   });
   }
 }
+
+// function changeCaseStatus() {   
+//   const routeSelect = document.getElementById("routeFilter");
+//   const statusSelect = document.getElementById("statusFilter");
+//   const newStatusSelect = document.getElementById("newStatusSelect");
+
+
+// }
+
+async function changeCaseStatus() {
+  const routeSelect = document.getElementById("routeFilter");
+  const statusSelect = document.getElementById("statusFilter");
+  const newStatusSelect = document.getElementById("newStatusSelect");
+
+  const routeId = routeSelect.value;
+  const currentStatusId = statusSelect.value;
+  const newStatusId = newStatusSelect.value;
+
+  // ולידציה
+  if (!routeId || !currentStatusId || !newStatusId) {
+    alert("יש לבחור מסלול, מצב נוכחי ומצב חדש לפני שינוי");
+    return;
+  }
+
+  if (currentStatusId === newStatusId) {
+    alert("המצב החדש חייב להיות שונה מהמצב הנוכחי");
+    return;
+  }
+
+  // שליפת תיקים רלוונטיים
+  const cases = await caseService.getCasesByStatus(
+    currentStatusId,
+    routeId
+  );
+
+  if (!cases || cases.length === 0) {
+    alert("לא נמצאו תיקים מתאימים לשינוי");
+    return;
+  }
+
+  const confirmMsg = `
+יימשך שינוי מצב ל־${cases.length} תיקים.
+האם להמשיך?
+  `.trim();
+
+  if (!confirm(confirmMsg)) return;
+
+  // ביצוע שינוי
+  for (const c of cases) {
+    await caseService.changeCaseStatus(
+      c.caseId,
+      newStatusId
+    );
+  }
+
+  alert(`שינוי מצב בוצע בהצלחה ל־${cases.length} תיקים`);
+
+  // רענון תצוגה (אופציונלי)
+  const tbody = document.getElementById("casesTable");
+  tbody.innerHTML = "";
+  renderSwitchingModes();
+}
+
+// newStatusSelect.onchange = () => {
+//   if (!routeSelect.value || !statusSelect.value) {
+//     alert("יש לבחור מסלול ומצב נוכחי לפני בחירת מצב חדש");
+//     newStatusSelect.value = "";
+//   }
+// };
+
 
 window.renderSwitchingModes = renderSwitchingModes;
 
