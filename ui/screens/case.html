@@ -1,4 +1,12 @@
 <div class="case-page">
+  <div class="case-nav">
+    <button id="prevCaseBtn" onclick="goToPrevCase()">◀ תיק קודם</button>
+    <span class="case-counter">
+      תיק <span id="currentIndex"></span> מתוך <span id="totalCases"></span>
+    </span>
+    <button id="nextCaseBtn" onclick="goToNextCase()">תיק הבא ▶</button>
+  </div>
+
   <div class="case-header">
     <h2>תיק #<span id="caseId"></span></h2>
     <span class="case-status" id="caseStatus"></span>

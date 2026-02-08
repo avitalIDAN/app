@@ -118,14 +118,94 @@ class CaseService{ //extends BaseService {
     return cases.find(c => c.caseId === caseId);
   }
 
+  async _getOrderedCases() {
+    const cases = await this.getAllCases();
+
+    // מיון ברור ויציב – לפי caseId
+    return cases
+      .filter(c => c && c.caseId !== undefined)
+      .sort((a, b) => a.caseId - b.caseId);
+  }
+
   async getFirstCase() {
     if (!authService.hasViewDBPermission("cases")) {
       return null;
-      // החזרת שגיאה "אין הרשאה" י
     }
-    const casesf = await this.getAllCases();
-    return casesf.at(-1);//מיון /סינון?
+
+    const cases = await this._getOrderedCases();
+
+    if (!cases.length) return null;
+
+    return cases[0]; // הראשון לפי המיון
   }
+
+  async getNextCase(caseId) {
+    if (!authService.hasViewDBPermission("cases")) {
+      return null;
+    }
+
+    const cases = await this._getOrderedCases();
+    if (!cases.length) return null;
+
+    const index = cases.findIndex(c => c.caseId === caseId);
+
+    // אם לא נמצא – חזרה לראשון
+    if (index === -1) {
+      return cases[0];
+    }
+
+    // מעבר מעגלי קדימה
+    const nextIndex = (index + 1) % cases.length;
+    return cases[nextIndex];
+  }
+
+  async getPreCase(caseId) {
+    if (!authService.hasViewDBPermission("cases")) {
+      return null;
+    }
+
+    const cases = await this._getOrderedCases();
+    if (!cases.length) return null;
+
+    const index = cases.findIndex(c => c.caseId === caseId);
+
+    // אם לא נמצא – חזרה לאחרון
+    if (index === -1) {
+      return cases[cases.length - 1];
+    }
+
+    // מעבר מעגלי אחורה
+    const prevIndex = (index - 1 + cases.length) % cases.length;
+    return cases[prevIndex];
+  }
+
+
+  // async getFirstCase() {
+  //   if (!authService.hasViewDBPermission("cases")) {
+  //     return null;
+  //     // החזרת שגיאה "אין הרשאה" י
+  //   }
+  //   const casesf = await this.getAllCases();
+  //   return casesf.at(-1);//מיון /סינון?
+  // }
+
+  // async getPreCase(caseId) {
+  //   if (!authService.hasViewDBPermission("cases")) {
+  //     return null;
+  //     // החזרת שגיאה "אין הרשאה" י
+  //   }
+  //   const casesf = await this.getAllCases();
+  //   return casesf.at(-1);//מיון /סינון?
+  // }
+
+  // async getNextCase(caseId) {
+  //   if (!authService.hasViewDBPermission("cases")) {
+  //     return null;
+  //     // החזרת שגיאה "אין הרשאה" י
+  //   }
+  //   const casesf = await this.getAllCases();
+  //   return casesf.at(-1);//מיון /סינון?
+  // }
 
   async getCasesByRoute(routeId) {
     if (!authService.hasViewDBPermission("cases")) {

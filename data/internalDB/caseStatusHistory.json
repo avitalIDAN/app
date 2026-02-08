@@ -6,7 +6,7 @@
     "caseId": 101,
     "routeId": 1,
     "statusId": 1,
-    "currentStatusName": "פתיחת תיק", 
+    "statusName": "פתיחת תיק", 
     "changedAt": "2025-01-11T10:15:00",
     "changedBy": "system",
     "note": "פתיחת תיק"
@@ -18,7 +18,7 @@
     "caseId": 22,
     "routeId": 1,
     "statusId": 2,
-    "currentStatusName": "התראה ראשונה", 
+    "statusName": "התראה ראשונה", 
     "changedAt": "2025-01-11T10:15:00",
     "changedBy": "system",
     "note": "פתיחת תיק"
@@ -30,7 +30,7 @@
     "caseId": 333,
     "routeId": 1,
     "statusId": 2,
-    "currentStatusName": "התראה ראשונה", 
+    "statusName": "התראה ראשונה", 
     "changedAt": "2025-01-11T10:15:00",
     "changedBy": "system",
     "note": "פתיחת תיק"
@@ -41,7 +41,7 @@
     "caseId": 4,
     "routeId": 2,
     "statusId": 1,
-    "currentStatusName": "פתיחת תיק", 
+    "statusName": "פתיחת תיק", 
     "changedAt": "2025-01-11T12:15:00",
     "changedBy": "system",
     "note": "פתיחת תיק"
@@ -53,7 +53,7 @@
     "caseId": 101,
     "routeId": 1,
     "statusId": 2,
-    "currentStatusName": "התראה ראשונה", 
+    "statusName": "התראה ראשונה", 
     "changedAt": "2025-01-12T14:30:00",
     "changedBy": "user123",
     "note": "שליחת התראה ראשונה"
@@ -64,7 +64,7 @@
     "caseId": 22,
     "routeId": 1,
     "statusId": 2,
-    "currentStatusName": "התראה ראשונה", 
+    "statusName": "התראה ראשונה", 
     "changedAt": "2025-01-12T14:30:00",
     "changedBy": "user123",
     "note": "שליחת התראה ראשונה"
@@ -76,7 +76,7 @@
     "caseId": 333,
     "routeId": 1,
     "statusId": 2,
-    "currentStatusName": "התראה ראשונה", 
+    "statusName": "התראה ראשונה", 
     "changedAt": "2025-01-12T14:30:00",
     "changedBy": "user123",
     "note": "שליחת התראה ראשונה"
