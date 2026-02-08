@@ -3,10 +3,8 @@ const screenControllers = {
   // cases: { onEnter: renderCases},
   case: { onEnter: renderCaseScreen},
   history: { onEnter: renderHistory},
-  
   casesInRoute: { onEnter: rendercasesInRouteTable},
-  //routes: { onEnter: renderRouteTable},
-    routes: { onEnter: renderRoutes},
+  routes: { onEnter: renderRoutes},
   statusesInRoute: { onEnter: renderStatusesInRoute },
   switchingModes: { onEnter: renderSwitchingModes}
 };

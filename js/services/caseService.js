@@ -179,34 +179,6 @@ class CaseService{ //extends BaseService {
     return cases[prevIndex];
   }
 
-
-  // async getFirstCase() {
-  //   if (!authService.hasViewDBPermission("cases")) {
-  //     return null;
-  //     // החזרת שגיאה "אין הרשאה" י
-  //   }
-  //   const casesf = await this.getAllCases();
-  //   return casesf.at(-1);//מיון /סינון?
-  // }
-
-  // async getPreCase(caseId) {
-  //   if (!authService.hasViewDBPermission("cases")) {
-  //     return null;
-  //     // החזרת שגיאה "אין הרשאה" י
-  //   }
-  //   const casesf = await this.getAllCases();
-  //   return casesf.at(-1);//מיון /סינון?
-  // }
-
-  // async getNextCase(caseId) {
-  //   if (!authService.hasViewDBPermission("cases")) {
-  //     return null;
-  //     // החזרת שגיאה "אין הרשאה" י
-  //   }
-  //   const casesf = await this.getAllCases();
-  //   return casesf.at(-1);//מיון /סינון?
-  // }
-
   async getCasesByRoute(routeId) {
     if (!authService.hasViewDBPermission("cases")) {
       return [];
@@ -218,57 +190,38 @@ class CaseService{ //extends BaseService {
   }
 
   
-async getCasesByStatus(statusId, routeId = null) {
-  if (!authService.hasViewDBPermission("cases")) {
-    return [];
-      // החזרת שגיאה "אין הרשאה" י
-  }
+  async getCasesByStatus(statusId, routeId = null) {
+    if (!authService.hasViewDBPermission("cases")) {
+      return [];
+        // החזרת שגיאה "אין הרשאה" י
+    }
 
-  const cases = await this.getAllCases();
-
-  // return cases.filter(c => {
-  //   if (c.currentStatusId !== statusId) return false;
-  //   if (routeId && c.routeId !== routeId) return false;
-  //   return true;
-  // });
+    const cases = await this.getAllCases();
     return cases.filter(c => (c.routeId == routeId)&&(c.currentStatusId == statusId));
-}
-
-// CaseService.js
-async getCasesFiltered({ routeId = null, statusId = null } = {}) {
-  if (!authService.hasViewDBPermission("cases")) {
-    return [];
   }
 
-  const cases = await this.getAllCases();
+  // CaseService.js
+  async getCasesFiltered({ routeId = null, statusId = null } = {}) {
+    if (!authService.hasViewDBPermission("cases")) {
+      return [];
+    }
 
-  return cases.filter(c => {
-    if (routeId && c.routeId !== routeId) return false;
-    if (statusId && c.currentStatusId !== statusId) return false;
-    return true;
-  });
-}
+    const cases = await this.getAllCases();
 
-// async getCasesFiltered({ routeId = null, statusId = null } = {}) {
-//   if (!authService.hasViewDBPermission("cases")) {
-//     return [];
-//   }
+    return cases.filter(c => {
+      if (routeId && c.routeId !== routeId) return false;
+      if (statusId && c.currentStatusId !== statusId) return false;
+      return true;
+    });
+  }
 
-//   if(!routeId && !statusId){
 
-//   }
-//   else if (!routeId) {
-    
-//   } else {
-    
-//   }
-// }
   async getCaseWithHistory(caseId) {
     if (!authService.hasViewDBPermission("cases")) {
       return [];  // או NULL
       // החזרת שגיאה "אין הרשאה" י
     }
-// לבדוק אם תיק קיים- פונקציה לבדיקה
+  // לבדוק אם תיק קיים- פונקציה לבדיקה
     const caseData = await this.getCaseById(caseId);
     if (!caseData) return null; // תיק לא קיים
 

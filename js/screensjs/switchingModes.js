@@ -101,14 +101,6 @@ async function renderSwitchingModes() {
       return;
     }
 
-    // cases.forEach(c => {
-    //   tbody.innerHTML += `
-    //     <tr>
-    //       <td>${c.caseId}</td>
-    //       <td>${c.currentStatusName}</td>
-    //       <td>${new Date(c.updatedAt).toLocaleDateString()}</td>
-    //     </tr>`;
-    // });
     cases.forEach(c => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
@@ -125,14 +117,6 @@ async function renderSwitchingModes() {
   });
   }
 }
-
-// function changeCaseStatus() {   
-//   const routeSelect = document.getElementById("routeFilter");
-//   const statusSelect = document.getElementById("statusFilter");
-//   const newStatusSelect = document.getElementById("newStatusSelect");
-
-
-// }
 
 async function changeCaseStatus() {
   const routeSelect = document.getElementById("routeFilter");
@@ -198,107 +182,3 @@ async function changeCaseStatus() {
 
 window.renderSwitchingModes = renderSwitchingModes;
 
-
-
-// async function renderSwitchingModes() {
-//   await fillFilters();
-//   await loadCases(); // ללא פילטרים = כל התיקים
-// }
-
-// async function fillFilters() {
-//   const routes = await routeService.getAll();
-//   const statuses = await statusService.getAll();
-
-//   const routeSelect = document.getElementById("routeFilter");
-//   const statusSelect = document.getElementById("statusFilter");
-
-//   routes.forEach(r => {
-//     routeSelect.innerHTML += `
-//       <option value="${r.routeId}">
-//         ${r.name} (ID: ${r.routeId})
-//       </option>`;
-//   });
-
-//   statuses.forEach(s => {
-//     statusSelect.innerHTML += `
-//       <option value="${s.statusId}">
-//         ${s.name}
-//       </option>`;
-//   });
-
-//   routeSelect.onchange = loadCases;
-//   statusSelect.onchange = loadCases;
-
-//   document.getElementById("clearFilters").onclick = () => {
-//     routeSelect.value = "";
-//     statusSelect.value = "";
-//     loadCases();
-//   };
-// }
-
-// async function loadCases() {
-//   const routeId = document.getElementById("routeFilter").value;
-//   const statusId = document.getElementById("statusFilter").value;
-
-//   const cases = await caseService.getCasesFiltered({
-//     routeId: routeId ? Number(routeId) : null,
-//     statusId: statusId ? Number(statusId) : null
-//   });
-
-//   renderCasesTable(cases);
-// }
-
-// function renderCasesTable(cases) {
-//   const tbody = document.getElementById("casesTable");
-//   tbody.innerHTML = "";
-
-//   if (!cases.length) {
-//     tbody.innerHTML = `
-//       <tr>
-//         <td colspan="4">לא נמצאו תיקים</td>
-//       </tr>`;
-//     return;
-//   }
-
-//   cases.forEach(c => {
-//     tbody.innerHTML += `
-//       <tr>
-//         <td>${c.caseId}</td>
-//         <td>${c.currentStatusName}</td>
-//         <td>${c.routeName ?? c.routeId}</td>
-//         <td>
-//           <button onclick="toCaseScreen(${c.caseId})">
-//             הצגת תיק
-//           </button>
-//         </td>
-//       </tr>`;
-//   });
-// }
-
-/////////////////
-// async function renderSwitchingModes() {
-//   const cases = await caseService.getAllCases();
-//   const tbody = document.getElementById("casesTable");
-//   tbody.innerHTML = "";
-
-//   cases.forEach(c => {
-//     const tr = document.createElement("tr");
-//     tr.innerHTML = `
-//       <td>${c.caseId}</td>
-//       <td>${c.currentStatusName}</td>
-//       <td>${c.routeId}</td>
-//       <td>
-//         <button onclick="toCaseScreen(${c.caseId})">
-//           הצגת תיק
-//         </button>
-//       </td>
-//     `;
-//     tbody.appendChild(tr);
-//   });
-// }
-
-// function toCaseScreen(caseId){
-    
-// //הפנייה לתיק- מסך הצגת תיק
-// }
-window.renderSwitchingModes = renderSwitchingModes;
