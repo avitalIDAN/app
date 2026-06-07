@@ -3,68 +3,52 @@ async function renderSwitchingModes() {
   const statusSelect = document.getElementById("statusFilter");
   const newStatusSelect = document.getElementById("newStatusSelect");
   const tbody = document.getElementById("casesTable");
-
-  await loadRoutes(routeSelect);
-
   statusSelect.disabled = true;
   newStatusSelect.disabled = true;
 
+  await loadRoutes();
+
   routeSelect.onchange = async () => {
     resetTable();
-    resetStatus();
+    resetStatusSelect();
+    resetNewStatusSelect();
 
     if (!routeSelect.value) return;
 
-    await loadStatuses(statusSelect,newStatusSelect, routeSelect.value);
-    // await loadCases();
-    const cases = await caseService.getCasesByRoute(routeSelect.value);
-    renderCases(cases);
+    await loadStatuses(routeSelect.value);
+    await refreshCases();
   };
 
-  statusSelect.onchange = async () => {
-    if (!routeSelect.value) {
-      alert("יש לבחור מסלול לפני בחירת מצב");
-      statusSelect.value = "";
-      return;
-    }
+  statusSelect.onchange = refreshCases;
 
-    // await loadCases();
-    const cases = await caseService.getCasesByStatus(
-      statusSelect.value,
-      routeSelect.value
-    );
-    renderCases(cases);
-  };
-
-  /* ---------- helpers ---------- */
-
-  async function loadRoutes(routeSelect) {
+  async function loadRoutes() {
     const routes = await routeService.getAll();
-    
+
     routeSelect.innerHTML = `<option value="">בחר מסלול</option>`;
 
-    routes.forEach(r => {
+    routes.forEach(route => {
       routeSelect.innerHTML += `
-        <option value="${r.routeId}">
-          ${r.routeId} – ${r.name}
+        <option value="${route.routeId}">
+          ${route.routeId} - ${route.name}
         </option>`;
     });
   }
 
-  async function loadStatuses(statusSelect, newStatusSelect, routeId) {
+  async function loadStatuses(routeId) {
     const statuses = await statusService.getAllByRoute(routeId);
-    statusSelect.innerHTML = `<option value="">כל המצבים</option>`;
-    newStatusSelect.innerHTML = `<option value="">כל המצבים</option>`;
 
-    statuses.forEach(s => {
+    statusSelect.innerHTML = `<option value="">כל המצבים</option>`;
+    newStatusSelect.innerHTML = `<option value="">בחר מצב חדש</option>`;
+
+    statuses.forEach(status => {
       statusSelect.innerHTML += `
-        <option value="${s.statusId}">
-          ${s.name}
+        <option value="${status.statusId}">
+          ${status.name}
         </option>`;
 
-       newStatusSelect.innerHTML += `
-        <option value="${s.statusId}">
-          ${s.name}
+      newStatusSelect.innerHTML += `
+        <option value="${status.statusId}">
+          ${status.name}
         </option>`;
     });
 
@@ -72,117 +56,147 @@ async function renderSwitchingModes() {
     newStatusSelect.disabled = false;
   }
 
-//   async function loadCases() {
-//     const cases = await caseService.getCasesFiltered({
-//       routeId: routeSelect.value,
-//       statusId: statusSelect.value || null
-//     });
-
-//     renderCases(cases);
-//   }
-
-  function resetStatus() {
+  function resetStatusSelect() {
     statusSelect.innerHTML = `<option value="">בחר מצב</option>`;
     statusSelect.disabled = true;
+  }
+
+  function resetNewStatusSelect() {
+    newStatusSelect.innerHTML = `<option value="">בחר מצב חדש</option>`;
+    newStatusSelect.disabled = true;
   }
 
   function resetTable() {
     tbody.innerHTML = "";
   }
 
-  function renderCases(cases) {
+  async function refreshCases() {
+    const cases = await caseService.getCasesFiltered({
+      routeId: routeSelect.value || null,
+      statusId: statusSelect.value || null
+    });
+
+    await renderCases(cases);
+  }
+
+  async function renderCases(cases) {
     tbody.innerHTML = "";
 
     if (!cases.length) {
       tbody.innerHTML = `
         <tr>
-          <td colspan="3">לא נמצאו תיקים</td>
+          <td colspan="7">לא נמצאו תיקים</td>
         </tr>`;
       return;
     }
 
-    cases.forEach(c => {
-    const tr = document.createElement("tr");
-    const nameRout = c.routeId; //await routeService.getNameById(c.routeId);
-    tr.innerHTML = `
-      <td>${c.caseId}</td>
-      <td>${nameRout}</td>
-      <td>${c.currentStatusName}</td>
-      <td>
-        <button onclick="promote(${c.caseId})">
-          קידום למצב
-        </button>
-      </td>
-      <td>
-        <button onclick="exclusion(${c})">
-          החרגה
-        </button>
-      </td>
-      <td>
-        <button onclick="closeCase(${c})">
-          סגירה
-        </button>
-      </td>
-      <td>
-        <button onclick="toCaseScreen(${c.caseId})">
-          הצגת תיק
-        </button>
-      </td>
-    `;
-    tbody.appendChild(tr);
-  });
+    for (const caseItem of cases) {
+      const routeName = await routeService.getNameById(caseItem.routeId);
+      const isClosed = caseItem.currentStatusId == 0;
+      const isExcluded = caseItem.currentStatusId == 5;
+      const isFinal = isClosed || isExcluded;
+      const tr = document.createElement("tr");
+
+      tr.innerHTML = `
+        <td>${caseItem.caseId}</td>
+        <td>${routeName || caseItem.routeId}</td>
+        <td>${caseItem.currentStatusName}</td>
+        <td>
+          <button ${isFinal ? "disabled" : ""} onclick="promote(${caseItem.caseId})">
+            קידום למצב
+          </button>
+        </td>
+        <td>
+          <button ${isFinal ? "disabled" : ""} onclick="exclusion(${caseItem.caseId})">
+            החרגה
+          </button>
+        </td>
+        <td>
+          <button ${isClosed ? "disabled" : ""} onclick="closeCase(${caseItem.caseId})">
+            סגירה
+          </button>
+        </td>
+        <td>
+          <button onclick="toCaseScreen(${caseItem.caseId})">
+            הצגת תיק
+          </button>
+        </td>`;
+
+      tbody.appendChild(tr);
+    }
   }
+
+  window.refreshSwitchingModesCases = refreshCases;
 }
 
 async function promote(caseId) {
-  const caseThis = await caseService.getCaseById(caseId);
-  const nextStatus = await statusService.getNextStatus(caseThis.currentStatusId, caseThis.routeId);
-   console.log(nextStatus)
-  if(!nextStatus){
-    await caseService.changeCaseStatus(
-      caseThis.caseId,
-      nextStatus.statusId
-    );
+  const caseItem = await caseService.getCaseById(caseId);
+
+  if (!caseItem) {
+    alert("תיק לא נמצא");
+    return;
   }
-  // const thisStatus = await statusService.getById(caseThis.statusId, caseThis.routeId);
-  // const statuses = await statusService.getAllByRoute(caseThis.routeId);
 
-  //async changeCaseStatus(caseId, newStatusId, changedBy = authService.getCurrentUser, note = "") {
- 
-
-  
-  // // רענון תצוגה (אופציונלי)
-  // const tbody = document.getElementById("casesTable");
-  // tbody.innerHTML = "";
-  // renderSwitchingModes();
-}
-
-async function exclusion(caseThis) {
-  await caseService.changeCaseStatus(
-    caseThis.caseId,
-    9999 //פונקציה שמחזירה מספר מוחג?
+  const nextStatus = await statusService.getNextStatus(
+    caseItem.currentStatusId,
+    caseItem.routeId
   );
 
-  
-  // רענון תצוגה (אופציונלי)
-  const tbody = document.getElementById("casesTable");
-  tbody.innerHTML = "";
-  renderSwitchingModes();
-}
+  if (!nextStatus) {
+    alert("לא נמצא מצב הבא לתיק זה");
+    return;
+  }
 
-async function closeCase(caseThis) {
   await caseService.changeCaseStatus(
-    caseThis.caseId,
-    0 //פונקציה שמחזירה מספר לסגירה?
+    caseItem.caseId,
+    nextStatus.statusId,
+    authService.getCurrentUsername(),
+    "קידום למצב הבא"
   );
 
-
-  // רענון תצוגה (אופציונלי)
-  const tbody = document.getElementById("casesTable");
-  tbody.innerHTML = "";
-  renderSwitchingModes();
+  await refreshSwitchingModesCases();
 }
 
+async function exclusion(caseId) {
+  const caseItem = await caseService.getCaseById(caseId);
+
+  if (!caseItem) {
+    alert("תיק לא נמצא");
+    return;
+  }
+
+  await caseService.changeCaseStatus(
+    caseItem.caseId,
+    await getExcludedStatusId(caseItem.routeId),
+    authService.getCurrentUsername(),
+    "החרגת תיק"
+  );
+
+  await refreshSwitchingModesCases();
+}
+
+async function closeCase(caseId) {
+  const caseItem = await caseService.getCaseById(caseId);
+
+  if (!caseItem) {
+    alert("תיק לא נמצא");
+    return;
+  }
+
+  await caseService.changeCaseStatus(
+    caseItem.caseId,
+    0,
+    authService.getCurrentUsername(),
+    "סגירת תיק"
+  );
+
+  await refreshSwitchingModesCases();
+}
+
+async function getExcludedStatusId(routeId) {
+  const excludedStatus = await statusService.getByCode("EXCLUDED", routeId);
+  return excludedStatus ? excludedStatus.statusId : 5;
+}
 async function changeCaseStatus() {
   const routeSelect = document.getElementById("routeFilter");
   const statusSelect = document.getElementById("statusFilter");
@@ -192,7 +206,6 @@ async function changeCaseStatus() {
   const currentStatusId = statusSelect.value;
   const newStatusId = newStatusSelect.value;
 
-  // ולידציה
   if (!routeId || !currentStatusId || !newStatusId) {
     alert("יש לבחור מסלול, מצב נוכחי ומצב חדש לפני שינוי");
     return;
@@ -203,125 +216,72 @@ async function changeCaseStatus() {
     return;
   }
 
-  // שליפת תיקים רלוונטיים
-  const cases = await caseService.getCasesByStatus(
-    currentStatusId,
-    routeId
-  );
+  const cases = await caseService.getCasesByStatus(currentStatusId, routeId);
 
-  if (!cases || cases.length === 0) {
+  if (!cases.length) {
     alert("לא נמצאו תיקים מתאימים לשינוי");
     return;
   }
 
-  const confirmMsg = `
-יימשך שינוי מצב ל־${cases.length} תיקים.
-האם להמשיך?
-  `.trim();
+  if (!confirm(`יימשך שינוי מצב ל-${cases.length} תיקים. האם להמשיך?`)) {
+    return;
+  }
 
-  if (!confirm(confirmMsg)) return;
-
-  // ביצוע שינוי
-  for (const c of cases) {
+  for (const caseItem of cases) {
     await caseService.changeCaseStatus(
-      c.caseId,
-      newStatusId
+      caseItem.caseId,
+      newStatusId,
+      authService.getCurrentUsername(),
+      "שינוי מצב מרוכז"
     );
   }
 
-  alert(`שינוי מצב בוצע בהצלחה ל־${cases.length} תיקים`);
-
-  // רענון תצוגה (אופציונלי)
-  const tbody = document.getElementById("casesTable");
-  tbody.innerHTML = "";
-  renderSwitchingModes();
+  alert(`שינוי מצב בוצע בהצלחה ל-${cases.length} תיקים`);
+  await refreshSwitchingModesCases();
 }
 
-// newStatusSelect.onchange = () => {
-//   if (!routeSelect.value || !statusSelect.value) {
-//     alert("יש לבחור מסלול ומצב נוכחי לפני בחירת מצב חדש");
-//     newStatusSelect.value = "";
-//   }
-// };
+function toCaseScreen(caseId) {
+  fetch("ui/screens/case.html")
+    .then(res => res.text())
+    .then(html => {
+      document.getElementById("content").innerHTML = html;
+      renderCaseScreen(caseId);
+    });
+}
 
-// async function changeCaseStatus() {
-//   const routeSelect = document.getElementById("routeFilter");
-//   const statusSelect = document.getElementById("statusFilter");
-//   const newStatusSelect = document.getElementById("newStatusSelect");
-//   const previewEl = document.getElementById("casesPreview");
-//   const btn = document.getElementById("changeStatusBtn");
+window.renderSwitchingModes = renderSwitchingModes;
 
-//   const routeId = routeSelect.value;
-//   const currentStatusId = statusSelect.value;
-//   const newStatusId = newStatusSelect.value;
+// // }
 
-//   previewEl.innerText = "";
+// // routeFilter.onchange = updateCasesPreview;
+// // statusFilter.onchange = updateCasesPreview;
 
-//   // ולידציה בסיסית
-//   if (!routeId || !currentStatusId || !newStatusId) {
-//     alert("יש לבחור מסלול, מצב נוכחי ומצב חדש");
-//     return;
-//   }
 
-//   if (currentStatusId === newStatusId) {
-//     alert("המצב החדש חייב להיות שונה מהמצב הנוכחי");
-//     return;
-//   }
+// // // // במקום לולאה
+// // // await caseService.bulkChangeStatus({
+// // //   routeId,
+// // //   fromStatusId: currentStatusId,
+// // //   toStatusId: newStatusId
+// // // });
 
-//   btn.disabled = true;
+// window.renderSwitchingModes = renderSwitchingModes;
 
-//   try {
-//     // שלב 1 – Preview
-//     const cases = await caseService.getCasesByStatus(
-//       currentStatusId,
-//       routeId
-//     );
+// ////  }
 
-//     if (!cases || cases.length === 0) {
-//       previewEl.innerText = "לא נמצאו תיקים מתאימים";
-//       return;
-//     }
+////  routeFilter.onchange = updateCasesPreview;
+////  statusFilter.onchange = updateCasesPreview;
 
-//     previewEl.innerText = `יימשך שינוי מצב ל־${cases.length} תיקים`;
 
-//     // שלב 2 – אישור
-//     const confirmed = confirm(
-//       `האם לשנות מצב ל־${cases.length} תיקים?`
-//     );
+////  // // במקום לולאה
+////  // await caseService.bulkChangeStatus({
+////  //   routeId,
+////  //   fromStatusId: currentStatusId,
+////  //   toStatusId: newStatusId
+////  // });
 
-//     if (!confirmed) return;
+///wi ndow.renderSwitchingModes = renderSwitchingModes;
 
-//     // שלב 3 – ביצוע (אחד־אחד)
-//     for (const c of cases) {
-//       await caseService.changeCaseStatus(
-//         c.caseId,
-//         newStatusId
-//       );
-//     }
-
-//     alert("שינוי המצב בוצע בהצלחה");
-
-//   } catch (err) {
-//     console.error(err);
-//     alert("אירעה שגיאה בעת שינוי המצב");
-//   } finally {
-//     btn.disabled = false;
-//   }
-// }
-
-// async function updateCasesPreview() {
-//   const routeId = routeFilter.value;
-//   const statusId = statusFilter.value;
-//   const previewEl = document.getElementById("casesPreview");
-
-//   previewEl.innerText = "";
-
-//   if (!routeId || !statusId) return;
-
-//   const cases = await caseService.getCasesByStatus(statusId, routeId);
-//   previewEl.innerText = cases.length
-//     ? `${cases.length} תיקים במצב זה`
-//     : "אין תיקים במצב זה";
+;
 // }
 
 // routeFilter.onchange = updateCasesPreview;

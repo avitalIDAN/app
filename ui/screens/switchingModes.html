@@ -1,34 +1,22 @@
-<h2>מעבר מצבים</h2>
+<h2>מעבר מצבים ומכתבים</h2>
 
 <div class="filters-bar">
-    <select id="routeFilter">
-        <!-- <option value="">כל המסלולים</option> -->
-    </select>
-</div>
-<div>
-    <p><b> מצב נוכחי </b> <select id="statusFilter" disabled></select></p>
-
-    <p><b> מצב חדש </b> <select id="newStatusSelect" disabled></select></p>
-
-    <!-- <p id="casesPreview" class="hint"></p>
-    <button id="changeStatusBtn" onclick="changeCaseStatus()">שינוי מצב בתיקים</button> -->
+  <select id="routeFilter"></select>
 </div>
 
+<div class="filters-bar">
+  <label>
+    <b>מצב נוכחי</b>
+    <select id="statusFilter" disabled></select>
+  </label>
 
-<!-- <button id="clearFilters">נקה סינון</button> -->
+  <label>
+    <b>מצב חדש</b>
+    <select id="newStatusSelect" disabled></select>
+  </label>
 
-<!-- 
-<div class="filters">
-  <div class="select-wrapper">
-    <select id="routeSelect"></select>
-  </div>
-
-  <div class="select-wrapper">
-    <select id="statusSelect" disabled>
-      <option value="">בחר מצב</option>
-    </select>
-  </div>
-</div> -->
+  <button id="changeStatusBtn" onclick="changeCaseStatus()">שינוי מצב בתיקים</button>
+</div>
 
 <table class="table table--switch table--striped table--hover">
   <thead>

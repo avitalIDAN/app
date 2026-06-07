@@ -4,43 +4,59 @@
     "caseId": 101,
     "externalCaseNumber": "C-1001",
     "routeId": 1,
+    "groupId": 1,
     "currentStatusId": 2,
-    "currentStatusName": "התראה ראשונה", 
+    "currentStatusName": "התראה ראשונה",
+    "idPayer": 1,
+    "idAsset": 1,
     "createdAt": "2025-01-10T09:00:00",
     "updatedAt": "2025-01-12T14:30:00",
+    "delta": 0,
     "debt": 1200
   },
-    {
+  {
     "key": 2,
     "caseId": 22,
     "externalCaseNumber": "C-22",
     "routeId": 1,
+    "groupId": 2,
     "currentStatusId": 2,
-    "currentStatusName": "התראה ראשונה", 
+    "currentStatusName": "התראה ראשונה",
+    "idPayer": 1,
+    "idAsset": 1,
     "createdAt": "2025-01-10T09:00:00",
     "updatedAt": "2025-01-12T14:30:00",
+    "delta": 0,
     "debt": 433
   },
-    {
+  {
     "key": 3,
     "caseId": 333,
     "externalCaseNumber": "C-333",
     "routeId": 1,
+    "groupId": 3,
     "currentStatusId": 2,
-    "currentStatusName": "התראה ראשונה", 
+    "currentStatusName": "התראה ראשונה",
+    "idPayer": 1,
+    "idAsset": 1,
     "createdAt": "2025-01-10T09:00:00",
     "updatedAt": "2025-01-12T14:30:00",
+    "delta": 0,
     "debt": 49.9
   },
-    {
+  {
     "key": 4,
     "caseId": 4,
     "externalCaseNumber": "C-4",
     "routeId": 2,
+    "groupId": 3,
     "currentStatusId": 1,
-    "currentStatusName": "פתיחת תיק", 
+    "currentStatusName": "פתיחת תיק",
+    "idPayer": 1,
+    "idAsset": 1,
     "createdAt": "2025-01-10T09:00:00",
     "updatedAt": "2025-01-12T14:30:00",
+    "delta": 0,
     "debt": 11100
   }
 ]

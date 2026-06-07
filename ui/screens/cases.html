@@ -1,0 +1,49 @@
+<div class="cases-builder">
+  <h2>בניית תיקים</h2>
+
+  <div class="filters-bar cases-builder__filters">
+    <label>
+      <b>מסלול</b>
+      <select id="caseRouteSelect"></select>
+    </label>
+
+    <label>
+      <b>קבוצת חיובים</b>
+      <select id="debtGroupSelect"></select>
+    </label>
+
+    <label>
+      <b>משלם</b>
+      <input id="payerFilter" type="number" placeholder="כל המשלמים" />
+    </label>
+
+    <label>
+      <b>נכס</b>
+      <input id="assetFilter" type="number" placeholder="כל הנכסים" />
+    </label>
+
+    <button onclick="loadDebtsForCaseBuilder()">איתור חובות</button>
+  </div>
+
+  <div class="case-builder-summary">
+    <span>נבחרו <b id="selectedDebtsCount">0</b> חובות</span>
+    <span>סכום לתיק <b id="selectedDebtsSum">0</b></span>
+    <button onclick="createCaseFromSelectedDebts()">הקמת תיק</button>
+  </div>
+
+  <table class="table table--striped table--hover">
+    <thead>
+      <tr>
+        <th>בחירה</th>
+        <th>מזהה חוב</th>
+        <th>משלם</th>
+        <th>נכס</th>
+        <th>קבוצת חיוב</th>
+        <th>שנה</th>
+        <th>ריבית</th>
+        <th>סכום</th>
+      </tr>
+    </thead>
+    <tbody id="gviaDebtsTable"></tbody>
+  </table>
+</div>

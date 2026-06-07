@@ -97,7 +97,7 @@ class CaseService{ //extends BaseService {
       // החזרת שגיאה "אין הרשאה" י
     }
     const cases = await this.getAllCases();
-    return cases.filter(c => c.currentStatusId === 0).length;
+    return cases.filter(c => c.currentStatusId != 0).length;
   }
 
   async getNumClosedCases() {
@@ -106,7 +106,7 @@ class CaseService{ //extends BaseService {
       // החזרת שגיאה "אין הרשאה" י
     }
     const cases = await this.getAllCases();
-    return cases.filter(c => c.currentStatusId != 0).length;
+    return cases.filter(c => c.currentStatusId == 0).length;
   }
 
   async getCaseById(caseId) {
@@ -115,7 +115,60 @@ class CaseService{ //extends BaseService {
       // החזרת שגיאה "אין הרשאה" י
     }
     const cases = await this.getAllCases();
-    return cases.find(c => c.caseId === caseId);
+    return cases.find(c => c.caseId == caseId);
+  }
+
+  async createCase({
+    routeId,
+    groupId,
+    idPayer,
+    idAsset,
+    statusId = 1,
+    delta = 0,
+    debt = 0
+  }) {
+    if (!authService.hasEditDBPermission("cases")) {
+      return null;
+    }
+
+    const cases = await this.getAllCases();
+    const nextKey = cases.reduce((max, c) => Math.max(max, c.key || 0), 0) + 1;
+    const nextCaseId = cases.reduce((max, c) => Math.max(max, c.caseId || 0), 0) + 1;
+    const now = new Date().toISOString();
+    const status = await statusService.getById(statusId, routeId);
+
+    const caseItem = {
+      key: nextKey,
+      caseId: nextCaseId,
+      externalCaseNumber: `C-${nextCaseId}`,
+      routeId: Number(routeId),
+      groupId: Number(groupId),
+      currentStatusId: statusId,
+      currentStatusName: status ? status.name : "",
+      idPayer: Number(idPayer),
+      idAsset: Number(idAsset),
+      createdAt: now,
+      updatedAt: now,
+      delta,
+      debt
+    };
+
+    cases.push(caseItem);
+
+    const history = await this.getAllCasesHis();
+    await this.addToStatusHis({
+      key: history.length + 1,
+      historyId: history.length + 1,
+      caseId: caseItem.caseId,
+      routeId: caseItem.routeId,
+      statusId: caseItem.currentStatusId,
+      statusName: caseItem.currentStatusName,
+      changedAt: now,
+      changedBy: authService.getCurrentUsername(),
+      note: "פתיחת תיק"
+    });
+
+    return caseItem;
   }
 
   async _getOrderedCases() {
@@ -209,8 +262,8 @@ class CaseService{ //extends BaseService {
     const cases = await this.getAllCases();
 
     return cases.filter(c => {
-      if (routeId && c.routeId !== routeId) return false;
-      if (statusId && c.currentStatusId !== statusId) return false;
+      if (routeId && c.routeId != routeId) return false;
+      if (statusId && c.currentStatusId != statusId) return false;
       return true;
     });
   }
@@ -291,16 +344,11 @@ class CaseService{ //extends BaseService {
 
   const routeId = caseItem.routeId;
 
-  console.log("newStatusId", newStatusId);
-  console.log("routeId", routeId);
-
   const currentStatus =
     await statusService.getById(
       newStatusId,
       routeId
     );
-
-  console.log(currentStatus);
 
   if (!currentStatus) {
     throw new Error(
@@ -328,8 +376,7 @@ class CaseService{ //extends BaseService {
 
   await this.addToStatusHis(caseItemH);
 
-  console.log("STATUS CHANGED", caseItem);
-  console.log("HISTORY", caseItemH);
+  return caseItem;
 }
 }
 

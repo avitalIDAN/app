@@ -1,6 +1,6 @@
 const screenControllers = {
   dashboard: { onEnter: renderDashboard},
-  // cases: { onEnter: renderCases},
+  cases: { onEnter: renderCasesBuilder},
   case: { onEnter: renderCaseScreen},
   history: { onEnter: renderHistory},
   casesInRoute: { onEnter: rendercasesInRouteTable},

@@ -281,6 +281,39 @@ body {
   box-shadow: 0 4px 12px rgba(0,0,0,.05);
 }
 
+.case-card--wide {
+  grid-column: 1 / -1;
+}
+
+.case-debt-total {
+  margin-top: 12px;
+  font-weight: 600;
+}
+
+.cases-builder__filters label,
+.filters-bar label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.filters-bar input {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.case-builder-summary {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin: 12px 0 16px;
+  padding: 12px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
 .timeline {
   list-style: none;
   padding: 0;

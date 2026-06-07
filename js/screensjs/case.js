@@ -1,31 +1,27 @@
 let data;
 
 async function renderCaseScreen(caseId) {
+  data = caseId ? await caseService.getCaseById(caseId) : await caseService.getFirstCase();
 
-  data = caseId? await caseService.getCaseById(caseId):await caseService.getFirstCase();
+  if (!data) {
+    document.getElementById("content").innerHTML = "<h3>לא נמצאו תיקים להצגה</h3>";
+    return;
+  }
 
   document.getElementById("caseId").innerText = data.caseId;
   document.getElementById("caseStatus").innerText = "מצב נוכחי: " + data.currentStatusName;
 
-  const routeName = await routeService.getNameById(data.routeId); //getById(data.routeId);
-  document.getElementById("debtorName").innerText = data.debt;
-  document.getElementById("routeName").innerText = routeName; //.name;
-  document.getElementById("updatedAt").innerText = new Date(data.updatedAt).toLocaleString("he-IL") ; 
-  document.getElementById("createdAt").innerText = new Date(data.createdAt).toLocaleString("he-IL"); 
+  const routeName = await routeService.getNameById(data.routeId);
+  document.getElementById("debtorName").innerText = data.idPayer ?? "-";
+  document.getElementById("assetName").innerText = data.idAsset ?? "-";
+  document.getElementById("groupName").innerText = data.groupId ?? "-";
+  document.getElementById("routeName").innerText = routeName || data.routeId;
+  document.getElementById("updatedAt").innerText = new Date(data.updatedAt).toLocaleString("he-IL");
+  document.getElementById("createdAt").innerText = new Date(data.createdAt).toLocaleString("he-IL");
 
-  const list = document.getElementById("caseHistory");
-  list.innerHTML = "";
-
-  const dataH = await caseService.getCaseWithHistory(data.caseId);
-  renderStatusTimeline(dataH)
-  // dataH.forEach(h => {
-  //   const li = document.createElement("li");
-  //   li.innerHTML = `
-  //     <b>${h.currentStatusName}</b><br>
-  //     <small>${h.changedAt} · ${h.changedBy}</small>
-  //   `;
-  //   list.appendChild(li);
-  // });
+  const history = await caseService.getCaseWithHistory(data.caseId);
+  renderStatusTimeline(history || []);
+  await renderCaseAchifaDebts(data.caseId);
 }
 
 window.renderCaseScreen = renderCaseScreen;
@@ -34,17 +30,56 @@ function renderStatusTimeline(history) {
   const ul = document.getElementById("caseHistory");
   ul.innerHTML = "";
 
-  history.forEach(h => {
+  if (!history.length) {
+    ul.innerHTML = "<li>אין היסטוריית מצבים</li>";
+    return;
+  }
+
+  history.forEach(item => {
     const li = document.createElement("li");
     li.innerHTML = `
-      <strong>${h.statusName + " - " + h.statusId}</strong>
+      <strong>${item.statusName} - ${item.statusId}</strong>
       <br/>
-      ${new Date(h.changedAt).toLocaleString()}
+      ${new Date(item.changedAt).toLocaleString("he-IL")}
       <br/>
-      ע"י ${h.changedBy}
+      ע"י ${item.changedBy}
     `;
     ul.appendChild(li);
   });
+}
+
+async function renderCaseAchifaDebts(caseId) {
+  const tbody = document.getElementById("caseAchifaDebts");
+  const totalEl = document.getElementById("caseAchifaDebtTotal");
+  const debts = await debtService.getAchifaDebtsByCase(caseId);
+
+  tbody.innerHTML = "";
+
+  if (!debts.length) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="7">לא נמצאו חובות באכיפה לתיק זה</td>
+      </tr>`;
+    totalEl.innerText = formatCurrency(data.debt || 0);
+    return;
+  }
+
+  debts.forEach(debt => {
+    const tr = document.createElement("tr");
+
+    tr.innerHTML = `
+      <td>${debt.idhov}</td>
+      <td>${debt.idPayer}</td>
+      <td>${debt.idAsset}</td>
+      <td>${debt.sugHov}</td>
+      <td>${debt.year}</td>
+      <td>${debt.ribit ? "כן" : "לא"}</td>
+      <td>${formatCurrency(debt.sum)}</td>`;
+
+    tbody.appendChild(tr);
+  });
+
+  totalEl.innerText = formatCurrency(debtService.sumDebts(debts));
 }
 
 async function goToNextCase() {
@@ -55,4 +90,11 @@ async function goToNextCase() {
 async function goToPrevCase() {
   const prevCase = await caseService.getPreCase(data.caseId);
   renderCaseScreen(prevCase.caseId);
+}
+
+function formatCurrency(value) {
+  return Number(value || 0).toLocaleString("he-IL", {
+    style: "currency",
+    currency: "ILS"
+  });
 }

@@ -1,10 +1,10 @@
 <div class="case-page">
   <div class="case-nav">
-    <button id="prevCaseBtn" onclick="goToPrevCase()">◀ תיק קודם</button>
+    <button id="prevCaseBtn" onclick="goToPrevCase()">תיק קודם</button>
     <span class="case-counter">
       תיק <span id="currentIndex"></span> מתוך <span id="totalCases"></span>
     </span>
-    <button id="nextCaseBtn" onclick="goToNextCase()">תיק הבא ▶</button>
+    <button id="nextCaseBtn" onclick="goToNextCase()">תיק הבא</button>
   </div>
 
   <div class="case-header">
@@ -15,21 +15,36 @@
   <div class="case-grid">
     <div class="case-card">
       <h4>פרטי תיק</h4>
-      <p><b>חייב:</b> <span id="debtorName"></span></p>
+      <p><b>משלם:</b> <span id="debtorName"></span></p>
+      <p><b>נכס:</b> <span id="assetName"></span></p>
+      <p><b>קבוצת חיוב:</b> <span id="groupName"></span></p>
       <p><b>מסלול:</b> <span id="routeName"></span></p>
       <p><b>עודכן לאחרונה:</b> <span id="updatedAt"></span></p>
       <p><b>נוצר:</b> <span id="createdAt"></span></p>
     </div>
 
-    <!-- <div class="case-actions">
-      <h3>שינוי מצב</h3>
-      <select id="nextStatusSelect"></select>
-      <button onclick="changeCaseStatus()">אישור</button>
-    </div> -->
-
     <div class="case-card">
       <h4>היסטוריית מצבים</h4>
       <ul id="caseHistory" class="timeline"></ul>
+    </div>
+
+    <div class="case-card case-card--wide">
+      <h4>חוב באכיפה</h4>
+      <table class="table table--compact table--hover">
+        <thead>
+          <tr>
+            <th>מזהה חוב</th>
+            <th>משלם</th>
+            <th>נכס</th>
+            <th>קבוצת חיוב</th>
+            <th>שנה</th>
+            <th>ריבית</th>
+            <th>סכום</th>
+          </tr>
+        </thead>
+        <tbody id="caseAchifaDebts"></tbody>
+      </table>
+      <p class="case-debt-total">סה"כ חוב באכיפה: <b id="caseAchifaDebtTotal">0</b></p>
     </div>
   </div>
 </div>

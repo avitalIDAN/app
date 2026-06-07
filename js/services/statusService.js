@@ -71,19 +71,25 @@ class StatusService{ // extends BaseService {
 
   async getNextStatus(statusId, routeId) {   
     if (!authService.hasViewDBPermission("statuses")) {
-      return [];
+      return null;
       // החזרת שגיאה "אין הרשאה" י
     }
-    console.log(statusId, routeId)
+
     const statuses = await this.getAll();
-    console.log(statuses)
     const thisS = statuses.find(s => (s.statusId == statusId)&&(s.routeId == routeId));
-    console.log(thisS)
-    console.log(statuses.filter(s => s.orderIndex == (thisS.orderIndex + 1)));
+    if (!thisS) return null;
+
     const nextS = statuses.find(s => s.isActive && (s.routeId == routeId) && (s.orderIndex == (thisS.orderIndex + 1)));
-    
-    console.log(nextS)
-    return nextS; //אם NULL - 
+    return nextS || null; //אם NULL - 
+  }
+
+  async getByCode(code, routeId) {
+    if (!authService.hasViewDBPermission("statuses")) {
+      return null;
+    }
+
+    const statuses = await this.getAll();
+    return statuses.find(s => s.code === code && s.routeId == routeId) || null;
   }
 
 }
