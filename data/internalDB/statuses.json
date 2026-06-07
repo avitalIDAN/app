@@ -6,7 +6,8 @@
     "routeId": 1,
     "code": "OPEN_CASE",
     "name": "פתיחת תיק",
-    "isActive": true
+    "isActive": true,
+    "orderIndex": 1
   },
   {
     "key": 2,
@@ -14,7 +15,8 @@
     "routeId": 1,
     "code": "FIRST_WARNING",
     "name": "התראה ראשונה",
-    "isActive": true
+    "isActive": true,
+    "orderIndex": 2
   },
   {
     "key": 3,
@@ -22,7 +24,8 @@
     "routeId": 1,
     "code": "SECOND_WARNING",
     "name": "התראה שנייה",
-    "isActive": true
+    "isActive": true,
+    "orderIndex": 3
   },
   {
     "key": 4,
@@ -30,7 +33,8 @@
     "routeId": 1,
     "code": "LIEN",
     "name": "עיקול",
-    "isActive": true
+    "isActive": true,
+    "orderIndex": 4
   },
   {
     "key": 5,
@@ -38,7 +42,8 @@
     "routeId": 1,
     "code": "EXCLUDED",
     "name": "מוחרג",
-    "isActive": true
+    "isActive": true,
+    "orderIndex": 9999
   },
     {
     "key": 6,
@@ -46,7 +51,8 @@
     "routeId": 1,
     "code": "OPEN_CASE",
     "name": "סגירת תיק",
-    "isActive": true
+    "isActive": true,
+    "orderIndex": 0
   },
     {
     "key": 7,
@@ -54,7 +60,8 @@
     "routeId": 2,
     "code": "OPEN_CASE",
     "name": "פתיחת תיק",
-    "isActive": true
+    "isActive": true,
+    "orderIndex": 1
   },
   {
     "key": 8,
@@ -62,7 +69,8 @@
     "routeId": 2,
     "code": "FIRST_WARNING",
     "name": "התראה ראשונה",
-    "isActive": true
+    "isActive": true,
+    "orderIndex": 2
   },
   {
     "key": 9,
@@ -70,7 +78,8 @@
     "routeId": 2,
     "code": "SECOND_WARNING",
     "name": "התראה שנייה",
-    "isActive": true
+    "isActive": true,
+    "orderIndex": 3
   },
   {
     "key": 10,
@@ -78,7 +87,8 @@
     "routeId": 2,
     "code": "LIEN",
     "name": "עיקול",
-    "isActive": true
+    "isActive": true,
+    "orderIndex": 4
   },
   {
     "key": 11,
@@ -86,7 +96,8 @@
     "routeId": 2,
     "code": "EXCLUDED",
     "name": "מוחרג",
-    "isActive": true
+    "isActive": true,
+    "orderIndex": 9999
   },
     {
     "key": 12,
@@ -94,6 +105,7 @@
     "routeId": 2,
     "code": "OPEN_CASE",
     "name": "סגירת תיק",
-    "isActive": true
+    "isActive": true,
+    "orderIndex": 0
   }
 ]

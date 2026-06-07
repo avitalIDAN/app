@@ -7,9 +7,9 @@ async function renderCaseScreen(caseId) {
   document.getElementById("caseId").innerText = data.caseId;
   document.getElementById("caseStatus").innerText = "מצב נוכחי: " + data.currentStatusName;
 
-  const routeName = await routeService.getById(data.routeId);
+  const routeName = await routeService.getNameById(data.routeId); //getById(data.routeId);
   document.getElementById("debtorName").innerText = data.debt;
-  document.getElementById("routeName").innerText = routeName.name;
+  document.getElementById("routeName").innerText = routeName; //.name;
   document.getElementById("updatedAt").innerText = new Date(data.updatedAt).toLocaleString("he-IL") ; 
   document.getElementById("createdAt").innerText = new Date(data.createdAt).toLocaleString("he-IL"); 
 

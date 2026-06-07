@@ -230,42 +230,107 @@ class CaseService{ //extends BaseService {
     return history;
   }
 
-  async changeCaseStatus(caseId, newStatusId, changedBy = authService.getCurrentUser, note = "") {
-    if (!authService.hasEditDBPermission("cases")) {
-      return;
-      // החזרת שגיאה "אין הרשאה" י
-    }
+  //סגירה, החרגה, קידום
 
-    const cases = await this.getAllCases();
-    const caseItem = cases.find(c => c.caseId === caseId);
-    if (!caseItem) throw new Error("Case not found");
-    const routeId = caseItem.routeId;
+  // async changeCaseStatus(caseId, newStatusId, changedBy = authService.getCurrentUser(), note = "") {
+  //   if (!authService.hasEditDBPermission("cases")) {
+  //     return;
+  //     // החזרת שגיאה "אין הרשאה" י
+  //   }
 
-    caseItem.currentStatusId = newStatusId;
-    const currentStatus = await statusService.getById(newStatusId, routeId);
-    caseItem.currentStatusName = currentStatus.name;
-    caseItem.updatedAt = new Date().toISOString();
+  //   const cases = await this.getAllCases();
+  //   const caseItem = cases.find(c => c.caseId === caseId);
+  //   if (!caseItem) throw new Error("Case not found");
+  //   const routeId = caseItem.routeId;
 
-    // הוספת היסטוריה
-    const history = await this.getAllCasesHis();
-    const caseItemH = {
-      key: history.length + 1,
-      historyId: history.length + 1,
-      caseId,
-      routeId,
-      statusId: newStatusId,
-      statusName: 1,
-      changedAt: new Date().toISOString(), //caseItem.updatedAt
-      changedBy,
-      note
-    };
+  //   caseItem.currentStatusId = newStatusId;
+  //   const currentStatus = await statusService.getById(newStatusId, routeId);
+  //   caseItem.currentStatusName = currentStatus.name;
+  //   caseItem.updatedAt = new Date().toISOString();
+
+  //   // הוספת היסטוריה
+  //   const history = await this.getAllCasesHis();
+  //   const caseItemH = {
+  //     key: history.length + 1,
+  //     historyId: history.length + 1,
+  //     caseId,
+  //     routeId,
+  //     statusId: newStatusId,
+  //     statusName: 1,
+  //     changedAt: new Date().toISOString(), //caseItem.updatedAt
+  //     changedBy,
+  //     note
+  //   };
 
 
-    this.addToStatusHis(caseItemH);
+  //   this.addToStatusHis(caseItemH);
 
-    console.log("STATUS CHANGED (mock):", caseItem);
-    console.log("in hist:", caseItemH);
+  //   console.log("STATUS CHANGED (mock):", caseItem);
+  //   console.log("in hist:", caseItemH);
+  // }
+
+  async changeCaseStatus(
+  caseId,
+  newStatusId,
+  changedBy = authService.getCurrentUsername(),
+  note = ""
+) {
+
+  if (!authService.hasEditDBPermission("cases")) {
+    return;
   }
+
+  const cases = await this.getAllCases();
+
+  const caseItem =
+    cases.find(c => c.caseId === caseId);
+
+  if (!caseItem) {
+    throw new Error("Case not found");
+  }
+
+  const routeId = caseItem.routeId;
+
+  console.log("newStatusId", newStatusId);
+  console.log("routeId", routeId);
+
+  const currentStatus =
+    await statusService.getById(
+      newStatusId,
+      routeId
+    );
+
+  console.log(currentStatus);
+
+  if (!currentStatus) {
+    throw new Error(
+      `Status not found: ${newStatusId}`
+    );
+  }
+
+  caseItem.currentStatusId = newStatusId;
+  caseItem.currentStatusName = currentStatus.name;
+  caseItem.updatedAt = new Date().toISOString();
+
+  const history = await this.getAllCasesHis();
+
+  const caseItemH = {
+    key: history.length + 1,
+    historyId: history.length + 1,
+    caseId,
+    routeId,
+    statusId: newStatusId,
+    statusName: currentStatus.name,
+    changedAt: new Date().toISOString(),
+    changedBy,
+    note
+  };
+
+  await this.addToStatusHis(caseItemH);
+
+  console.log("STATUS CHANGED", caseItem);
+  console.log("HISTORY", caseItemH);
+}
 }
 
 window.caseService = new CaseService();

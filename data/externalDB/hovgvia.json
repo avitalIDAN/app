@@ -1,0 +1,38 @@
+[
+    {
+        "idhov": 1,
+        "idPayer": 1,
+        "idAsset": 1,
+        "sugHov": 1,
+        "year": 2025,
+        "ribit": false,
+        "sum": 1000
+    },
+    {
+        "idhov": 2,
+        "idPayer": 1,
+        "idAsset": 1,
+        "sugHov": 2,
+        "year": 2025,
+        "ribit": false,
+        "sum": 1000
+    },
+    {
+        "idhov": 3,
+        "idPayer": 1,
+        "idAsset": 1,
+        "sugHov": 3,
+        "year": 2025,
+        "ribit": false,
+        "sum": 1000
+    },
+    {
+        "idhov": 4,
+        "idPayer": 1,
+        "idAsset": 1,
+        "sugHov": 3,
+        "year": 2025,
+        "ribit": true,
+        "sum": 1000
+    }
+]

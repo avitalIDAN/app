@@ -103,10 +103,26 @@ async function renderSwitchingModes() {
 
     cases.forEach(c => {
     const tr = document.createElement("tr");
+    const nameRout = c.routeId; //await routeService.getNameById(c.routeId);
     tr.innerHTML = `
       <td>${c.caseId}</td>
+      <td>${nameRout}</td>
       <td>${c.currentStatusName}</td>
-      <td>${c.routeId}</td>
+      <td>
+        <button onclick="promote(${c.caseId})">
+          קידום למצב
+        </button>
+      </td>
+      <td>
+        <button onclick="exclusion(${c})">
+          החרגה
+        </button>
+      </td>
+      <td>
+        <button onclick="closeCase(${c})">
+          סגירה
+        </button>
+      </td>
       <td>
         <button onclick="toCaseScreen(${c.caseId})">
           הצגת תיק
@@ -116,6 +132,55 @@ async function renderSwitchingModes() {
     tbody.appendChild(tr);
   });
   }
+}
+
+async function promote(caseId) {
+  const caseThis = await caseService.getCaseById(caseId);
+  const nextStatus = await statusService.getNextStatus(caseThis.currentStatusId, caseThis.routeId);
+   console.log(nextStatus)
+  if(!nextStatus){
+    await caseService.changeCaseStatus(
+      caseThis.caseId,
+      nextStatus.statusId
+    );
+  }
+  // const thisStatus = await statusService.getById(caseThis.statusId, caseThis.routeId);
+  // const statuses = await statusService.getAllByRoute(caseThis.routeId);
+
+  //async changeCaseStatus(caseId, newStatusId, changedBy = authService.getCurrentUser, note = "") {
+ 
+
+  
+  // // רענון תצוגה (אופציונלי)
+  // const tbody = document.getElementById("casesTable");
+  // tbody.innerHTML = "";
+  // renderSwitchingModes();
+}
+
+async function exclusion(caseThis) {
+  await caseService.changeCaseStatus(
+    caseThis.caseId,
+    9999 //פונקציה שמחזירה מספר מוחג?
+  );
+
+  
+  // רענון תצוגה (אופציונלי)
+  const tbody = document.getElementById("casesTable");
+  tbody.innerHTML = "";
+  renderSwitchingModes();
+}
+
+async function closeCase(caseThis) {
+  await caseService.changeCaseStatus(
+    caseThis.caseId,
+    0 //פונקציה שמחזירה מספר לסגירה?
+  );
+
+
+  // רענון תצוגה (אופציונלי)
+  const tbody = document.getElementById("casesTable");
+  tbody.innerHTML = "";
+  renderSwitchingModes();
 }
 
 async function changeCaseStatus() {
@@ -179,6 +244,96 @@ async function changeCaseStatus() {
 //   }
 // };
 
+// async function changeCaseStatus() {
+//   const routeSelect = document.getElementById("routeFilter");
+//   const statusSelect = document.getElementById("statusFilter");
+//   const newStatusSelect = document.getElementById("newStatusSelect");
+//   const previewEl = document.getElementById("casesPreview");
+//   const btn = document.getElementById("changeStatusBtn");
+
+//   const routeId = routeSelect.value;
+//   const currentStatusId = statusSelect.value;
+//   const newStatusId = newStatusSelect.value;
+
+//   previewEl.innerText = "";
+
+//   // ולידציה בסיסית
+//   if (!routeId || !currentStatusId || !newStatusId) {
+//     alert("יש לבחור מסלול, מצב נוכחי ומצב חדש");
+//     return;
+//   }
+
+//   if (currentStatusId === newStatusId) {
+//     alert("המצב החדש חייב להיות שונה מהמצב הנוכחי");
+//     return;
+//   }
+
+//   btn.disabled = true;
+
+//   try {
+//     // שלב 1 – Preview
+//     const cases = await caseService.getCasesByStatus(
+//       currentStatusId,
+//       routeId
+//     );
+
+//     if (!cases || cases.length === 0) {
+//       previewEl.innerText = "לא נמצאו תיקים מתאימים";
+//       return;
+//     }
+
+//     previewEl.innerText = `יימשך שינוי מצב ל־${cases.length} תיקים`;
+
+//     // שלב 2 – אישור
+//     const confirmed = confirm(
+//       `האם לשנות מצב ל־${cases.length} תיקים?`
+//     );
+
+//     if (!confirmed) return;
+
+//     // שלב 3 – ביצוע (אחד־אחד)
+//     for (const c of cases) {
+//       await caseService.changeCaseStatus(
+//         c.caseId,
+//         newStatusId
+//       );
+//     }
+
+//     alert("שינוי המצב בוצע בהצלחה");
+
+//   } catch (err) {
+//     console.error(err);
+//     alert("אירעה שגיאה בעת שינוי המצב");
+//   } finally {
+//     btn.disabled = false;
+//   }
+// }
+
+// async function updateCasesPreview() {
+//   const routeId = routeFilter.value;
+//   const statusId = statusFilter.value;
+//   const previewEl = document.getElementById("casesPreview");
+
+//   previewEl.innerText = "";
+
+//   if (!routeId || !statusId) return;
+
+//   const cases = await caseService.getCasesByStatus(statusId, routeId);
+//   previewEl.innerText = cases.length
+//     ? `${cases.length} תיקים במצב זה`
+//     : "אין תיקים במצב זה";
+// }
+
+// routeFilter.onchange = updateCasesPreview;
+// statusFilter.onchange = updateCasesPreview;
+
+
+// // // במקום לולאה
+// // await caseService.bulkChangeStatus({
+// //   routeId,
+// //   fromStatusId: currentStatusId,
+// //   toStatusId: newStatusId
+// // });
 
 window.renderSwitchingModes = renderSwitchingModes;
 

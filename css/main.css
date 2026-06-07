@@ -400,3 +400,48 @@ select:disabled {
 .case-counter {
   font-weight: bold;
 }
+
+/* //דוחות */
+.routes-screen {
+  padding: 20px;
+}
+
+/* פס פעולות */
+.actions-bar {
+  display: flex;
+  justify-content: flex-end; /* שמאלה */
+  gap: 12px;
+  margin-bottom: 20px;
+}
+/* .actions-bar {
+  justify-content: flex-start;
+} */
+
+/* עיצוב כללי לכפתורים */
+.btn {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s ease;
+  color: white;
+}
+
+/* Excel */
+.btn--excel {
+  background-color: #2ecc71;
+}
+
+.btn--excel:hover {
+  background-color: #27ae60;
+}
+
+/* PDF */
+.btn--pdf {
+  background-color: #e74c3c;
+}
+
+.btn--pdf:hover {
+  background-color: #c0392b;
+}

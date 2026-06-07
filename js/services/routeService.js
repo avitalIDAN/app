@@ -26,7 +26,17 @@ class RouteService{ // extends BaseService {
     }
 
     const routes = await this.getAll();
-    return routes.find(r => r.routeId === routeId);
+    return routes.find(r => r.routeId == routeId);
+  }
+
+  async getNameById(routeId) {
+    if (!authService.hasViewDBPermission("routes")) {
+      return null;
+      // החזרת שגיאה "אין הרשאה" י
+    }
+
+    const route = await this.getById(routeId);
+    return route ? route.name : "";
   }
 
   async getActive() {

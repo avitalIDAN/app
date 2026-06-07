@@ -1,5 +1,8 @@
+let routes = [];
+
 async function renderRoutes() {
-  const routes = await routeService.getAll();
+  
+  routes = await routeService.getAll();
   const tbody = document.getElementById("routesTable");
   tbody.innerHTML = "";
 
@@ -17,6 +20,42 @@ async function renderRoutes() {
         <td>${r.description ?? ""}</td>
       </tr>`;
   });
+  bindRouteReportButtons();
 }
 
 window.renderRoutes = renderRoutes;
+
+function bindRouteReportButtons() {
+  const printBtn = document.getElementById("printBtn");
+  const excelBtn = document.getElementById("exportExcelBtn");
+
+  if (!printBtn || !excelBtn) return;
+
+  printBtn.onclick = onClickPrint;
+  excelBtn.onclick = onClickExcel;
+}
+
+
+function onClickExcel() {
+  exportToExcel({
+    data: routes,
+    headers: ["מפתח","מזהה מסלול", "קוד מסלול", "שם מסלול", "פעיל"],
+    fileName: "מסלולים.xlsx",
+    sheetName: "Routes"
+  });
+};
+
+function onClickPrint() {
+  printTextReport({
+    title: "דוח מסלולים",
+    data: routes,
+    summaryText: `מספר מסלולים: ${routes.length}`,
+    renderItem: r => `
+      <div class="record">
+        <h2>${r.name} (קוד: ${r.routeId})</h2>
+        <p>${r.description ?? ""}</p>
+        <div class="divider"></div>
+      </div>
+    `
+  });
+};

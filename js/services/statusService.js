@@ -40,12 +40,24 @@ class StatusService{ // extends BaseService {
     return statuses.find(s => (s.statusId == statusId)&&(s.routeId == routeId));
   }
 
+  //לבטל שימוש בשם מטבלאות אחרות ולקשר לפי הID אן מפתח
+  async getNameById(statusId, routeId) {
+    if (!authService.hasViewDBPermission("statuses")) {
+      return [];
+      // החזרת שגיאה "אין הרשאה" י
+    }
+
+    const status = await this.getById(statusId, routeId);
+    return status ? status.name : "";
+  }
+
+
   // async getByCode(code) {
   //   const statuses = await this.getAll();
   //   return statuses.find(s => s.code === code);
   // }
 
-  async getActive(routeId) {   
+  async getActive(routeId) {  //מצבים פעילים 
     if (!authService.hasViewDBPermission("statuses")) {
       return [];
       // החזרת שגיאה "אין הרשאה" י
@@ -56,6 +68,24 @@ class StatusService{ // extends BaseService {
   }
 
   /// הוספת מצב ומחיקת מחק
+
+  async getNextStatus(statusId, routeId) {   
+    if (!authService.hasViewDBPermission("statuses")) {
+      return [];
+      // החזרת שגיאה "אין הרשאה" י
+    }
+    console.log(statusId, routeId)
+    const statuses = await this.getAll();
+    console.log(statuses)
+    const thisS = statuses.find(s => (s.statusId == statusId)&&(s.routeId == routeId));
+    console.log(thisS)
+    console.log(statuses.filter(s => s.orderIndex == (thisS.orderIndex + 1)));
+    const nextS = statuses.find(s => s.isActive && (s.routeId == routeId) && (s.orderIndex == (thisS.orderIndex + 1)));
+    
+    console.log(nextS)
+    return nextS; //אם NULL - 
+  }
+
 }
 
 window.statusService = new StatusService();
