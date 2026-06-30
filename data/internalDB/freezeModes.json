@@ -1,0 +1,18 @@
+[
+  {
+    "code": "NONE",
+    "name": "ללא הקפאה"
+  },
+  {
+    "code": "FREEZE_GROWTH",
+    "name": "הקפאת גידול"
+  },
+  {
+    "code": "FREEZE_ALL",
+    "name": "הקפאה מלאה"
+  },
+  {
+    "code": "DELTA_ONLY",
+    "name": "פתיחת תיקי דלתא בלבד"
+  }
+]

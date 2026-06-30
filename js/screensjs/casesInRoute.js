@@ -98,7 +98,7 @@ async function rendercasesInRouteTable() {
       tbody.innerHTML += `
         <tr>
           <td>${c.caseId}</td>
-          <td>${c.currentStatusName}</td>
+          <td>${c.statusName}</td>
           <td>${new Date(c.updatedAt).toLocaleDateString()}</td>
         </tr>
       `;
@@ -204,7 +204,7 @@ function onClickPrintC() {
        <h3 class="case-title">תיק #${c.caseId}</h3>
         <div><strong>מספר תיק פנימי:</strong> ${c.caseId}</div>
         <div><strong>מספר חיצוני:</strong> ${c.externalCaseNumber}</div>
-        <div><strong>מצב נוכחי:</strong> ${c.currentStatusName}</div>
+        <div><strong>מצב נוכחי:</strong> ${c.statusName}</div>
         <div><strong>חוב:</strong>₪ ${(c.debt ?? 0).toLocaleString()}</div>
         <div><strong>נוצר בתאריך:</strong> ${new Date(c.createdAt).toLocaleString("he-IL")}</div>
         <div><strong>עודכן בתאריך:</strong> ${new Date(c.updatedAt).toLocaleString("he-IL")}</div>

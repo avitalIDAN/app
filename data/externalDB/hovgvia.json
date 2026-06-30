@@ -1,38 +1,146 @@
 [
-    {
-        "idhov": 1,
-        "idPayer": 1,
-        "idAsset": 1,
-        "sugHov": 1,
-        "year": 2025,
-        "ribit": false,
-        "sum": 1000
-    },
-    {
-        "idhov": 2,
-        "idPayer": 1,
-        "idAsset": 1,
-        "sugHov": 2,
-        "year": 2025,
-        "ribit": false,
-        "sum": 1000
-    },
-    {
-        "idhov": 3,
-        "idPayer": 1,
-        "idAsset": 1,
-        "sugHov": 3,
-        "year": 2025,
-        "ribit": false,
-        "sum": 1000
-    },
-    {
-        "idhov": 4,
-        "idPayer": 1,
-        "idAsset": 1,
-        "sugHov": 3,
-        "year": 2025,
-        "ribit": true,
-        "sum": 1000
-    }
+  {
+    "idhov": 1,
+    "idPayer": 1,
+    "idAsset": 101,
+    "originalCode": 100,
+    "year": 2025,
+    "ribit": false,
+    "sum": 1200
+  },
+  {
+    "idhov": 2,
+    "idPayer": 1,
+    "idAsset": 101,
+    "originalCode": 101,
+    "year": 2025,
+    "ribit": false,
+    "sum": 350
+  },
+  {
+    "idhov": 3,
+    "idPayer": 1,
+    "idAsset": 101,
+    "originalCode": 100,
+    "year": 2024,
+    "ribit": true,
+    "sum": 700
+  },
+  {
+    "idhov": 4,
+    "idPayer": 2,
+    "idAsset": 201,
+    "originalCode": 100,
+    "year": 2025,
+    "ribit": false,
+    "sum": 1800
+  },
+  {
+    "idhov": 5,
+    "idPayer": 2,
+    "idAsset": 201,
+    "originalCode": 101,
+    "year": 2025,
+    "ribit": false,
+    "sum": 250
+  },
+  {
+    "idhov": 6,
+    "idPayer": 2,
+    "idAsset": 201,
+    "originalCode": 200,
+    "year": 2025,
+    "ribit": false,
+    "sum": 900
+  },
+  {
+    "idhov": 7,
+    "idPayer": 3,
+    "idAsset": 301,
+    "originalCode": 100,
+    "year": 2025,
+    "ribit": false,
+    "sum": 1500
+  },
+  {
+    "idhov": 8,
+    "idPayer": 3,
+    "idAsset": 301,
+    "originalCode": 101,
+    "year": 2025,
+    "ribit": true,
+    "sum": 200
+  },
+  {
+    "idhov": 9,
+    "idPayer": 3,
+    "idAsset": 301,
+    "originalCode": 300,
+    "year": 2025,
+    "ribit": false,
+    "sum": 450
+  },
+  {
+    "idhov": 10,
+    "idPayer": 3,
+    "idAsset": 301,
+    "originalCode": 300,
+    "year": 2024,
+    "ribit": false,
+    "sum": 520
+  },
+  {
+    "idhov": 11,
+    "idPayer": 4,
+    "idAsset": 401,
+    "originalCode": 100,
+    "year": 2025,
+    "ribit": false,
+    "sum": 950
+  },
+  {
+    "idhov": 12,
+    "idPayer": 4,
+    "idAsset": 401,
+    "originalCode": 200,
+    "year": 2025,
+    "ribit": false,
+    "sum": 1200
+  },
+  {
+    "idhov": 13,
+    "idPayer": 4,
+    "idAsset": 401,
+    "originalCode": 300,
+    "year": 2025,
+    "ribit": false,
+    "sum": 600
+  },
+  {
+    "idhov": 14,
+    "idPayer": 5,
+    "idAsset": 501,
+    "originalCode": 100,
+    "year": 2025,
+    "ribit": false,
+    "sum": 2200
+  },
+  {
+    "idhov": 15,
+    "idPayer": 5,
+    "idAsset": 501,
+    "originalCode": 101,
+    "year": 2025,
+    "ribit": false,
+    "sum": 500
+  },
+  {
+    "idhov": 16,
+    "idPayer": 5,
+    "idAsset": 501,
+    "originalCode": 200,
+    "year": 2025,
+    "ribit": false,
+    "sum": 1100
+  }
 ]

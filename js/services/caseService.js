@@ -73,13 +73,31 @@ class CaseService{ //extends BaseService {
       // החזרת שגיאה "אין הרשאה" י
     }
 
-    if(this.ispull==0){
-      this.allCases = await this.load(this.PATH);;
-      this.ispull=1;
-    }
-    return this.allCases;
+    // if(this.ispull==0){
+    //   this.allCases = await this.load(this.PATH);;
+    //   this.ispull=1;
+    // }
+    // return this.allCases;
 
-    // return await this.load(this.PATH);
+    // // return await this.load(this.PATH);
+
+    if (!authService.hasViewDBPermission("cases")) return [];
+
+    if (this.ispull == 0) {
+      this.allCases = await this.load(this.PATH);
+      this.ispull = 1;
+    }
+
+    const routes = await routeService.getAll();
+    const statuses = await statusService.getAll();
+    //const groups = await debtService.getGroups();
+
+    return this.allCases.map(c => ({
+      ...c,
+      routeName: routes.find(r => r.routeId == c.routeId)?.name,
+      statusName: statuses.find(s => s.statusId == c.currentStatusId)?.name,
+      //groupName: groups.find(g => g.groupId == c.groupId)?.name
+    }));
   }
 
   async getNumCases() {
@@ -144,7 +162,7 @@ class CaseService{ //extends BaseService {
       routeId: Number(routeId),
       groupId: Number(groupId),
       currentStatusId: statusId,
-      currentStatusName: status ? status.name : "",
+      //currentStatusName: status ? status.name : "",
       idPayer: Number(idPayer),
       idAsset: Number(idAsset),
       createdAt: now,
@@ -162,7 +180,7 @@ class CaseService{ //extends BaseService {
       caseId: caseItem.caseId,
       routeId: caseItem.routeId,
       statusId: caseItem.currentStatusId,
-      statusName: caseItem.currentStatusName,
+      //statusName: caseItem.currentStatusName,
       changedAt: now,
       changedBy: authService.getCurrentUsername(),
       note: "פתיחת תיק"
@@ -357,7 +375,7 @@ class CaseService{ //extends BaseService {
   }
 
   caseItem.currentStatusId = newStatusId;
-  caseItem.currentStatusName = currentStatus.name;
+  //caseItem.currentStatusName = currentStatus.name;
   caseItem.updatedAt = new Date().toISOString();
 
   const history = await this.getAllCasesHis();

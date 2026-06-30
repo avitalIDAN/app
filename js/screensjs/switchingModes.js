@@ -100,7 +100,7 @@ async function renderSwitchingModes() {
       tr.innerHTML = `
         <td>${caseItem.caseId}</td>
         <td>${routeName || caseItem.routeId}</td>
-        <td>${caseItem.currentStatusName}</td>
+        <td>${caseItem.statusName}</td>
         <td>
           <button ${isFinal ? "disabled" : ""} onclick="promote(${caseItem.caseId})">
             קידום למצב

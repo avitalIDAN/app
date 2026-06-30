@@ -9,7 +9,7 @@ async function renderCaseScreen(caseId) {
   }
 
   document.getElementById("caseId").innerText = data.caseId;
-  document.getElementById("caseStatus").innerText = "מצב נוכחי: " + data.currentStatusName;
+  document.getElementById("caseStatus").innerText = "מצב נוכחי: " + data.statusName;
 
   const routeName = await routeService.getNameById(data.routeId);
   document.getElementById("debtorName").innerText = data.idPayer ?? "-";
