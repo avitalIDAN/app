@@ -1,4 +1,54 @@
+
 <div class="cases-builder">
+  <div class="page-header">
+    <h2>בניית תיקים</h2>
+    <button id="refreshBtn">רענן</button>
+  </div>
+
+  <div class="filters-bar">
+    <label>
+      <b>מסלול</b>
+      <select id="routeFilter"></select>
+    </label>
+
+    <label>
+      <b>קבוצת חיובים</b>
+      <select id="groupFilter"></select>
+    </label>
+
+    <label>
+      <b>משלם</b>
+      <input id="payerFilter" type="number" placeholder="כל המשלמים">
+    </label>
+
+    <label>
+      <b>נכס</b>
+      <input id="assetFilter" type="number" placeholder="כל הנכסים">
+    </label>
+  </div>
+
+  <table class="table table--striped table--hover">
+    <thead>
+      <tr>
+        <th>בחירה</th>
+        <th>משלם</th>
+        <th>נכס</th>
+        <th>קבוצה</th>
+        <th>מס' חובות</th>
+        <th>חוב בגבייה</th>
+        <th>חוב באכיפה</th>
+        <th>פער</th>
+        <th>מספר תיק</th>
+        <th>סטטוס תיק</th>
+        <th>סיבת פעולה</th>
+        <th>פעולה</th>
+      </tr>
+    </thead>
+    <tbody id="casesTable"></tbody>
+  </table>
+</div>
+
+<!-- <div class="cases-builder">
   <h2>בניית תיקים</h2>
 
   <div class="filters-bar cases-builder__filters">
@@ -46,4 +96,4 @@
     </thead>
     <tbody id="gviaDebtsTable"></tbody>
   </table>
-</div>
+</div> -->
