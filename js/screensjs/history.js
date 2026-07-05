@@ -11,18 +11,18 @@ function fillHistoryFilters(history) {
   const userSelect = document.getElementById("filterUser");
   const actionSelect = document.getElementById("filterAction");
 
-  const users = [...new Set(history.map(h => h.user))];
-  const actions = [...new Set(history.map(h => h.action))];
+  const users = [...new Set(history.map(h => h.username).filter(Boolean))];
+  const actions = [...new Set(history.map(h => h.description || h.actionName).filter(Boolean))];
 
   userSelect.innerHTML = `<option value="">כל המשתמשים</option>`;
   actionSelect.innerHTML = `<option value="">כל הפעולות</option>`;
 
-  users.forEach(u => {
-    userSelect.innerHTML += `<option value="${u}">${u}</option>`;
+  users.forEach(username => {
+    userSelect.innerHTML += `<option value="${username}">${username}</option>`;
   });
 
-  actions.forEach(a => {
-    actionSelect.innerHTML += `<option value="${a}">${a}</option>`;
+  actions.forEach(action => {
+    actionSelect.innerHTML += `<option value="${action}">${action}</option>`;
   });
 }
 
@@ -30,15 +30,34 @@ function renderHistoryTable(history) {
   const tbody = document.getElementById("historyTableBody");
   tbody.innerHTML = "";
 
+  if (!history.length) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="5">לא נמצאו פעולות</td>
+      </tr>
+    `;
+    return;
+  }
+
   history.forEach(h => {
     const tr = document.createElement("tr");
+
+    const action = h.description || h.actionName || "-";
+    const username = h.username || "-";
+    const beforeText = h.beforeText || "-";
+    const afterText = h.afterText || "-";
+    const actionDate = h.actionDate
+      ? new Date(h.actionDate).toLocaleString("he-IL")
+      : "-";
+
     tr.innerHTML = `
-      <td>${h.action}</td>
-      <td>${h.user}</td>
-      <td>${h.oldvalue ?? "-"}</td>
-      <td>${h.newvalue ?? "-"}</td>
-      <td>${new Date(h.timestamp).toLocaleString("he-IL")}</td>
+      <td>${action}</td>
+      <td>${username}</td>
+      <td>${beforeText}</td>
+      <td>${afterText}</td>
+      <td>${actionDate}</td>
     `;
+
     tbody.appendChild(tr);
   });
 }
@@ -52,19 +71,19 @@ function applyHistoryFilters() {
   let filtered = [...allHistory];
 
   if (user) {
-    filtered = filtered.filter(h => h.user === user);
+    filtered = filtered.filter(h => h.username === user);
   }
 
   if (action) {
-    filtered = filtered.filter(h => h.action === action); //לפי מזהה..
+    filtered = filtered.filter(h => (h.description || h.actionName) === action);
   }
 
   if (fromDate) {
-    filtered = filtered.filter(h => h.timestamp >= fromDate);
+    filtered = filtered.filter(h => h.actionDate >= fromDate);
   }
 
   if (toDate) {
-    filtered = filtered.filter(h => h.timestamp <= toDate + "T23:59:59");
+    filtered = filtered.filter(h => h.actionDate <= toDate + "T23:59:59");
   }
 
   renderHistoryTable(filtered);

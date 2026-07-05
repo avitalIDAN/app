@@ -1,139 +1,91 @@
-// services/CaseService.js
-//import BaseService from "./BaseService.js";
-
-//export default 
-class CaseService{ //extends BaseService {
-  PATH = "data/internalDB/cases.json";
-  ispull = 0;
-  allCases = []; // זמני 
-
-  PATH_His = "data/internalDB/caseStatusHistory.json";
-  ispullHis = 0;
-  allCasesHis = [];
-
-  async load(path) {
-    const res = await fetch(path);
-    if (!res.ok) throw new Error(`Failed to load ${path}`);
-    return await res.json();
-  }
-
-  /// היסטוריית תיקים
+class CaseService {
   async getAllCasesHis() {
     if (!authService.hasViewDBPermission("cases")) {
       return [];
-      // החזרת שגיאה "אין הרשאה" י
     }
 
-    if(this.ispullHis==0){
-      this.allCasesHis = await this.load(this.PATH_His);;
-      this.ispullHis=1;
-    }
-    return this.allCasesHis;
-
-    // return await this.load(this.PATH);
+    return await localDbService.getAll("caseStatusHistory");
   }
-  
+
   async getHisByCaseId(caseId) {
-    if (!authService.hasViewDBPermission("cases")) {
-      return [];
-      // החזרת שגיאה "אין הרשאה" י
-    }
     const history = await this.getAllCasesHis();
+
     return history
-      .filter(h => h.caseId === caseId)
+      .filter(h => h.caseId == caseId)
       .sort((a, b) => new Date(a.changedAt) - new Date(b.changedAt));
   }
 
   async getLastStatusHis(caseId) {
-    if (!authService.hasViewDBPermission("cases")) {
-      return null;
-      // החזרת שגיאה "אין הרשאה" י
-    }
     const history = await this.getHisByCaseId(caseId);
-    return history.at(-1);
+    return history.at(-1) || null;
   }
 
-  //add to his
-  async addToStatusHis(caseOld) {
+  async addToStatusHis(statusHistoryRecord) {
     if (!authService.hasEditDBPermission("cases")) {
       return null;
-      // החזרת שגיאה "אין הרשאה" י
     }
-    if(this.ispullHis==0){
-      this.getAllCasesHis();
-    }
-    this.allCasesHis.push(caseOld); // זמני
-  }
 
-  /////תיקים
+    const history = await localDbService.getAll("caseStatusHistory");
+
+    const newRecord = {
+      key: localDbService.getNextId(history, "key"),
+      historyId: localDbService.getNextId(history, "historyId"),
+      ...statusHistoryRecord
+    };
+
+    history.push(newRecord);
+    localDbService.warnMemoryOnly("caseStatusHistory", "insert");
+
+    return newRecord;
+  }
 
   async getAllCases() {
     if (!authService.hasViewDBPermission("cases")) {
       return [];
-      // החזרת שגיאה "אין הרשאה" י
     }
 
-    // if(this.ispull==0){
-    //   this.allCases = await this.load(this.PATH);;
-    //   this.ispull=1;
-    // }
-    // return this.allCases;
+    const [cases, routes, statuses, groups] = await Promise.all([
+      localDbService.getAll("cases"),
+      routeService.getAll(),
+      statusService.getAll(),
+      debtService.getGroups()
+    ]);
 
-    // // return await this.load(this.PATH);
+    return cases.map(c => {
+      const route = routes.find(r => r.routeId == c.routeId);
+      const status = statuses.find(s =>
+        s.statusId == c.currentStatusId &&
+        s.routeId == c.routeId
+      );
+      const group = groups.find(g => g.groupId == c.groupId);
 
-    if (!authService.hasViewDBPermission("cases")) return [];
-
-    if (this.ispull == 0) {
-      this.allCases = await this.load(this.PATH);
-      this.ispull = 1;
-    }
-
-    const routes = await routeService.getAll();
-    const statuses = await statusService.getAll();
-    //const groups = await debtService.getGroups();
-
-    return this.allCases.map(c => ({
-      ...c,
-      routeName: routes.find(r => r.routeId == c.routeId)?.name,
-      statusName: statuses.find(s => s.statusId == c.currentStatusId)?.name,
-      //groupName: groups.find(g => g.groupId == c.groupId)?.name
-    }));
+      return {
+        ...c,
+        routeName: route ? route.name : "",
+        statusName: status ? (status.statusName || status.name) : "",
+        groupName: group ? group.name : ""
+      };
+    });
   }
 
   async getNumCases() {
-    if (!authService.hasViewDBPermission("cases")) {
-      return 0;
-      // החזרת שגיאה "אין הרשאה" י
-    }
     const cases = await this.getAllCases();
     return cases.length;
   }
 
-   async getNumActiveCases() {
-    if (!authService.hasViewDBPermission("cases")) {
-      return 0;
-      // החזרת שגיאה "אין הרשאה" י
-    }
+  async getNumActiveCases() {
     const cases = await this.getAllCases();
-    return cases.filter(c => c.currentStatusId != 0).length;
+    return cases.filter(c => !c.isClosed && c.currentStatusId != 0).length;
   }
 
   async getNumClosedCases() {
-    if (!authService.hasViewDBPermission("cases")) {
-      return 0;
-      // החזרת שגיאה "אין הרשאה" י
-    }
     const cases = await this.getAllCases();
-    return cases.filter(c => c.currentStatusId == 0).length;
+    return cases.filter(c => c.isClosed || c.currentStatusId == 0).length;
   }
 
   async getCaseById(caseId) {
-    if (!authService.hasViewDBPermission("cases")) {
-      return null;
-      // החזרת שגיאה "אין הרשאה" י
-    }
     const cases = await this.getAllCases();
-    return cases.find(c => c.caseId == caseId);
+    return cases.find(c => c.caseId == caseId) || null;
   }
 
   async createCase({
@@ -143,48 +95,69 @@ class CaseService{ //extends BaseService {
     idAsset,
     statusId = 1,
     delta = 0,
-    debt = 0
+    parentCaseId = null
   }) {
     if (!authService.hasEditDBPermission("cases")) {
       return null;
     }
 
-    const cases = await this.getAllCases();
-    const nextKey = cases.reduce((max, c) => Math.max(max, c.key || 0), 0) + 1;
-    const nextCaseId = cases.reduce((max, c) => Math.max(max, c.caseId || 0), 0) + 1;
+    const cases = await localDbService.getAll("cases");
     const now = new Date().toISOString();
+    const nextKey = localDbService.getNextId(cases, "key");
+    const nextCaseId = localDbService.getNextId(cases, "caseId");
+    const username = authService.getCurrentUsername();
     const status = await statusService.getById(statusId, routeId);
 
     const caseItem = {
       key: nextKey,
       caseId: nextCaseId,
       externalCaseNumber: `C-${nextCaseId}`,
-      routeId: Number(routeId),
-      groupId: Number(groupId),
-      currentStatusId: statusId,
-      //currentStatusName: status ? status.name : "",
       idPayer: Number(idPayer),
       idAsset: Number(idAsset),
+      routeId: Number(routeId),
+      groupId: Number(groupId),
+      currentStatusId: Number(statusId),
+      freezeMode: "NONE",
+      createdBy: username,
       createdAt: now,
       updatedAt: now,
+      isClosed: Number(statusId) === 0,
+      closedAt: Number(statusId) === 0 ? now : null,
       delta,
-      debt
+      parentCaseId
     };
 
     cases.push(caseItem);
+    localDbService.warnMemoryOnly("cases", "insert");
 
-    const history = await this.getAllCasesHis();
     await this.addToStatusHis({
-      key: history.length + 1,
-      historyId: history.length + 1,
       caseId: caseItem.caseId,
       routeId: caseItem.routeId,
       statusId: caseItem.currentStatusId,
-      //statusName: caseItem.currentStatusName,
+      statusName: status ? (status.statusName || status.name) : "",
       changedAt: now,
-      changedBy: authService.getCurrentUsername(),
+      changedBy: username,
       note: "פתיחת תיק"
     });
+
+    if (window.historyService?.logAction) {
+      await historyService.logAction({
+        actionType: "create",
+        entityType: "case",
+        entityId: caseItem.caseId,
+        entityLabel: `תיק ${caseItem.caseId}`,
+        description: "יצירת תיק",
+        beforeText: "",
+        afterText: `נוצר תיק ${caseItem.caseId}`,
+        screenName: "cases",
+        serviceName: "CaseService",
+        actionName: "createCase",
+        details: [
+          { fieldName: "caseId", oldValue: "", newValue: caseItem.caseId },
+          { fieldName: "currentStatusId", oldValue: "", newValue: caseItem.currentStatusId }
+        ]
+      });
+    }
 
     return caseItem;
   }
@@ -192,210 +165,149 @@ class CaseService{ //extends BaseService {
   async _getOrderedCases() {
     const cases = await this.getAllCases();
 
-    // מיון ברור ויציב – לפי caseId
     return cases
       .filter(c => c && c.caseId !== undefined)
       .sort((a, b) => a.caseId - b.caseId);
   }
 
   async getFirstCase() {
-    if (!authService.hasViewDBPermission("cases")) {
-      return null;
-    }
-
     const cases = await this._getOrderedCases();
-
-    if (!cases.length) return null;
-
-    return cases[0]; // הראשון לפי המיון
+    return cases[0] || null;
   }
 
   async getNextCase(caseId) {
-    if (!authService.hasViewDBPermission("cases")) {
-      return null;
-    }
-
     const cases = await this._getOrderedCases();
     if (!cases.length) return null;
 
-    const index = cases.findIndex(c => c.caseId === caseId);
+    const index = cases.findIndex(c => c.caseId == caseId);
 
-    // אם לא נמצא – חזרה לראשון
     if (index === -1) {
       return cases[0];
     }
 
-    // מעבר מעגלי קדימה
-    const nextIndex = (index + 1) % cases.length;
-    return cases[nextIndex];
+    return cases[(index + 1) % cases.length];
   }
 
   async getPreCase(caseId) {
-    if (!authService.hasViewDBPermission("cases")) {
-      return null;
-    }
-
     const cases = await this._getOrderedCases();
     if (!cases.length) return null;
 
-    const index = cases.findIndex(c => c.caseId === caseId);
+    const index = cases.findIndex(c => c.caseId == caseId);
 
-    // אם לא נמצא – חזרה לאחרון
     if (index === -1) {
       return cases[cases.length - 1];
     }
 
-    // מעבר מעגלי אחורה
-    const prevIndex = (index - 1 + cases.length) % cases.length;
-    return cases[prevIndex];
+    return cases[(index - 1 + cases.length) % cases.length];
   }
 
   async getCasesByRoute(routeId) {
-    if (!authService.hasViewDBPermission("cases")) {
-      return [];
-      // החזרת שגיאה "אין הרשאה" י
-    }
-
     const cases = await this.getAllCases();
-    return cases.filter(c => c.routeId == routeId); // שניים או שלוש ==
+    return cases.filter(c => c.routeId == routeId);
   }
 
-  
   async getCasesByStatus(statusId, routeId = null) {
-    if (!authService.hasViewDBPermission("cases")) {
-      return [];
-        // החזרת שגיאה "אין הרשאה" י
-    }
-
     const cases = await this.getAllCases();
-    return cases.filter(c => (c.routeId == routeId)&&(c.currentStatusId == statusId));
+
+    return cases.filter(c => {
+      if (routeId && c.routeId != routeId) return false;
+      return c.currentStatusId == statusId;
+    });
   }
 
-  // CaseService.js
-  async getCasesFiltered({ routeId = null, statusId = null } = {}) {
-    if (!authService.hasViewDBPermission("cases")) {
-      return [];
-    }
-
+  async getCasesFiltered({ routeId = null, statusId = null, groupId = null } = {}) {
     const cases = await this.getAllCases();
 
     return cases.filter(c => {
       if (routeId && c.routeId != routeId) return false;
       if (statusId && c.currentStatusId != statusId) return false;
+      if (groupId && c.groupId != groupId) return false;
       return true;
     });
   }
 
-
   async getCaseWithHistory(caseId) {
-    if (!authService.hasViewDBPermission("cases")) {
-      return [];  // או NULL
-      // החזרת שגיאה "אין הרשאה" י
-    }
-  // לבדוק אם תיק קיים- פונקציה לבדיקה
     const caseData = await this.getCaseById(caseId);
-    if (!caseData) return null; // תיק לא קיים
+    if (!caseData) return null;
 
-    const history = await this.getHisByCaseId(caseId);
-
-    return history;
+    return await this.getHisByCaseId(caseId);
   }
-
-  //סגירה, החרגה, קידום
-
-  // async changeCaseStatus(caseId, newStatusId, changedBy = authService.getCurrentUser(), note = "") {
-  //   if (!authService.hasEditDBPermission("cases")) {
-  //     return;
-  //     // החזרת שגיאה "אין הרשאה" י
-  //   }
-
-  //   const cases = await this.getAllCases();
-  //   const caseItem = cases.find(c => c.caseId === caseId);
-  //   if (!caseItem) throw new Error("Case not found");
-  //   const routeId = caseItem.routeId;
-
-  //   caseItem.currentStatusId = newStatusId;
-  //   const currentStatus = await statusService.getById(newStatusId, routeId);
-  //   caseItem.currentStatusName = currentStatus.name;
-  //   caseItem.updatedAt = new Date().toISOString();
-
-  //   // הוספת היסטוריה
-  //   const history = await this.getAllCasesHis();
-  //   const caseItemH = {
-  //     key: history.length + 1,
-  //     historyId: history.length + 1,
-  //     caseId,
-  //     routeId,
-  //     statusId: newStatusId,
-  //     statusName: 1,
-  //     changedAt: new Date().toISOString(), //caseItem.updatedAt
-  //     changedBy,
-  //     note
-  //   };
-
-
-  //   this.addToStatusHis(caseItemH);
-
-  //   console.log("STATUS CHANGED (mock):", caseItem);
-  //   console.log("in hist:", caseItemH);
-  // }
 
   async changeCaseStatus(
-  caseId,
-  newStatusId,
-  changedBy = authService.getCurrentUsername(),
-  note = ""
-) {
-
-  if (!authService.hasEditDBPermission("cases")) {
-    return;
-  }
-
-  const cases = await this.getAllCases();
-
-  const caseItem =
-    cases.find(c => c.caseId === caseId);
-
-  if (!caseItem) {
-    throw new Error("Case not found");
-  }
-
-  const routeId = caseItem.routeId;
-
-  const currentStatus =
-    await statusService.getById(
-      newStatusId,
-      routeId
-    );
-
-  if (!currentStatus) {
-    throw new Error(
-      `Status not found: ${newStatusId}`
-    );
-  }
-
-  caseItem.currentStatusId = newStatusId;
-  //caseItem.currentStatusName = currentStatus.name;
-  caseItem.updatedAt = new Date().toISOString();
-
-  const history = await this.getAllCasesHis();
-
-  const caseItemH = {
-    key: history.length + 1,
-    historyId: history.length + 1,
     caseId,
-    routeId,
-    statusId: newStatusId,
-    statusName: currentStatus.name,
-    changedAt: new Date().toISOString(),
-    changedBy,
-    note
-  };
+    newStatusId,
+    changedBy = authService.getCurrentUsername(),
+    note = ""
+  ) {
+    if (!authService.hasEditDBPermission("cases")) {
+      return null;
+    }
 
-  await this.addToStatusHis(caseItemH);
+    const cases = await localDbService.getAll("cases");
+    const index = cases.findIndex(c => c.caseId == caseId);
 
-  return caseItem;
-}
+    if (index === -1) {
+      throw new Error("Case not found");
+    }
+
+    const oldCase = { ...cases[index] };
+    const routeId = oldCase.routeId;
+    const newStatus = await statusService.getById(newStatusId, routeId);
+
+    if (!newStatus) {
+      throw new Error(`Status not found: ${newStatusId}`);
+    }
+
+    const now = new Date().toISOString();
+    const isClosed = Number(newStatusId) === 0;
+
+    cases[index] = {
+      ...cases[index],
+      currentStatusId: Number(newStatusId),
+      updatedAt: now,
+      isClosed,
+      closedAt: isClosed ? now : cases[index].closedAt
+    };
+
+    localDbService.warnMemoryOnly("cases", "update");
+
+    await this.addToStatusHis({
+      caseId: cases[index].caseId,
+      routeId,
+      statusId: Number(newStatusId),
+      statusName: newStatus.statusName || newStatus.name,
+      changedAt: now,
+      changedBy,
+      note
+    });
+
+    if (window.historyService?.logAction) {
+      const oldStatus = await statusService.getById(oldCase.currentStatusId, routeId);
+
+      await historyService.logAction({
+        actionType: "status_change",
+        entityType: "case",
+        entityId: cases[index].caseId,
+        entityLabel: `תיק ${cases[index].caseId}`,
+        description: "מעבר מצב",
+        beforeText: `מצב קודם: ${oldStatus ? (oldStatus.statusName || oldStatus.name) : oldCase.currentStatusId}`,
+        afterText: `מצב חדש: ${newStatus.statusName || newStatus.name}`,
+        screenName: "switchingModes",
+        serviceName: "CaseService",
+        actionName: "changeCaseStatus",
+        details: [
+          {
+            fieldName: "currentStatusId",
+            oldValue: oldCase.currentStatusId,
+            newValue: Number(newStatusId)
+          }
+        ]
+      });
+    }
+
+    const enrichedCases = await this.getAllCases();
+    return enrichedCases.find(c => c.caseId == caseId) || cases[index];
+  }
 }
 
 window.caseService = new CaseService();

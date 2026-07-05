@@ -20,11 +20,11 @@ async function renderDashboard() {
     const tr = document.createElement("tr");
 
     tr.innerHTML = `
-      <td>${h.action}</td>
-      <td>${h.user}</td>
-      <td>${h.newvalue ?? "-"}</td>  
-      <td>${h.oldvalue ?? "-"}</td>  
-      <td>${new Date(h.timestamp).toLocaleString("he-IL")}</td>      
+      <td>${h.description || h.actionName || "-"}</td>
+      <td>${h.username || "-"}</td>
+      <td>${h.beforeText || "-"}</td>
+      <td>${h.afterText || "-"}</td>
+      <td>${new Date(h.actionDate).toLocaleString("he-IL")}</td>
     `;
 
     tbody.appendChild(tr);

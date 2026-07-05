@@ -1,85 +1,84 @@
 class HistoryService {
-  constructor() {
-    this.HISTORY_PATH = "data/internalDB/history.json";
-    this.NAMEHISTORY_PATH = "data/internalDB/namehist.json";
-    this.ispull = 0;
-    this.ispullname = 0;
-    this.allhistory = [];
-    this.allnamehistory = []
-  }
-  
-  /* ===== READ ===== */
   async getAllHistory() {
     if (!authService.hasViewDBPermission("history")) {
       return [];
-      // החזרת שגיאה "אין הרשאה" י
     }
-    if(this.ispull==0){
-      this.ispull=1;
-      const res = await fetch(this.HISTORY_PATH);
-      this.allhistory = res.json();
-      this.ispull=1;
+
+    return await localDbService.getAll("history");
+  }
+
+  async getAllHistoryDetails() {
+    if (!authService.hasViewDBPermission("history")) {
+      return [];
     }
-    return this.allhistory;
+
+    return await localDbService.getAll("historyDetails");
   }
 
   async getAllNameHistory() {
     if (!authService.hasViewDBPermission("history")) {
       return [];
-      // החזרת שגיאה "אין הרשאה" י
     }
-    const res = await fetch(this.NAMEHISTORY_PATH);
-    return await res.json();
+
+    return await localDbService.getAll("nameHistory");
   }
 
   async getActionName(kodaction) {
-    if (!authService.hasViewDBPermission("history")) {
-      return "";
-      // החזרת שגיאה "אין הרשאה" י
-    }
     const actions = await this.getAllNameHistory();
-    const found = actions.find(a => a.kodaction === kodaction);
+    const found = actions.find(a => a.kodaction == kodaction);
     return found ? found.action : "פעולה לא ידועה";
   }
 
   async getLastActions(num) {
-    if (!authService.hasViewDBPermission("history")) {
-      return [];
-      // החזרת שגיאה "אין הרשאה" י
-    }
     const history = await this.getAllHistory();
-    return history.slice(-num).reverse();
+    return history
+      .slice()
+      .sort((a, b) => new Date(b.actionDate) - new Date(a.actionDate))
+      .slice(0, num);
   }
 
-  /* ===== CREATE ===== */
-  async logAction(oldvalue, newvalue, kodaction) {
+  async logAction(action) {
     if (!authService.hasEditDBPermission("history")) {
-      return;
-      // החזרת שגיאה "אין הרשאה" י
-    }    
+      return null;
+    }
+
+    const history = await localDbService.getAll("history");
+    const historyDetails = await localDbService.getAll("historyDetails");
     const username = authService.getCurrentUsername();
-    if (!username) return;
 
-    const history = await getAllHistory();
-    const actionName = await this.getActionName(kodaction);
-
-
-    const newRecord = {
-      key: history.length,               // זמני
-      oldvalue,
-      newvalue,
-      user: username,
-      kodaction,
-      action: actionName,
-      timestamp: new Date().toISOString()
+    const newHistory = {
+      historyId: localDbService.getNextId(history, "historyId"),
+      actionDate: new Date().toISOString(),
+      userId: action.userId ?? null,
+      username,
+      actionType: action.actionType,
+      entityType: action.entityType,
+      entityId: action.entityId,
+      entityLabel: action.entityLabel || "",
+      description: action.description || "",
+      beforeText: action.beforeText || "",
+      afterText: action.afterText || "",
+      screenName: action.screenName || "",
+      serviceName: action.serviceName || "",
+      actionName: action.actionName || ""
     };
 
-    history.push(newRecord);
-    console.log(newRecord);
+    history.push(newHistory);
 
-    console.warn("⚠️ DB מדומה – הנתון לא נשמר פיזית", newRecord);
+    if (Array.isArray(action.details)) {
+      action.details.forEach(detail => {
+        historyDetails.push({
+          detailId: localDbService.getNextId(historyDetails, "detailId"),
+          historyId: newHistory.historyId,
+          fieldName: detail.fieldName,
+          oldValue: String(detail.oldValue ?? ""),
+          newValue: String(detail.newValue ?? "")
+        });
+      });
+    }
 
-    return newRecord;
+    localDbService.warnMemoryOnly("history", "insert");
+    return newHistory;
   }
 }
 

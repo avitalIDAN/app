@@ -68,13 +68,13 @@ async function renderCaseAchifaDebts(caseId) {
     const tr = document.createElement("tr");
 
     tr.innerHTML = `
-      <td>${debt.idhov}</td>
-      <td>${debt.idPayer}</td>
-      <td>${debt.idAsset}</td>
-      <td>${debt.sugHov}</td>
-      <td>${debt.year}</td>
-      <td>${debt.ribit ? "כן" : "לא"}</td>
-      <td>${formatCurrency(debt.sum)}</td>`;
+      <td>${debt.idhov || debt.key || "-"}</td>
+<td>${debt.idPayer || "-"}</td>
+<td>${debt.idAsset || "-"}</td>
+<td>${debt.debtTypeName || debt.debtTypeId || "-"}</td>
+<td>${debt.year || "-"}</td>
+<td>${debt.ribit ? "כן" : "לא"}</td>
+<td>${formatCurrency(debt.sum)}</td>`;
 
     tbody.appendChild(tr);
   });
