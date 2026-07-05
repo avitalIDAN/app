@@ -1,0 +1,5 @@
+[
+  { "detailId": 1, "historyId": 1, "fieldName": "currentStatusId", "oldValue": "1", "newValue": "2" },
+  { "detailId": 2, "historyId": 2, "fieldName": "sum", "oldValue": "66.9", "newValue": "2287" },
+  { "detailId": 3, "historyId": 3, "fieldName": "currentStatusId", "oldValue": "3", "newValue": "5" }
+]

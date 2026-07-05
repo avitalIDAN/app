@@ -2,10 +2,10 @@
   {
     "key": 1,
     "caseId": 1001,
-    "idhov?": 1,
     "idPayer": 1,
     "idAsset": 101,
     "enforcementCode": 1002025,
+    "debtTypeId": 1,
     "ribit": false,
     "sum": 1200,
     "pulledAt": "2025-01-10T09:00:00"
@@ -13,21 +13,21 @@
   {
     "key": 2,
     "caseId": 1001,
-    "idhov": 2,
     "idPayer": 1,
     "idAsset": 101,
     "enforcementCode": 1012025,
+    "debtTypeId": 2,
     "ribit": false,
-    "sum": 350,
+    "sum": 300,
     "pulledAt": "2025-01-10T09:00:00"
   },
   {
     "key": 3,
     "caseId": 1002,
-    "idhov": 4,
     "idPayer": 2,
     "idAsset": 201,
     "enforcementCode": 1002025,
+    "debtTypeId": 1,
     "ribit": false,
     "sum": 1800,
     "pulledAt": "2025-01-10T09:00:00"
@@ -35,10 +35,10 @@
   {
     "key": 4,
     "caseId": 1002,
-    "idhov": 5,
     "idPayer": 2,
     "idAsset": 201,
     "enforcementCode": 1012025,
+    "debtTypeId": 2, 
     "ribit": false,
     "sum": 250,
     "pulledAt": "2025-01-10T09:00:00"

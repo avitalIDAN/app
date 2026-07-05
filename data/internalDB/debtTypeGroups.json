@@ -1,0 +1,7 @@
+[
+  { "debtTypeGroupId": 1, "debtTypeId": 1, "groupId": 1, "isActive": true },
+  { "debtTypeGroupId": 2, "debtTypeId": 2, "groupId": 1, "isActive": true },
+  { "debtTypeGroupId": 3, "debtTypeId": 3, "groupId": 1, "isActive": true },
+  { "debtTypeGroupId": 4, "debtTypeId": 4, "groupId": 2, "isActive": true },
+  { "debtTypeGroupId": 5, "debtTypeId": 3, "groupId": 3, "isActive": true }
+]

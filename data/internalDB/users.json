@@ -1,4 +1,4 @@
 [
-  { "key":1, "username": "admin", "password": "qwe12!", "roles": {"dashboard":1,"cases":1,"routes":1} },
-  { "key":0, "username": "user1", "password": "1111", "roles": {"dashboard":1,"cases":0,"routes":null} }
+  { "userId":1, "displayName": "admin", "username": "admin", "password": "qwe12!", "isAdmin": 1, "roles": {"dashboard":1,"cases":1,"routes":1} },
+  { "userId":0, "displayName": "user1", "username": "user1", "password": "1111", "isAdmin": 0,  "roles": {"dashboard":1,"cases":0,"routes":null} }
 ]

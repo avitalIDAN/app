@@ -1,111 +1,15 @@
-
 [
-  {
-    "key": 1,
-    "statusId": 1,
-    "routeId": 1,
-    "code": "OPEN_CASE",
-    "name": "פתיחת תיק",
-    "isActive": true,
-    "orderIndex": 1
-  },
-  {
-    "key": 2,
-    "statusId": 2,
-    "routeId": 1,
-    "code": "FIRST_WARNING",
-    "name": "התראה ראשונה",
-    "isActive": true,
-    "orderIndex": 2
-  },
-  {
-    "key": 3,
-    "statusId": 3,
-    "routeId": 1,
-    "code": "SECOND_WARNING",
-    "name": "התראה שנייה",
-    "isActive": true,
-    "orderIndex": 3
-  },
-  {
-    "key": 4,
-    "statusId": 4,
-    "routeId": 1,
-    "code": "LIEN",
-    "name": "עיקול",
-    "isActive": true,
-    "orderIndex": 4
-  },
-  {
-    "key": 5,
-    "statusId": 5,
-    "routeId": 1,
-    "code": "EXCLUDED",
-    "name": "מוחרג",
-    "isActive": true,
-    "orderIndex": 9999
-  },
-    {
-    "key": 6,
-    "statusId": 0,
-    "routeId": 1,
-    "code": "OPEN_CASE",
-    "name": "סגירת תיק",
-    "isActive": true,
-    "orderIndex": 0
-  },
-    {
-    "key": 7,
-    "statusId": 1,
-    "routeId": 2,
-    "code": "OPEN_CASE",
-    "name": "פתיחת תיק",
-    "isActive": true,
-    "orderIndex": 1
-  },
-  {
-    "key": 8,
-    "statusId": 2,
-    "routeId": 2,
-    "code": "FIRST_WARNING",
-    "name": "התראה ראשונה",
-    "isActive": true,
-    "orderIndex": 2
-  },
-  {
-    "key": 9,
-    "statusId": 3,
-    "routeId": 2,
-    "code": "SECOND_WARNING",
-    "name": "התראה שנייה",
-    "isActive": true,
-    "orderIndex": 3
-  },
-  {
-    "key": 10,
-    "statusId": 4,
-    "routeId": 2,
-    "code": "LIEN",
-    "name": "עיקול",
-    "isActive": true,
-    "orderIndex": 4
-  },
-  {
-    "key": 11,
-    "statusId": 5,
-    "routeId": 2,
-    "code": "EXCLUDED",
-    "name": "מוחרג",
-    "isActive": true,
-    "orderIndex": 9999
-  },
-    {
-    "key": 12,
-    "statusId": 0,
-    "routeId": 2,
-    "code": "OPEN_CASE",
-    "name": "סגירת תיק",
-    "isActive": true,
-    "orderIndex": 0
-  }
+  { "key": 1, "statusId": 1, "routeId": 1, "code": "OPEN_CASE", "statusCode": "OPEN_CASE", "name": "פתיחת תיק", "statusName": "פתיחת תיק", "isActive": true, "orderIndex": 1, "nextStatusId": 2, "feeAmount": 0, "letterTemplateId": null, "defaultChargeTypeId": null, "defaultActionCode": null, "defaultNote": "" },
+  { "key": 2, "statusId": 2, "routeId": 1, "code": "FIRST_WARNING", "statusCode": "FIRST_WARNING", "name": "התראה ראשונה", "statusName": "התראה ראשונה", "isActive": true, "orderIndex": 2, "nextStatusId": 3, "feeAmount": 0, "letterTemplateId": null, "defaultChargeTypeId": null, "defaultActionCode": null, "defaultNote": "" },
+  { "key": 3, "statusId": 3, "routeId": 1, "code": "SECOND_WARNING", "statusCode": "SECOND_WARNING", "name": "התראה שנייה", "statusName": "התראה שנייה", "isActive": true, "orderIndex": 3, "nextStatusId": 4, "feeAmount": 0, "letterTemplateId": null, "defaultChargeTypeId": null, "defaultActionCode": null, "defaultNote": "" },
+  { "key": 4, "statusId": 4, "routeId": 1, "code": "LIEN", "statusCode": "LIEN", "name": "עיקול", "statusName": "עיקול", "isActive": true, "orderIndex": 4, "nextStatusId": null, "feeAmount": 0, "letterTemplateId": null, "defaultChargeTypeId": null, "defaultActionCode": null, "defaultNote": "" },
+  { "key": 5, "statusId": 5, "routeId": 1, "code": "EXCLUDED", "statusCode": "EXCLUDED", "name": "מוחרג", "statusName": "מוחרג", "isActive": true, "orderIndex": 9999, "nextStatusId": null, "feeAmount": 0, "letterTemplateId": null, "defaultChargeTypeId": null, "defaultActionCode": null, "defaultNote": "" },
+  { "key": 6, "statusId": 0, "routeId": 1, "code": "CLOSED", "statusCode": "CLOSED", "name": "סגירת תיק", "statusName": "סגירת תיק", "isActive": true, "orderIndex": 0, "nextStatusId": null, "feeAmount": 0, "letterTemplateId": null, "defaultChargeTypeId": null, "defaultActionCode": null, "defaultNote": "" },
+
+  { "key": 7, "statusId": 1, "routeId": 2, "code": "OPEN_CASE", "statusCode": "OPEN_CASE", "name": "פתיחת תיק", "statusName": "פתיחת תיק", "isActive": true, "orderIndex": 1, "nextStatusId": 2, "feeAmount": 0, "letterTemplateId": null, "defaultChargeTypeId": null, "defaultActionCode": null, "defaultNote": "" },
+  { "key": 8, "statusId": 2, "routeId": 2, "code": "FIRST_WARNING", "statusCode": "FIRST_WARNING", "name": "התראה ראשונה", "statusName": "התראה ראשונה", "isActive": true, "orderIndex": 2, "nextStatusId": 3, "feeAmount": 0, "letterTemplateId": null, "defaultChargeTypeId": null, "defaultActionCode": null, "defaultNote": "" },
+  { "key": 9, "statusId": 3, "routeId": 2, "code": "SECOND_WARNING", "statusCode": "SECOND_WARNING", "name": "התראה שנייה", "statusName": "התראה שנייה", "isActive": true, "orderIndex": 3, "nextStatusId": 4, "feeAmount": 0, "letterTemplateId": null, "defaultChargeTypeId": null, "defaultActionCode": null, "defaultNote": "" },
+  { "key": 10, "statusId": 4, "routeId": 2, "code": "LIEN", "statusCode": "LIEN", "name": "עיקול", "statusName": "עיקול", "isActive": true, "orderIndex": 4, "nextStatusId": null, "feeAmount": 0, "letterTemplateId": null, "defaultChargeTypeId": null, "defaultActionCode": null, "defaultNote": "" },
+  { "key": 11, "statusId": 5, "routeId": 2, "code": "EXCLUDED", "statusCode": "EXCLUDED", "name": "מוחרג", "statusName": "מוחרג", "isActive": true, "orderIndex": 9999, "nextStatusId": null, "feeAmount": 0, "letterTemplateId": null, "defaultChargeTypeId": null, "defaultActionCode": null, "defaultNote": "" },
+  { "key": 12, "statusId": 0, "routeId": 2, "code": "CLOSED", "statusCode": "CLOSED", "name": "סגירת תיק", "statusName": "סגירת תיק", "isActive": true, "orderIndex": 0, "nextStatusId": null, "feeAmount": 0, "letterTemplateId": null, "defaultChargeTypeId": null, "defaultActionCode": null, "defaultNote": "" }
 ]

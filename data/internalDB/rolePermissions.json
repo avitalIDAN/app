@@ -1,0 +1,22 @@
+[
+  { "roleId": 1, "resourceType": "screen", "resourceName": "*", "canView": true, "canEdit": true, "isBlocked": false },
+  { "roleId": 1, "resourceType": "table", "resourceName": "*", "canView": true, "canEdit": true, "isBlocked": false },
+
+  { "roleId": 2, "resourceType": "screen", "resourceName": "dashboard", "canView": true, "canEdit": false, "isBlocked": false },
+  { "roleId": 2, "resourceType": "screen", "resourceName": "cases", "canView": true, "canEdit": true, "isBlocked": false },
+  { "roleId": 2, "resourceType": "screen", "resourceName": "case", "canView": true, "canEdit": false, "isBlocked": false },
+  { "roleId": 2, "resourceType": "screen", "resourceName": "switchingModes", "canView": true, "canEdit": true, "isBlocked": false },
+  { "roleId": 2, "resourceType": "screen", "resourceName": "history", "canView": true, "canEdit": false, "isBlocked": false },
+
+  { "roleId": 2, "resourceType": "table", "resourceName": "cases", "canView": true, "canEdit": true, "isBlocked": false },
+  { "roleId": 2, "resourceType": "table", "resourceName": "hovgvia", "canView": true, "canEdit": false, "isBlocked": false },
+  { "roleId": 2, "resourceType": "table", "resourceName": "hovachifa", "canView": true, "canEdit": true, "isBlocked": false },
+  { "roleId": 2, "resourceType": "table", "resourceName": "caseStatusHistory", "canView": true, "canEdit": true, "isBlocked": false },
+  { "roleId": 2, "resourceType": "table", "resourceName": "history", "canView": true, "canEdit": true, "isBlocked": false },
+
+  { "roleId": 3, "resourceType": "screen", "resourceName": "dashboard", "canView": true, "canEdit": false, "isBlocked": false },
+  { "roleId": 3, "resourceType": "screen", "resourceName": "case", "canView": true, "canEdit": false, "isBlocked": false },
+  { "roleId": 3, "resourceType": "screen", "resourceName": "casesInRoute", "canView": true, "canEdit": false, "isBlocked": false },
+  { "roleId": 3, "resourceType": "table", "resourceName": "cases", "canView": true, "canEdit": false, "isBlocked": false },
+  { "roleId": 3, "resourceType": "table", "resourceName": "hovachifa", "canView": true, "canEdit": false, "isBlocked": false }
+]

@@ -1,0 +1,9 @@
+[
+  { "userPermissionId": 1, "userId": 1, "resourceType": "screen", "resourceName": "*", "canView": true, "canEdit": true, "isBlocked": false, "sourceRoleId": 1, "isManualOverride": false },
+  { "userPermissionId": 2, "userId": 1, "resourceType": "table", "resourceName": "*", "canView": true, "canEdit": true, "isBlocked": false, "sourceRoleId": 1, "isManualOverride": false },
+
+  { "userPermissionId": 3, "userId": 0, "resourceType": "screen", "resourceName": "dashboard", "canView": true, "canEdit": false, "isBlocked": false, "sourceRoleId": 3, "isManualOverride": false },
+  { "userPermissionId": 4, "userId": 0, "resourceType": "screen", "resourceName": "case", "canView": true, "canEdit": false, "isBlocked": false, "sourceRoleId": 3, "isManualOverride": false },
+  { "userPermissionId": 5, "userId": 0, "resourceType": "table", "resourceName": "cases", "canView": true, "canEdit": false, "isBlocked": false, "sourceRoleId": 3, "isManualOverride": false },
+  { "userPermissionId": 6, "userId": 0, "resourceType": "screen", "resourceName": "cases", "canView": false, "canEdit": false, "isBlocked": true, "sourceRoleId": null, "isManualOverride": true }
+]

@@ -1,6 +1,6 @@
 [
-  { "debtTypeId": 1, "originalCode": 100, "enforcementCode": 1002025, "year": 2025, "name": "ארנונה 2025", "groupId": 1 },
-  { "debtTypeId": 2, "originalCode": 101, "enforcementCode": 1012025, "year": 2025, "name": "מים 2025", "groupId": 1 },
-  { "debtTypeId": 3, "originalCode": 102, "enforcementCode": 1022025, "year": 2025, "name": "ביוב 2025", "groupId": 1 },
-  { "debtTypeId": 4, "originalCode": 103, "enforcementCode": 1032025, "year": 2025, "name": "אגרות 2025", "groupId": 2 }
+  { "debtTypeId": 1, "originalCode": 100, "enforcementCode": 1002025, "year": 2025, "name": "ארנונה 2025"},
+  { "debtTypeId": 2, "originalCode": 101, "enforcementCode": 1012025, "year": 2025, "name": "מים 2025" },
+  { "debtTypeId": 3, "originalCode": 102, "enforcementCode": 1022025, "year": 2025, "name": "ביוב 2025" },
+  { "debtTypeId": 4, "originalCode": 103, "enforcementCode": 1032025, "year": 2025, "name": "אגרות 2025" }
 ]
