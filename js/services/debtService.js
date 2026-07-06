@@ -61,8 +61,8 @@ class DebtService {
   }
 
   async getCaseBuilderRows({ routeId, groupId = "", idPayer = "", idAsset = "" } = {}) {
-    // אם אחת מטבלאות הבסיס חסומה, השירות מחזיר מערך ריק.
-    // המסך עצמו אחראי להציג "אין הרשאה לנתונים".
+    // טבלאות בסיס שחייבות להיות זמינות כדי לבנות את שורות המסך.
+    // אם אחת חסומה, השירות מחזיר מערך ריק והמסך מציג הודעת הרשאה.
     if (!permissionService.canViewAllTables(["hovgvia", "debtTypes", "debtTypeGroups", "groups"])) {
       return [];
     }
@@ -166,32 +166,75 @@ class DebtService {
   }
 
   async addDebtsToCase(caseId, gviaDebts) {
-    // הקמת חובות באכיפה היא כתיבה ל-hovachifa.
+    // כתיבה ל-hovachifa: אם אין הרשאת עריכה, לא מבצעים פעולה.
+    // בשלב הזה חסימת הרשאה אינה נרשמת כשגיאה, כדי לא להציף את errorLog.
     if (!permissionService.canEditTable("hovachifa")) {
       return [];
     }
 
-    const achifaTable = await localDbService.getAll("hovachifa");
-    const nextKey = localDbService.getNextId(achifaTable, "key");
-    const now = new Date().toISOString();
+    try {
+      const achifaTable = await localDbService.getAll("hovachifa");
+      const nextKey = localDbService.getNextId(achifaTable, "key");
+      const now = new Date().toISOString();
 
-    const rows = gviaDebts.map((debt, index) => ({
-      key: nextKey + index,
-      caseId,
-      idhov: debt.idhov,
-      idPayer: debt.idPayer,
-      idAsset: debt.idAsset,
-      enforcementCode: debt.enforcementCode,
-      debtTypeId: debt.debtTypeId,
-      ribit: debt.ribit,
-      sum: debt.sum,
-      pulledAt: now
-    }));
+      const rows = gviaDebts.map((debt, index) => ({
+        key: nextKey + index,
+        caseId,
+        idhov: debt.idhov,
+        idPayer: debt.idPayer,
+        idAsset: debt.idAsset,
+        enforcementCode: debt.enforcementCode,
+        debtTypeId: debt.debtTypeId,
+        ribit: debt.ribit,
+        sum: debt.sum,
+        pulledAt: now
+      }));
 
-    achifaTable.push(...rows);
-    localDbService.warnMemoryOnly("hovachifa", "insert");
+      achifaTable.push(...rows);
+      localDbService.warnMemoryOnly("hovachifa", "insert");
 
-    return rows;
+      const totalDebt = this.sumDebts(rows);
+
+      // רישום היסטוריה עסקית על הוספת חובות לתיק.
+      if (window.historyService?.logAction) {
+        await historyService.logAction({
+          actionType: "create",
+          entityType: "caseDebt",
+          entityId: caseId,
+          entityLabel: `תיק ${caseId}`,
+          description: "הוספת חובות לתיק",
+          beforeText: "",
+          afterText: `נוספו ${rows.length} חובות בסך ${totalDebt}`,
+          screenName: "cases",
+          serviceName: "DebtService",
+          actionName: "addDebtsToCase",
+          details: [
+            { fieldName: "debtsCount", oldValue: "", newValue: rows.length },
+            { fieldName: "totalDebt", oldValue: "", newValue: totalDebt }
+          ]
+        });
+      }
+
+      return rows;
+    } catch (error) {
+      // רישום שגיאה בלי ליצור לולאת שגיאות אם הלוג עצמו נכשל.
+      if (window.errorLogService?.logException) {
+        try {
+          await errorLogService.logException({
+            error,
+            screenName: "cases",
+            serviceName: "DebtService",
+            actionName: "addDebtsToCase",
+            entityType: "case",
+            entityId: caseId
+          });
+        } catch (logError) {
+          console.error("Failed to write error log", logError);
+        }
+      }
+
+      throw error;
+    }
   }
 }
 

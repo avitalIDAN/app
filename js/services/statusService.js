@@ -97,7 +97,48 @@ class StatusService {
       return null;
     }
 
-    return await localDbService.insert("statuses", status, "key");
+    try {
+      const newStatus = await localDbService.insert("statuses", status, "key");
+
+      if (window.historyService?.logAction) {
+        await historyService.logAction({
+          actionType: "create",
+          entityType: "status",
+          entityId: newStatus.key,
+          entityLabel: newStatus.statusName || newStatus.name || `מצב ${newStatus.statusId}`,
+          description: "יצירת מצב",
+          beforeText: "",
+          afterText: `נוצר מצב ${newStatus.statusName || newStatus.name || newStatus.statusId}`,
+          screenName: "statusesInRoute",
+          serviceName: "StatusService",
+          actionName: "createStatus",
+          details: [
+            { fieldName: "statusId", oldValue: "", newValue: newStatus.statusId },
+            { fieldName: "routeId", oldValue: "", newValue: newStatus.routeId },
+            { fieldName: "name", oldValue: "", newValue: newStatus.statusName || newStatus.name || "" }
+          ]
+        });
+      }
+
+      return newStatus;
+    } catch (error) {
+      if (window.errorLogService?.logException) {
+        try {
+          await errorLogService.logException({
+            error,
+            screenName: "statusesInRoute",
+            serviceName: "StatusService",
+            actionName: "createStatus",
+            entityType: "status",
+            entityId: status?.statusId ?? null
+          });
+        } catch (logError) {
+          console.error("Failed to write error log", logError);
+        }
+      }
+
+      throw error;
+    }
   }
 
   async updateStatus(key, changes) {
@@ -105,7 +146,49 @@ class StatusService {
       return null;
     }
 
-    return await localDbService.update("statuses", "key", key, changes);
+    try {
+      const oldStatus = await localDbService.getById("statuses", "key", key);
+      if (!oldStatus) {
+        throw new Error("Status not found");
+      }
+
+      const updatedStatus = await localDbService.update("statuses", "key", key, changes);
+
+      if (window.historyService?.logAction) {
+        await historyService.logAction({
+          actionType: "update",
+          entityType: "status",
+          entityId: key,
+          entityLabel: updatedStatus.statusName || updatedStatus.name || `מצב ${updatedStatus.statusId}`,
+          description: "עדכון מצב",
+          beforeText: `שם: ${oldStatus.statusName || oldStatus.name || ""}`,
+          afterText: `שם: ${updatedStatus.statusName || updatedStatus.name || ""}`,
+          screenName: "statusesInRoute",
+          serviceName: "StatusService",
+          actionName: "updateStatus",
+          details: this.buildChangeDetails(oldStatus, updatedStatus)
+        });
+      }
+
+      return updatedStatus;
+    } catch (error) {
+      if (window.errorLogService?.logException) {
+        try {
+          await errorLogService.logException({
+            error,
+            screenName: "statusesInRoute",
+            serviceName: "StatusService",
+            actionName: "updateStatus",
+            entityType: "status",
+            entityId: key
+          });
+        } catch (logError) {
+          console.error("Failed to write error log", logError);
+        }
+      }
+
+      throw error;
+    }
   }
 
   async deleteStatus(key) {
@@ -113,7 +196,63 @@ class StatusService {
       return false;
     }
 
-    return await localDbService.delete("statuses", "key", key);
+    try {
+      const oldStatus = await localDbService.getById("statuses", "key", key);
+      if (!oldStatus) {
+        throw new Error("Status not found");
+      }
+
+      const deleted = await localDbService.delete("statuses", "key", key);
+
+      if (deleted && window.historyService?.logAction) {
+        await historyService.logAction({
+          actionType: "delete",
+          entityType: "status",
+          entityId: key,
+          entityLabel: oldStatus.statusName || oldStatus.name || `מצב ${oldStatus.statusId}`,
+          description: "מחיקת מצב",
+          beforeText: `נמחק מצב ${oldStatus.statusName || oldStatus.name || oldStatus.statusId}`,
+          afterText: "",
+          screenName: "statusesInRoute",
+          serviceName: "StatusService",
+          actionName: "deleteStatus",
+          details: [
+            { fieldName: "key", oldValue: oldStatus.key, newValue: "" },
+            { fieldName: "statusId", oldValue: oldStatus.statusId, newValue: "" },
+            { fieldName: "routeId", oldValue: oldStatus.routeId, newValue: "" }
+          ]
+        });
+      }
+
+      return deleted;
+    } catch (error) {
+      if (window.errorLogService?.logException) {
+        try {
+          await errorLogService.logException({
+            error,
+            screenName: "statusesInRoute",
+            serviceName: "StatusService",
+            actionName: "deleteStatus",
+            entityType: "status",
+            entityId: key
+          });
+        } catch (logError) {
+          console.error("Failed to write error log", logError);
+        }
+      }
+
+      throw error;
+    }
+  }
+
+  buildChangeDetails(oldRecord, newRecord) {
+    return Object.keys(newRecord)
+      .filter(key => oldRecord[key] !== newRecord[key])
+      .map(key => ({
+        fieldName: key,
+        oldValue: oldRecord[key] ?? "",
+        newValue: newRecord[key] ?? ""
+      }));
   }
 }
 
