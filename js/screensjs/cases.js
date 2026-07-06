@@ -15,6 +15,7 @@ function formatCurrency(value) {
 
 function showCaseBuilderNoDataPermission(message = "אין הרשאה לנתונים הנדרשים למסך זה") {
   const tbody = document.getElementById("casesTable");
+  if (!tbody) return;
 
   tbody.innerHTML = `
     <tr>
@@ -24,14 +25,12 @@ function showCaseBuilderNoDataPermission(message = "אין הרשאה לנתונ
 }
 
 function getCaseBuilderAccess() {
-  // טבלאות בסיסיות שבלעדיהן אי אפשר לבנות את שורות המסך בצורה אמינה.
   const baseTables = ["hovgvia", "debtTypes", "debtTypeGroups", "groups", "routes"];
   const blockedBaseTables = permissionService.getBlockedTables(baseTables, "view");
 
   const canViewCases = permissionService.canViewTable("cases");
   const canViewAchifa = permissionService.canViewTable("hovachifa");
 
-  // הקמת תיק דורשת גם יצירת תיק וגם יצירת שורות חוב באכיפה.
   const canCreateCase =
     canViewCases &&
     canViewAchifa &&
@@ -47,51 +46,102 @@ function getCaseBuilderAccess() {
   };
 }
 
-function getReason(row) {
+function getCaseAction(row) {
   if (!caseBuilderAccess.canViewCases) {
-    return "אין הרשאה לנתוני תיקים";
+    return {
+      code: "BLOCKED",
+      label: "פעולה חסומה",
+      enabled: false,
+      reason: "אין הרשאה לנתוני תיקים"
+    };
   }
 
   if (!caseBuilderAccess.canViewAchifa) {
-    return "אין הרשאה לנתוני אכיפה";
+    return {
+      code: "BLOCKED",
+      label: "פעולה חסומה",
+      enabled: false,
+      reason: "אין הרשאה לנתוני אכיפה"
+    };
   }
 
-  if (!row.caseInfo.hasCase) return "לא קיים תיק";
-  if (row.gap === 0) return "אין שינוי";
-  if (row.gap > 0) return `נמצא פער של ${formatCurrency(row.gap)}`;
+  if (!row.caseInfo.hasCase) {
+    return {
+      code: "CREATE_CASE",
+      label: "הקמת תיק",
+      enabled: caseBuilderAccess.canCreateCase,
+      reason: "לא קיים תיק"
+    };
+  }
 
-  return "החוב באכיפה גבוה מהגבייה";
+  if (row.caseInfo.freezeMode === "DELTA_ONLY") {
+    return {
+      code: "CREATE_DELTA",
+      label: "תיק דלתא",
+      enabled: false,
+      reason: "תיקי דלתא עדיין לתצוגה בלבד"
+    };
+  }
+
+  if (row.gap !== 0) {
+    return {
+      code: "UPDATE_DEBT",
+      label: "עדכון חוב",
+      enabled: false,
+      reason: "עדכון חוב עדיין לתצוגה בלבד"
+    };
+  }
+
+  return {
+    code: "NONE",
+    label: "",
+    enabled: false,
+    reason: "אין שינוי"
+  };
+}
+
+function getReason(row) {
+  return getCaseAction(row).reason;
 }
 
 function getActionHtml(row) {
-  // אם אין הרשאת צפייה ל-cases, אי אפשר לדעת אם תיק קיים.
-  // לכן לא מציגים "הקמת תיק", אלא פעולה חסומה כדי לא להטעות.
-  if (!caseBuilderAccess.canViewCases) {
-    return `<button disabled>פעולה חסומה</button>`;
+  const action = getCaseAction(row);
+
+  if (action.code === "CREATE_CASE") {
+    return `
+      <button ${action.enabled ? "" : "disabled"} onclick="createCaseFromBuilderRow('${row.rowId}')">
+        ${action.label}
+      </button>
+    `;
   }
 
-  if (row.caseInfo.hasCase) {
-    return `<button disabled>קיים תיק</button>`;
+  if (!action.label) {
+    return `<span>—</span>`;
   }
 
-  if (!caseBuilderAccess.canCreateCase) {
-    return `<button disabled>הקמת תיק</button>`;
-  }
+  return `<button disabled>${action.label}</button>`;
+}
 
-  return `
-    <button onclick="createCaseFromBuilderRow('${row.rowId}')">
-      הקמת תיק
-    </button>
-  `;
+function renderCheckboxList(container, items, getValue, getLabel) {
+  if (!container) return;
+
+  container.innerHTML = items.map(item => `
+    <label>
+      <input type="checkbox" value="${getValue(item)}">
+      ${getLabel(item)}
+    </label>
+  `).join("");
 }
 
 async function loadCaseBuilderFilters() {
   const routeSelect = document.getElementById("routeFilter");
   const groupSelect = document.getElementById("groupFilter");
+  const cutDebtTypes = document.getElementById("cutDebtTypes");
 
-  const [routes, groups] = await Promise.all([
+  const [routes, groups, debtTypes] = await Promise.all([
     routeService.getActive(),
-    debtService.getGroups()
+    debtService.getGroups(),
+    debtService.getDebtTypes()
   ]);
 
   routeSelect.innerHTML = "";
@@ -111,11 +161,16 @@ async function loadCaseBuilderFilters() {
       </option>
     `;
   });
+
+  renderCheckboxList(
+    cutDebtTypes,
+    debtTypes,
+    type => type.debtTypeId,
+    type => type.name
+  );
 }
 
 async function enrichRowsWithCaseInfo(rows) {
-  // אם אין הרשאת צפייה ל-cases, אסור לנסות להסיק אם תיק קיים או לא.
-  // לכן כל שורה תקבל מצב ניטרלי שמונע פעולה.
   if (!caseBuilderAccess.canViewCases) {
     return rows.map(row => ({
       ...row,
@@ -160,6 +215,19 @@ async function enrichRowsWithCaseInfo(rows) {
   });
 }
 
+function isCutModeEnabled() {
+  return Boolean(document.getElementById("cutModeToggle")?.checked);
+}
+
+function syncCutModeUi() {
+  const isCutMode = isCutModeEnabled();
+  const panel = document.getElementById("cutModePanel");
+  const groupSelect = document.getElementById("groupFilter");
+
+  if (panel) panel.classList.toggle("cut-panel--hidden", !isCutMode);
+  if (groupSelect) groupSelect.disabled = isCutMode;
+}
+
 async function loadCaseBuilderRows() {
   caseBuilderAccess = getCaseBuilderAccess();
 
@@ -170,7 +238,7 @@ async function loadCaseBuilderRows() {
   }
 
   const routeId = document.getElementById("routeFilter").value;
-  const groupId = document.getElementById("groupFilter").value;
+  const groupId = isCutModeEnabled() ? "" : document.getElementById("groupFilter").value;
   const idPayer = document.getElementById("payerFilter").value;
   const idAsset = document.getElementById("assetFilter").value;
 
@@ -207,6 +275,15 @@ async function renderCasesBuilder() {
   document.getElementById("assetFilter").oninput = loadCaseBuilderRows;
   document.getElementById("refreshBtn").onclick = loadCaseBuilderRows;
 
+  const cutModeToggle = document.getElementById("cutModeToggle");
+  if (cutModeToggle) {
+    cutModeToggle.onchange = async () => {
+      syncCutModeUi();
+      await loadCaseBuilderRows();
+    };
+  }
+
+  syncCutModeUi();
   await loadCaseBuilderRows();
 }
 
@@ -220,19 +297,33 @@ function renderCaseBuilderTable() {
         <td colspan="12">לא נמצאו נתונים</td>
       </tr>
     `;
+    updateBulkActionsState();
+    updateActionCounters();
     return;
   }
 
   caseBuilderRows.forEach(row => {
+    const action = getCaseAction(row);
+    const canSelect = action.code === "CREATE_CASE" && action.enabled;
+
     tbody.innerHTML += `
       <tr>
-        <td><input type="checkbox" data-row-id="${row.rowId}"></td>
+        <td>
+          <input
+            type="checkbox"
+            class="case-builder-checkbox"
+            data-row-id="${row.rowId}"
+            ${canSelect ? "" : "disabled"}
+          >
+        </td>
         <td>${row.idPayer}</td>
         <td>${row.idAsset}</td>
         <td>${row.groupName}</td>
         <td>${row.debtsCount}</td>
-        <td>${formatCurrency(row.gviaDebt)}</td>
-        <td>${caseBuilderAccess.canViewAchifa ? formatCurrency(row.achifaDebt) : "אין הרשאה"}</td>
+        <td ondblclick="showDebtDetails('${row.rowId}', 'gvia')">${formatCurrency(row.gviaDebt)}</td>
+        <td ondblclick="showDebtDetails('${row.rowId}', 'achifa')">
+          ${caseBuilderAccess.canViewAchifa ? formatCurrency(row.achifaDebt) : "אין הרשאה"}
+        </td>
         <td>${caseBuilderAccess.canViewAchifa ? formatCurrency(row.gap) : "אין הרשאה"}</td>
         <td>${row.caseInfo.caseId || ""}</td>
         <td>${row.caseInfo.statusName}</td>
@@ -241,13 +332,61 @@ function renderCaseBuilderTable() {
       </tr>
     `;
   });
+
+  document.querySelectorAll(".case-builder-checkbox").forEach(input => {
+    input.onchange = updateBulkActionsState;
+  });
+
+  updateBulkActionsState();
+  updateActionCounters();
+}
+
+function getSelectedCreateRows() {
+  const selectedIds = [...document.querySelectorAll(".case-builder-checkbox:checked")]
+    .map(input => input.dataset.rowId);
+
+  return caseBuilderRows.filter(row =>
+    selectedIds.includes(row.rowId) &&
+    getCaseAction(row).code === "CREATE_CASE" &&
+    getCaseAction(row).enabled
+  );
+}
+
+function updateBulkActionsState() {
+  const button = document.getElementById("bulkCreateCasesBtn");
+  const selectAllButton = document.getElementById("selectAllCreateRowsBtn");
+  const clearButton = document.getElementById("clearSelectedRowsBtn");
+  const selectedCount = document.getElementById("selectedRowsCount");
+  if (!button || !selectedCount) return;
+
+  const selectedRows = getSelectedCreateRows();
+  const selectableCount = document.querySelectorAll(".case-builder-checkbox:not(:disabled)").length;
+
+  selectedCount.innerText = selectedRows.length;
+  button.disabled = selectedRows.length === 0;
+
+  if (selectAllButton) selectAllButton.disabled = selectableCount === 0;
+  if (clearButton) clearButton.disabled = selectedRows.length === 0;
+}
+
+function updateActionCounters() {
+  const createCount = caseBuilderRows.filter(row => getCaseAction(row).code === "CREATE_CASE").length;
+  const updateCount = caseBuilderRows.filter(row => getCaseAction(row).code === "UPDATE_DEBT").length;
+  const deltaCount = caseBuilderRows.filter(row => getCaseAction(row).code === "CREATE_DELTA").length;
+
+  const createEl = document.getElementById("createCasesCount");
+  const updateEl = document.getElementById("updateDebtCount");
+  const deltaEl = document.getElementById("deltaCasesCount");
+
+  if (createEl) createEl.innerText = createCount;
+  if (updateEl) updateEl.innerText = updateCount;
+  if (deltaEl) deltaEl.innerText = deltaCount;
 }
 
 async function createCaseFromBuilderRow(rowId) {
   const row = caseBuilderRows.find(r => r.rowId === rowId);
   if (!row || row.caseInfo.hasCase) return;
 
-  // בדיקה חוזרת בזמן פעולה, כדי שלא נסתמך רק על מצב הכפתור במסך.
   if (!caseBuilderAccess.canCreateCase) {
     alert("אין הרשאה להקמת תיק");
     return;
@@ -269,5 +408,106 @@ async function createCaseFromBuilderRow(rowId) {
   await loadCaseBuilderRows();
 }
 
+function selectAllCreateRows() {
+  document.querySelectorAll(".case-builder-checkbox:not(:disabled)").forEach(input => {
+    input.checked = true;
+  });
+
+  updateBulkActionsState();
+}
+
+function clearSelectedRows() {
+  document.querySelectorAll(".case-builder-checkbox").forEach(input => {
+    input.checked = false;
+  });
+
+  updateBulkActionsState();
+}
+
+async function createSelectedCases() {
+  const rows = getSelectedCreateRows();
+  if (!rows.length) return;
+
+  const button = document.getElementById("bulkCreateCasesBtn");
+  if (button) button.disabled = true;
+
+  let created = 0;
+  let failed = 0;
+
+  for (const row of rows) {
+    try {
+      const caseItem = await caseService.createCase({
+        routeId: row.routeId,
+        groupId: row.groupId,
+        idPayer: row.idPayer,
+        idAsset: row.idAsset
+      });
+
+      if (!caseItem) {
+        failed++;
+        continue;
+      }
+
+      await debtService.addDebtsToCase(caseItem.caseId, row.debts);
+      created++;
+    } catch (error) {
+      console.error("Failed creating case", error);
+      failed++;
+    }
+  }
+
+  alert(`הוקמו ${created} תיקים. נכשלו ${failed}.`);
+  await loadCaseBuilderRows();
+}
+
+async function showDebtDetails(rowId, source) {
+  const row = caseBuilderRows.find(r => r.rowId === rowId);
+  const modal = document.getElementById("debtDetailsModal");
+  const title = document.getElementById("debtDetailsTitle");
+  const body = document.getElementById("debtDetailsBody");
+
+  if (!row || !modal || !title || !body) return;
+
+  modal.classList.remove("modal-backdrop--hidden");
+  title.innerText = source === "gvia" ? "פירוט חובות גבייה" : "פירוט חובות אכיפה";
+
+  const details = source === "gvia"
+    ? await debtService.getGviaDetailsForBuilderRow(row)
+    : await debtService.getAchifaDetailsForBuilderRow(row);
+
+  if (!details.length) {
+    body.innerHTML = `<tr><td colspan="6">לא נמצאו חיובים</td></tr>`;
+    return;
+  }
+
+  body.innerHTML = details.map(debt => `
+    <tr>
+      <td>${debt.idhov || ""}</td>
+      <td>${debt.caseId || ""}</td>
+      <td>${debt.debtTypeName || debt.enforcementCode || debt.originalCode || ""}</td>
+      <td>${debt.year || ""}</td>
+      <td>${debt.ribit ? "כן" : "לא"}</td>
+      <td>${formatCurrency(debt.sum)}</td>
+    </tr>
+  `).join("");
+}
+
+function closeDebtDetails() {
+  const modal = document.getElementById("debtDetailsModal");
+  if (modal) modal.classList.add("modal-backdrop--hidden");
+}
+
+function closeDebtDetailsFromBackdrop(event) {
+  if (event.target?.id === "debtDetailsModal") {
+    closeDebtDetails();
+  }
+}
+
 window.renderCasesBuilder = renderCasesBuilder;
 window.createCaseFromBuilderRow = createCaseFromBuilderRow;
+window.createSelectedCases = createSelectedCases;
+window.selectAllCreateRows = selectAllCreateRows;
+window.clearSelectedRows = clearSelectedRows;
+window.showDebtDetails = showDebtDetails;
+window.closeDebtDetails = closeDebtDetails;
+window.closeDebtDetailsFromBackdrop = closeDebtDetailsFromBackdrop;

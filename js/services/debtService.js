@@ -165,6 +165,79 @@ class DebtService {
       });
   }
 
+  async getGviaDetailsForBuilderRow(row) {
+    if (!permissionService.canViewAllTables(["hovgvia", "debtTypes", "debtTypeGroups"])) {
+      return [];
+    }
+
+    const [gviaDebts, debtTypes, debtTypeGroups] = await Promise.all([
+      this.getAllGviaDebts(),
+      this.getDebtTypes(),
+      this.getDebtTypeGroups()
+    ]);
+
+    return gviaDebts
+      .map(debt => {
+        const type = this.getDebtType(debt, debtTypes);
+        if (!type) return null;
+
+        const isInGroup = debtTypeGroups.some(link =>
+          link.debtTypeId == type.debtTypeId &&
+          link.groupId == row.groupId &&
+          link.isActive
+        );
+
+        if (!isInGroup) return null;
+
+        return {
+          ...debt,
+          debtTypeId: type.debtTypeId,
+          debtTypeName: type.name,
+          enforcementCode: type.enforcementCode,
+          groupId: row.groupId
+        };
+      })
+      .filter(debt =>
+        debt &&
+        debt.idPayer == row.idPayer &&
+        debt.idAsset == row.idAsset
+      );
+  }
+
+  async getAchifaDetailsForBuilderRow(row) {
+    if (!permissionService.canViewAllTables(["hovachifa", "debtTypes"])) {
+      return [];
+    }
+
+    const [achifaDebts, debtTypes] = await Promise.all([
+      this.getAllAchifaDebts(),
+      this.getDebtTypes()
+    ]);
+
+    const gviaDetails = row.debts || await this.getGviaDetailsForBuilderRow(row);
+    const enforcementCodes = gviaDetails.map(debt => debt.enforcementCode);
+
+    return achifaDebts
+      .filter(debt =>
+        debt.idPayer == row.idPayer &&
+        debt.idAsset == row.idAsset &&
+        enforcementCodes.includes(debt.enforcementCode)
+      )
+      .map(debt => {
+        const type = debtTypes.find(t =>
+          t.debtTypeId == debt.debtTypeId ||
+          t.enforcementCode == debt.enforcementCode
+        );
+
+        return {
+          ...debt,
+          debtTypeName: type ? type.name : "",
+          originalCode: type ? type.originalCode : "",
+          year: type ? type.year : ""
+        };
+      });
+  }
+
   async addDebtsToCase(caseId, gviaDebts) {
     // כתיבה ל-hovachifa: אם אין הרשאת עריכה, לא מבצעים פעולה.
     // בשלב הזה חסימת הרשאה אינה נרשמת כשגיאה, כדי לא להציף את errorLog.

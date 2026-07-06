@@ -1,4 +1,3 @@
-
 <div class="cases-builder">
   <div class="page-header">
     <h2>בניית תיקים</h2>
@@ -25,6 +24,109 @@
       <b>נכס</b>
       <input id="assetFilter" type="number" placeholder="כל הנכסים">
     </label>
+
+    <label class="inline-check">
+      <input id="cutModeToggle" type="checkbox">
+      <b>עבודה לפי חתך</b>
+    </label>
+  </div>
+
+  <div id="cutModePanel" class="cut-panel cut-panel--hidden">
+    <div class="cut-panel__title">הגדרת חתך</div>
+
+    <div class="cut-panel__grid">
+      <label>
+        <b>משנה</b>
+        <input id="cutYearFrom" type="number" placeholder="לדוגמה 2024">
+      </label>
+
+      <label>
+        <b>עד שנה</b>
+        <input id="cutYearTo" type="number" placeholder="לדוגמה 2026">
+      </label>
+
+      <label>
+        <b>בעלי חוב היום וגם נכון ל-</b>
+        <input id="debtAsOfDate" type="date">
+      </label>
+    </div>
+
+    <div class="cut-panel__grid cut-panel__grid--lists">
+      <div>
+        <b>סוגי חיוב</b>
+        <div id="cutDebtTypes" class="checkbox-list"></div>
+      </div>
+
+      <div>
+        <b>סיווג משלם</b>
+        <div id="cutPayerClasses" class="checkbox-list">
+          <label><input type="checkbox" value="private"> פרטי</label>
+          <label><input type="checkbox" value="business"> עסקי</label>
+          <label><input type="checkbox" value="public"> ציבורי</label>
+        </div>
+        <label class="inline-check">
+          <input id="includeNoPayerClass" type="checkbox">
+          <b>ללא סייוגים</b>
+        </label>
+      </div>
+
+      <div>
+        <b>סוגי נכס</b>
+        <div id="cutAssetTypes" class="checkbox-list">
+          <label><input type="checkbox" value="residential"> מגורים</label>
+          <label><input type="checkbox" value="business"> עסקי</label>
+          <label><input type="checkbox" value="land"> קרקע</label>
+        </div>
+        <label class="inline-check">
+          <input id="includeNoAssetType" type="checkbox">
+          <b>ללא סוגי נכס</b>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="case-builder-summary">
+    <span>נבחרו <b id="selectedRowsCount">0</b> שורות</span>
+    <button id="selectAllCreateRowsBtn" onclick="selectAllCreateRows()">
+      סמן כל השורות הרלוונטיות להקמת תיק
+    </button>
+    <button id="clearSelectedRowsBtn" onclick="clearSelectedRows()">
+      נקה סימון
+    </button>
+    <button id="bulkCreateCasesBtn" onclick="createSelectedCases()" disabled>
+      הקמת תיקים מסומנים
+    </button>
+  </div>
+
+  <div class="case-builder-summary">
+    <span>בניית תיקים: <b id="createCasesCount">0</b></span>
+    <span>עדכון חוב: <b id="updateDebtCount">0</b> לתצוגה בלבד</span>
+    <span>בניית תיקי דלתא: <b id="deltaCasesCount">0</b> לתצוגה בלבד</span>
+  </div>
+
+  <div id="debtDetailsModal" class="modal-backdrop modal-backdrop--hidden" onclick="closeDebtDetailsFromBackdrop(event)">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3 id="debtDetailsTitle">פירוט חיובים</h3>
+        <button onclick="closeDebtDetails()">סגור</button>
+      </div>
+
+      <div class="modal-body">
+        <table class="table table--striped table--hover">
+          <thead>
+            <tr>
+              <th>חוב</th>
+              <th>תיק</th>
+              <th>סוג חיוב</th>
+              <th>שנה</th>
+              <th>ריבית</th>
+              <th>סכום</th>
+            </tr>
+          </thead>
+          <tbody id="debtDetailsBody"></tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
   <table class="table table--striped table--hover">
@@ -47,53 +149,3 @@
     <tbody id="casesTable"></tbody>
   </table>
 </div>
-
-<!-- <div class="cases-builder">
-  <h2>בניית תיקים</h2>
-
-  <div class="filters-bar cases-builder__filters">
-    <label>
-      <b>מסלול</b>
-      <select id="caseRouteSelect"></select>
-    </label>
-
-    <label>
-      <b>קבוצת חיובים</b>
-      <select id="debtGroupSelect"></select>
-    </label>
-
-    <label>
-      <b>משלם</b>
-      <input id="payerFilter" type="number" placeholder="כל המשלמים" />
-    </label>
-
-    <label>
-      <b>נכס</b>
-      <input id="assetFilter" type="number" placeholder="כל הנכסים" />
-    </label>
-
-    <button onclick="loadDebtsForCaseBuilder()">איתור חובות</button>
-  </div>
-
-  <div class="case-builder-summary">
-    <span>נבחרו <b id="selectedDebtsCount">0</b> חובות</span>
-    <span>סכום לתיק <b id="selectedDebtsSum">0</b></span>
-    <button onclick="createCaseFromSelectedDebts()">הקמת תיק</button>
-  </div>
-
-  <table class="table table--striped table--hover">
-    <thead>
-      <tr>
-        <th>בחירה</th>
-        <th>מזהה חוב</th>
-        <th>משלם</th>
-        <th>נכס</th>
-        <th>קבוצת חיוב</th>
-        <th>שנה</th>
-        <th>ריבית</th>
-        <th>סכום</th>
-      </tr>
-    </thead>
-    <tbody id="gviaDebtsTable"></tbody>
-  </table>
-</div> -->
