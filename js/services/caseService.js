@@ -61,34 +61,7 @@ class CaseService {
     return newRecord;
   }
 
-  // async getAllCases() {
-  //   if (!authService.hasViewDBPermission("cases")) {
-  //     return [];
-  //   }
 
-  //   const [cases, routes, statuses, groups] = await Promise.all([
-  //     localDbService.getAll("cases"),
-  //     routeService.getAll(),
-  //     statusService.getAll(),
-  //     debtService.getGroups()
-  //   ]);
-
-  //   return cases.map(c => {
-  //     const route = routes.find(r => r.routeId == c.routeId);
-  //     const status = statuses.find(s =>
-  //       s.statusId == c.currentStatusId &&
-  //       s.routeId == c.routeId
-  //     );
-  //     const group = groups.find(g => g.groupId == c.groupId);
-
-  //     return {
-  //       ...c,
-  //       routeName: route ? route.name : "",
-  //       statusName: status ? (status.statusName || status.name) : "",
-  //       groupName: group ? group.name : ""
-  //     };
-  //   });
-  // }
 
   async getAllCases() {
   if (!permissionService.canViewTable("cases")) {
@@ -293,9 +266,7 @@ class CaseService {
     changedBy = authService.getCurrentUsername(),
     note = ""
   ) {
-    // if (!authService.hasEditDBPermission("cases")) {
-    //   return null;
-    // }
+
     if (
       !permissionService.canEditTable("cases") ||
       !permissionService.canEditTable("caseStatusHistory")

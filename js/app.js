@@ -1,29 +1,44 @@
 const screenControllers = {
-  dashboard: { onEnter: renderDashboard},
-  cases: { onEnter: renderCasesBuilder},
-  case: { onEnter: renderCaseScreen},
-  history: { onEnter: renderHistory},
-  casesInRoute: { onEnter: rendercasesInRouteTable},
-  routes: { onEnter: renderRoutes},
+  dashboard: { onEnter: renderDashboard },
+  cases: { onEnter: renderCasesBuilder },
+  case: { onEnter: renderCaseScreen },
+  history: { onEnter: renderHistory },
+  casesInRoute: { onEnter: rendercasesInRouteTable },
+  routes: { onEnter: renderRoutes },
   statusesInRoute: { onEnter: renderStatusesInRoute },
-  switchingModes: { onEnter: renderSwitchingModes}
+  switchingModes: { onEnter: renderSwitchingModes }
 };
 
+function canViewScreen(screenName) {
+  return permissionService.canViewScreen(screenName);
+}
+
+function showNoScreenPermission() {
+  document.getElementById("content").innerHTML =
+    `<h3>אין הרשאה לצפייה במסך זה</h3>`;
+}
 
 function navigate(screenName) {
-    if (!authService.isLoggedIn()) {
+  if (!authService.isLoggedIn()) {
     loadLogin();
     return;
   }
 
-  if (!authService.hasViewPermission(screenName)) {
-    document.getElementById("content").innerHTML =
-      `<h3>אין הרשאה לצפייה במסך זה</h3>`;
+  // בדיקה מרכזית לפני טעינת קובץ ה-HTML של המסך.
+  // גם אם מישהו קרא ידנית ל-navigate מה-console, המסך לא ייטען בלי הרשאה.
+  if (!canViewScreen(screenName)) {
+    showNoScreenPermission();
     return;
   }
 
   fetch(`ui/screens/${screenName}.html`)
-    .then(res => res.text())
+    .then(res => {
+      if (!res.ok) {
+        throw new Error(`Screen not found: ${screenName}`);
+      }
+
+      return res.text();
+    })
     .then(html => {
       document.getElementById("content").innerHTML = html;
 
@@ -31,6 +46,11 @@ function navigate(screenName) {
       if (controller?.onEnter) {
         controller.onEnter();
       }
+    })
+    .catch(error => {
+      console.error(error);
+      document.getElementById("content").innerHTML =
+        `<h3>המסך לא נמצא או שלא ניתן לטעון אותו</h3>`;
     });
 }
 
@@ -43,17 +63,15 @@ function loadLogin() {
 }
 
 function loadMainLayout() {
-   
   fetch("ui/layout/mainLayout.html")
     .then(res => res.text())
     .then(html => {
       document.getElementById("app").innerHTML = html;
 
-      applyMenuPermissions(); 
-      showUsername();  
+      applyMenuPermissions();
+      showUsername();
       navigate("dashboard");
     });
-
 }
 
 function showUsername() {
@@ -63,20 +81,25 @@ function showUsername() {
 
   const el = document.getElementById("usernameDisplay");
   if (el) {
-    el.innerText = `${username}`; /// `שלום, ${username}`;
+    el.innerText = username;
   }
 }
 
 function applyMenuPermissions() {
   document.querySelectorAll("[data-screen]").forEach(item => {
     const screen = item.dataset.screen;
+    const hasPermission = canViewScreen(screen);
 
-    if (!authService.hasViewPermission(screen)) {
-      item.classList.add("menu-disabled");
+    item.classList.toggle("menu-disabled", !hasPermission);
+    item.setAttribute("aria-disabled", String(!hasPermission));
+
+    if (!hasPermission) {
+      item.title = "אין הרשאה למסך זה";
+    } else {
+      item.removeAttribute("title");
     }
   });
 }
-
 
 function handleLogout() {
   authService.logout();
@@ -99,7 +122,9 @@ async function handleLogin() {
 }
 
 function handleMenuClick(screenName) {
-  if (!authService.hasViewPermission(screenName)) {
+  // בדיקה בזמן לחיצה על התפריט.
+  // זו שכבת הגנה נוספת מעבר לעיצוב של menu-disabled.
+  if (!canViewScreen(screenName)) {
     alert("אין לך הרשאה למסך זה");
     return;
   }
@@ -111,4 +136,3 @@ function toggleSubmenu(element) {
   const menuItem = element.parentElement;
   menuItem.classList.toggle("open");
 }
-

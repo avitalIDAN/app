@@ -1,22 +1,23 @@
 <div class="actions-bar">
   <button id="exportExcelBtn" class="btn btn--excel">
-      הורד כקובץ Excel 📥
+    הורד כקובץ Excel
   </button>
 
   <button id="printBtn" class="btn btn--pdf">
-      הורד כקובץ PDF 📄
+    הורד כקובץ PDF
   </button>
 </div>
 
-<!-- <select id="routeSelect"></select> -->
 <div class="filters">
   <div class="select-wrapper">
-    <select id="routeSelect"></select>
+    <select id="routeSelect">
+      <option value="">כל המסלולים</option>
+    </select>
   </div>
 
   <div class="select-wrapper">
     <select id="statusSelect" disabled>
-      <option value="">בחר מצב</option>
+      <option value="">כל המצבים</option>
     </select>
   </div>
 </div>
@@ -25,7 +26,10 @@
   <thead>
     <tr>
       <th>תיק</th>
+      <th>מספר חיצוני</th>
+      <th>מסלול</th>
       <th>מצב</th>
+      <th>נוצר</th>
       <th>עודכן</th>
     </tr>
   </thead>

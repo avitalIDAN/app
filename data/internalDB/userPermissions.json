@@ -32,5 +32,5 @@
   { "userPermissionId": 28, "userId": 2, "resourceType": "screen", "resourceName": "cases", "canView": true, "canEdit": false, "blockView": false, "blockEdit": false, "sourceRoleId": null, "isManualOverride": true },
   { "userPermissionId": 29, "userId": 2, "resourceType": "screen", "resourceName": "switchingModes", "canView": true, "canEdit": false, "blockView": false, "blockEdit": false, "sourceRoleId": 1, "isManualOverride": false },
   { "userPermissionId": 30, "userId": 2, "resourceType": "table", "resourceName": "routes", "canView": false, "canEdit": false, "blockView": true, "blockEdit": true, "sourceRoleId": null, "isManualOverride": true },
-  { "userPermissionId": 31, "userId": 2, "resourceType": "table", "resourceName": "hovachifa", "canView": false, "canEdit": false, "blockView": true, "blockEdit": true, "sourceRoleId": null, "isManualOverride": true }
+  { "userPermissionId": 31, "userId": 2, "resourceType": "table", "resourceName": "cases", "canView": false, "canEdit": false, "blockView": true, "blockEdit": true, "sourceRoleId": null, "isManualOverride": true }
 ]

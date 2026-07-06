@@ -3,63 +3,40 @@ let casesInRoute = [];
 async function rendercasesInRouteTable() {
   const routeSelect = document.getElementById("routeSelect");
   const statusSelect = document.getElementById("statusSelect");
-  const tbody = document.getElementById("routeCases");
 
-  // טעינת מסלולים
-  const routes = await routeService.getAll();
+  bindCasesInRouteReportButtons();
+  setCasesInRouteReportButtonsEnabled(false);
+  casesInRoute = [];
+
   routeSelect.innerHTML = `<option value="">כל המסלולים</option>`;
-  // routes.forEach(r => {
-  //   routeSelect.innerHTML += `<option value="${r.routeId}">${r.name}</option>`;
-  // });
-  routes.forEach(r => {
-    routeSelect.innerHTML += `
-      <option value="${r.routeId}">
-        ${r.routeId} – ${r.name}
-      </option>
-    `;
-  });
+  statusSelect.innerHTML = `<option value="">כל המצבים</option>`;
+  statusSelect.disabled = true;
 
-  // שינוי מסלול
+  // בלי routes אין יכולת לבחור מסלול.
+  if (!permissionService.canViewTable("routes")) {
+    routeSelect.disabled = true;
+    showCasesInRouteNoDataPermission("אין הרשאה לנתוני מסלולים");
+    return;
+  }
+
+  routeSelect.disabled = false;
+  await loadRoutesToSelect();
+
   routeSelect.onchange = async () => {
     const routeId = routeSelect.value;
-    tbody.innerHTML = "";
+
     statusSelect.innerHTML = `<option value="">כל המצבים</option>`;
+    statusSelect.disabled = true;
 
     if (!routeId) {
-      statusSelect.disabled = true;
-        // טעינת כל התיקים 
-      const allcases = await caseService.getAllCases();
-      renderCases(allcases);
+      await loadAndRenderCases({});
       return;
     }
 
-    // טעינת מצבים למסלול
-    const statuses = await statusService.getAllByRoute(routeId);
-    statuses.forEach(s => {
-      statusSelect.innerHTML += `
-        <option value="${s.statusId}">${s.name}</option>
-      `;
-    });
-
-    statusSelect.disabled = false;
-
-    // טעינת כל התיקים במסלול
-    const cases = await caseService.getCasesByRoute(routeId);
-    renderCases(cases);
-    // if (!routeSelect.value) {
-    //     // טעינת כל התיקים 
-    //   const allcases = await caseService.getAllCases();
-    //   renderCases(allcases);
-    // }
-    // else{
-    //   // טעינת כל התיקים במסלול
-    //   const cases = await caseService.getCasesByRoute(routeId);
-    //   renderCases(cases);
-
-    // }
+    await loadStatusesToSelect(routeId);
+    await loadAndRenderCases({ routeId });
   };
 
-  // שינוי מצב
   statusSelect.onchange = async () => {
     if (!routeSelect.value) {
       alert("יש לבחור מסלול לפני בחירת מצב");
@@ -67,179 +44,185 @@ async function rendercasesInRouteTable() {
       return;
     }
 
-    if (!statusSelect.value) {
-      // טעינת כל התיקים במסלול
-      const cases = await caseService.getCasesByRoute(routeSelect.value);
-      renderCases(cases);
-    }
-    else{
-      const cases = await caseService.getCasesByStatus(
-        statusSelect.value,
-        routeSelect.value
-      );
-
-      renderCases(cases);
-    }
+    await loadAndRenderCases({
+      routeId: routeSelect.value,
+      statusId: statusSelect.value || null
+    });
   };
 
-  function renderCases(cases) {
-    tbody.innerHTML = "";
-
-    if (!cases || cases.length==0) {
-      tbody.innerHTML = `
-        <tr>
-          <td colspan="3">לא נמצאו תיקים</td>
-        </tr>`;
-      return;
-    }
-    casesInRoute = cases;
-
-    casesInRoute.forEach(c => {
-      tbody.innerHTML += `
-        <tr>
-          <td>${c.caseId}</td>
-          <td>${c.statusName}</td>
-          <td>${new Date(c.updatedAt).toLocaleDateString()}</td>
-        </tr>
-      `;
-    });
-  }
-
-    // טעינת כל התיקים 
-  const allcases = await caseService.getAllCases();
-  renderCases(allcases);
-  
-  bindRouteReportButtonsC();
+  await loadAndRenderCases({});
 }
 
-window.rendercasesInRouteTable = rendercasesInRouteTable;
+async function loadRoutesToSelect() {
+  const routeSelect = document.getElementById("routeSelect");
+  const routes = await routeService.getAll();
 
+  routes.forEach(route => {
+    routeSelect.innerHTML += `
+      <option value="${route.routeId}">
+        ${route.routeId} - ${route.name}
+      </option>
+    `;
+  });
+}
 
-function bindRouteReportButtonsC() {
+async function loadStatusesToSelect(routeId) {
+  const statusSelect = document.getElementById("statusSelect");
+
+  // אם מצבים חסומים, עדיין אפשר להציג תיקים לפי מסלול,
+  // אבל אי אפשר לסנן לפי מצב.
+  if (!permissionService.canViewTable("statuses")) {
+    statusSelect.disabled = true;
+    statusSelect.innerHTML = `<option value="">אין הרשאה למצבים</option>`;
+    return;
+  }
+
+  const statuses = await statusService.getAllByRoute(routeId);
+
+  statuses.forEach(status => {
+    statusSelect.innerHTML += `
+      <option value="${status.statusId}">
+        ${status.statusName || status.name}
+      </option>
+    `;
+  });
+
+  statusSelect.disabled = false;
+}
+
+async function loadAndRenderCases({ routeId = null, statusId = null } = {}) {
+  // אם טבלת תיקים חסומה, לא מציגים "לא נמצאו".
+  // זו חסימת נתונים, לא מצב של אפס תוצאות.
+  if (!permissionService.canViewTable("cases")) {
+    casesInRoute = [];
+    setCasesInRouteReportButtonsEnabled(false);
+    showCasesInRouteNoDataPermission("אין הרשאה לנתוני תיקים");
+    return;
+  }
+
+  casesInRoute = await caseService.getCasesFiltered({
+    routeId,
+    statusId
+  });
+
+  renderCases(casesInRoute);
+}
+
+function renderCases(cases) {
+  const tbody = document.getElementById("routeCases");
+  tbody.innerHTML = "";
+
+  if (!cases || !cases.length) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6">לא נמצאו תיקים</td>
+      </tr>
+    `;
+    setCasesInRouteReportButtonsEnabled(false);
+    return;
+  }
+
+  cases.forEach(caseItem => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${caseItem.caseId}</td>
+        <td>${caseItem.externalCaseNumber || "-"}</td>
+        <td>${caseItem.routeName || caseItem.routeId || "-"}</td>
+        <td>${caseItem.statusName || "-"}</td>
+        <td>${caseItem.createdAt ? new Date(caseItem.createdAt).toLocaleDateString("he-IL") : "-"}</td>
+        <td>${caseItem.updatedAt ? new Date(caseItem.updatedAt).toLocaleDateString("he-IL") : "-"}</td>
+      </tr>
+    `;
+  });
+
+  setCasesInRouteReportButtonsEnabled(true);
+}
+
+function showCasesInRouteNoDataPermission(message = "אין הרשאה לנתונים") {
+  const tbody = document.getElementById("routeCases");
+
+  tbody.innerHTML = `
+    <tr>
+      <td colspan="6">${message}</td>
+    </tr>
+  `;
+}
+
+function bindCasesInRouteReportButtons() {
   const printBtn = document.getElementById("printBtn");
   const excelBtn = document.getElementById("exportExcelBtn");
 
-  if (!printBtn || !excelBtn) return;
-
-  printBtn.onclick = onClickPrintC;
-  excelBtn.onclick = onClickExcelC;
+  if (printBtn) printBtn.onclick = onClickPrintC;
+  if (excelBtn) excelBtn.onclick = onClickExcelC;
 }
 
-// function exportCasesToExcel() {
+function setCasesInRouteReportButtonsEnabled(enabled) {
+  const printBtn = document.getElementById("printBtn");
+  const excelBtn = document.getElementById("exportExcelBtn");
 
-//   const totalDebt = casesCache.reduce((sum, c) => sum + (c.debt || 0), 0);
-
-//   const excelData = casesCache.map(c => ({
-//     "מספר תיק": c.caseId,
-//     "מספר חיצוני": c.externalCaseNumber,
-//     "מצב נוכחי": c.currentStatusName,
-//     "חוב": c.debt,
-//     "נוצר בתאריך": formatDate(c.createdAt),
-//     "עודכן בתאריך": formatDate(c.updatedAt)
-//   }));
-
-//   exportToExcel({
-//     data: excelData,
-//     headers: Object.keys(excelData[0]),
-//     fileName: "דוח_תיקים.xlsx",
-//     sheetName: "Cases"
-//   });
-// }
+  if (printBtn) printBtn.disabled = !enabled;
+  if (excelBtn) excelBtn.disabled = !enabled;
+}
 
 function onClickExcelC() {
+  if (!permissionService.canViewTable("cases")) {
+    alert("אין הרשאה לנתונים");
+    return;
+  }
+
+  if (!casesInRoute.length) {
+    alert("אין נתונים לייצוא");
+    return;
+  }
+
   exportToExcel({
     data: casesInRoute,
-    headers: ["מפתח","מזהה תיק", "קוד תיק", "קוד מסלול", "קוד מצב", "שם מצב", "תאריך יצירת התיק", "תאריך עדכון", "חוב"],
+    headers: [
+      "מפתח",
+      "מזהה תיק",
+      "מספר תיק",
+      "קוד מסלול",
+      "קוד מצב",
+      "שם מצב",
+      "תאריך יצירת התיק",
+      "תאריך עדכון"
+    ],
     fileName: "תיקים במסלול.xlsx",
     sheetName: "casesInRoute"
   });
-};
-
-// function onClickPrint() {
-  
-//     if(routeSelect.value==""){
-
-//     }  statusSelect.value,
-//       routeSelect.value
-
-//   printTextReport({
-//     title: "דוח תיקים במסלולים",
-//     data: casesInRoute,
-//     summaryText: `מספר מסלולים: ${casesInRoute.length}`,
-//     renderItem: c => `
-//       <div class="record">
-//         <h2>מסלול: ${c.name} (קוד: ${c.caseId})</h2>
-//         <p>${c.description ?? ""}</p>
-//         <div class="divider"></div>
-//       </div>
-//     `
-//   });
-// };
-
+}
 
 function onClickPrintC() {
+  if (!permissionService.canViewTable("cases")) {
+    alert("אין הרשאה לנתונים");
+    return;
+  }
+
   if (!casesInRoute.length) {
     alert("אין נתונים להדפסה");
     return;
   }
 
-  const totalDebt = casesInRoute.reduce((sum, c) => sum + (c.debt || 0), 0);
-
   printTextReport({
     title: "דוח תיקים במסלול",
-
     summaryText: `
       <div class="report-summary">
-        <p><strong>מסלול:</strong> ${routeSelect.value || "כל המסלולים"}</p>
-        <p><strong>מצב:</strong> ${statusSelect.value || "כל המצבים"}</p>
-        <p><strong>סה"כ תיקים:</strong> ${casesInRoute.length}</p>
-        <p><strong>סה"כ חוב:</strong> ₪ ${totalDebt.toLocaleString()}</p>
+        <p><strong>סה״כ תיקים:</strong> ${casesInRoute.length}</p>
       </div>
     `,
-
     data: casesInRoute,
-
-    renderItem: c => `
+    renderItem: caseItem => `
       <div class="case-card">
-       <h3 class="case-title">תיק #${c.caseId}</h3>
-        <div><strong>מספר תיק פנימי:</strong> ${c.caseId}</div>
-        <div><strong>מספר חיצוני:</strong> ${c.externalCaseNumber}</div>
-        <div><strong>מצב נוכחי:</strong> ${c.statusName}</div>
-        <div><strong>חוב:</strong>₪ ${(c.debt ?? 0).toLocaleString()}</div>
-        <div><strong>נוצר בתאריך:</strong> ${new Date(c.createdAt).toLocaleString("he-IL")}</div>
-        <div><strong>עודכן בתאריך:</strong> ${new Date(c.updatedAt).toLocaleString("he-IL")}</div>
+        <h3 class="case-title">תיק #${caseItem.caseId}</h3>
+        <div><strong>מספר תיק פנימי:</strong> ${caseItem.caseId}</div>
+        <div><strong>מספר חיצוני:</strong> ${caseItem.externalCaseNumber || "-"}</div>
+        <div><strong>מסלול:</strong> ${caseItem.routeName || caseItem.routeId || "-"}</div>
+        <div><strong>מצב נוכחי:</strong> ${caseItem.statusName || "-"}</div>
+        <div><strong>נוצר בתאריך:</strong> ${caseItem.createdAt ? new Date(caseItem.createdAt).toLocaleString("he-IL") : "-"}</div>
+        <div><strong>עודכן בתאריך:</strong> ${caseItem.updatedAt ? new Date(caseItem.updatedAt).toLocaleString("he-IL") : "-"}</div>
       </div>
     `
   });
-        // <div><strong>נוצר בתאריך:</strong> ${formatDate(c.createdAt)}</div>
-        // <div><strong>עודכן בתאריך:</strong> ${formatDate(c.updatedAt)}</div>
 }
 
-
-// async function renderRouteTable() {
-//   const routes = await routeService.getAll();
-//   const select = document.getElementById("routeSelect");
-
-//   select.innerHTML = `<option value="">בחר מסלול</option>`;
-//   routes.forEach(r => {
-//     select.innerHTML += `<option value="${r.routeId}">${r.name}</option>`;
-//   });
-
-//   select.onchange = async () => {
-//     const cases = await caseService.getCasesByRoute(select.value); //מאיפה הערך ואם תואם
-//     const tbody = document.getElementById("routeCases");
-//     tbody.innerHTML = "";
-
-//     cases.forEach(c => {
-//       tbody.innerHTML += `
-//         <tr>
-//           <td>${c.caseId}</td>
-//           <td>${c.currentStatusName}</td>
-//           <td>${c.updatedAt}</td>
-//         </tr>
-//       `;
-//     });
-//   };
-// }
-
-// window.renderRouteTable = renderRouteTable;
+window.rendercasesInRouteTable = rendercasesInRouteTable;

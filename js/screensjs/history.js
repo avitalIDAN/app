@@ -1,10 +1,40 @@
 let allHistory = [];
 
 async function renderHistory() {
+  // מסך ההיסטוריה עצמו נטען לפי הרשאת מסך.
+  // כאן בודקים את הרשאת הנתונים בפועל.
+  if (!permissionService.canViewTable("history")) {
+    allHistory = [];
+    resetHistoryFilterOptions();
+    renderHistoryNoDataPermission();
+    return;
+  }
+
   allHistory = await historyService.getAllHistory();
 
   fillHistoryFilters(allHistory);
   renderHistoryTable(allHistory);
+}
+
+function resetHistoryFilterOptions() {
+  const userSelect = document.getElementById("filterUser");
+  const actionSelect = document.getElementById("filterAction");
+
+  userSelect.innerHTML = `<option value="">כל המשתמשים</option>`;
+  actionSelect.innerHTML = `<option value="">כל הפעולות</option>`;
+
+  document.getElementById("filterFromDate").value = "";
+  document.getElementById("filterToDate").value = "";
+}
+
+function renderHistoryNoDataPermission() {
+  const tbody = document.getElementById("historyTableBody");
+
+  tbody.innerHTML = `
+    <tr>
+      <td colspan="5">אין הרשאה לנתונים</td>
+    </tr>
+  `;
 }
 
 function fillHistoryFilters(history) {
@@ -63,6 +93,12 @@ function renderHistoryTable(history) {
 }
 
 function applyHistoryFilters() {
+  // אם אין הרשאת נתונים, גם כפתור הסינון לא ינסה לעבוד על מערך ריק מטעה.
+  if (!permissionService.canViewTable("history")) {
+    renderHistoryNoDataPermission();
+    return;
+  }
+
   const user = document.getElementById("filterUser").value;
   const action = document.getElementById("filterAction").value;
   const fromDate = document.getElementById("filterFromDate").value;
@@ -90,10 +126,12 @@ function applyHistoryFilters() {
 }
 
 function resetHistoryFilters() {
-  document.getElementById("filterUser").value = "";
-  document.getElementById("filterAction").value = "";
-  document.getElementById("filterFromDate").value = "";
-  document.getElementById("filterToDate").value = "";
+  resetHistoryFilterOptions();
+
+  if (!permissionService.canViewTable("history")) {
+    renderHistoryNoDataPermission();
+    return;
+  }
 
   renderHistoryTable(allHistory);
 }
