@@ -1,6 +1,6 @@
 class HistoryService {
   async getAllHistory() {
-    if (!authService.hasViewDBPermission("history")) {
+    if (!permissionService.canViewTable("history")) {
       return [];
     }
 
@@ -8,29 +8,16 @@ class HistoryService {
   }
 
   async getAllHistoryDetails() {
-    if (!authService.hasViewDBPermission("history")) {
+    if (!permissionService.canViewTable("historyDetails")) {
       return [];
     }
 
     return await localDbService.getAll("historyDetails");
   }
 
-  async getAllNameHistory() {
-    if (!authService.hasViewDBPermission("history")) {
-      return [];
-    }
-
-    return await localDbService.getAll("nameHistory");
-  }
-
-  async getActionName(kodaction) {
-    const actions = await this.getAllNameHistory();
-    const found = actions.find(a => a.kodaction == kodaction);
-    return found ? found.action : "פעולה לא ידועה";
-  }
-
   async getLastActions(num) {
     const history = await this.getAllHistory();
+
     return history
       .slice()
       .sort((a, b) => new Date(b.actionDate) - new Date(a.actionDate))
@@ -38,18 +25,27 @@ class HistoryService {
   }
 
   async logAction(action) {
-    if (!authService.hasEditDBPermission("history")) {
+    // כתיבת היסטוריה דורשת הרשאת עריכה לטבלת הכותרת.
+    if (!permissionService.canEditTable("history")) {
+      return null;
+    }
+
+    const hasDetails = Array.isArray(action.details) && action.details.length > 0;
+
+    // אם יש פירוט שדות, נדרשת גם הרשאת עריכה לטבלת הפירוט.
+    if (hasDetails && !permissionService.canEditTable("historyDetails")) {
       return null;
     }
 
     const history = await localDbService.getAll("history");
     const historyDetails = await localDbService.getAll("historyDetails");
     const username = authService.getCurrentUsername();
+    const user = authService.getCurrentUser();
 
     const newHistory = {
       historyId: localDbService.getNextId(history, "historyId"),
       actionDate: new Date().toISOString(),
-      userId: action.userId ?? null,
+      userId: user ? user.userId : null,
       username,
       actionType: action.actionType,
       entityType: action.entityType,
@@ -65,7 +61,7 @@ class HistoryService {
 
     history.push(newHistory);
 
-    if (Array.isArray(action.details)) {
+    if (hasDetails) {
       action.details.forEach(detail => {
         historyDetails.push({
           detailId: localDbService.getNextId(historyDetails, "detailId"),

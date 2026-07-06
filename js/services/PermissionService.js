@@ -1,66 +1,115 @@
 class PermissionService {
   constructor() {
-    this.USER_PERMISSIONS_PATH = "data/internalDB/userPermissions.json";
     this.userPermissions = [];
-    this.isLoaded = false;
   }
 
-  async load(path) {
-    const res = await fetch(path);
-    if (!res.ok) throw new Error(`Failed to load ${path}`);
-    return await res.json();
+  async init() {
+    this.userPermissions = await localDbService.getAll("userPermissions");
   }
 
-  async getAllUserPermissions() {
-    if (!this.isLoaded) {
-      this.userPermissions = await this.load(this.USER_PERMISSIONS_PATH);
-      this.isLoaded = true;
-    }
-
-    return this.userPermissions;
-  }
-
-  async getPermission(resourceType, resourceName) {
+  getCurrentUserId() {
     const user = authService.getCurrentUser();
-    if (!user) return { canView: false, canEdit: false };
+    if (!user) return null;
 
-    if (user.isAdmin) {
-      return { canView: true, canEdit: true };
-    }
+    return user.userId;
+  }
 
-    const permissions = await this.getAllUserPermissions();
-    const userId = user.userId ?? user.key;
+  getUserPermissions(resourceType, resourceName) {
+    const userId = this.getCurrentUserId();
+    if (userId === null || userId === undefined) return [];
 
-    const relevant = permissions.filter(p =>
+    return this.userPermissions.filter(p =>
       p.userId == userId &&
       p.resourceType === resourceType &&
       (p.resourceName === resourceName || p.resourceName === "*")
     );
+  }
 
-    if (relevant.some(p => p.isBlocked)) {
-      return { canView: false, canEdit: false };
-    }
+  // הרשאות מסך הן הרשאות חיוביות:
+  // חייבת להיות הרשאת canView/canEdit מפורשת.
+  getScreenAccess(screenName) {
+    const permissions = this.getUserPermissions("screen", screenName);
 
     return {
-      canView: relevant.some(p => p.canView),
-      canEdit: relevant.some(p => p.canEdit)
+      resourceType: "screen",
+      resourceName: screenName,
+      canView: permissions.some(p => p.canView === true),
+      canEdit: permissions.some(p => p.canEdit === true)
     };
   }
 
-  async canViewScreen(screenName) {
-    return (await this.getPermission("screen", screenName)).canView;
+  // הרשאות טבלה הן חסימות:
+  // כברירת מחדל מותר, אלא אם קיימת חסימה מפורשת.
+  getTableAccess(tableName) {
+    const permissions = this.getUserPermissions("table", tableName);
+
+    const blockView = permissions.some(p => p.blockView === true);
+    const blockEdit = permissions.some(p => p.blockEdit === true);
+
+    return {
+      resourceType: "table",
+      resourceName: tableName,
+      canView: !blockView,
+      canEdit: !blockEdit,
+      blockView,
+      blockEdit
+    };
   }
 
-  async canEditScreen(screenName) {
-    return (await this.getPermission("screen", screenName)).canEdit;
+  getPermission(resourceType, resourceName) {
+    if (resourceType === "screen") {
+      return this.getScreenAccess(resourceName);
+    }
+
+    if (resourceType === "table") {
+      return this.getTableAccess(resourceName);
+    }
+
+    return {
+      resourceType,
+      resourceName,
+      canView: false,
+      canEdit: false
+    };
   }
 
-  async canViewTable(tableName) {
-    return (await this.getPermission("table", tableName)).canView;
+  canViewScreen(screenName) {
+    return this.getScreenAccess(screenName).canView;
   }
 
-  async canEditTable(tableName) {
-    return (await this.getPermission("table", tableName)).canEdit;
+  canEditScreen(screenName) {
+    return this.getScreenAccess(screenName).canEdit;
+  }
+
+  canViewTable(tableName) {
+    return this.getTableAccess(tableName).canView;
+  }
+
+  canEditTable(tableName) {
+    return this.getTableAccess(tableName).canEdit;
+  }
+
+  // בדיקה מרוכזת של חסימות צפייה או עריכה לכמה טבלאות.
+  // מחזיר מערך של שמות הטבלאות החסומות.
+  getBlockedTables(tableNames, action = "view") {
+    return tableNames.filter(tableName => {
+      const access = this.getTableAccess(tableName);
+
+      if (action === "view") return !access.canView;
+      if (action === "edit") return !access.canEdit;
+
+      return false;
+    });
+  }
+
+  // נוח למסכים: האם כל הטבלאות זמינות לצפייה.
+  canViewAllTables(tableNames) {
+    return this.getBlockedTables(tableNames, "view").length === 0;
+  }
+
+  // נוח למסכים: האם כל הטבלאות זמינות לעריכה.
+  canEditAllTables(tableNames) {
+    return this.getBlockedTables(tableNames, "edit").length === 0;
   }
 }
 

@@ -1,22 +1,42 @@
 class DebtService {
   async getAllGviaDebts() {
+    if (!permissionService.canViewTable("hovgvia")) {
+      return [];
+    }
+
     return await localDbService.getAll("hovgvia");
   }
 
   async getAllAchifaDebts() {
+    if (!permissionService.canViewTable("hovachifa")) {
+      return [];
+    }
+
     const rows = await localDbService.getAll("hovachifa");
     return rows.filter(row => row && Object.keys(row).length);
   }
 
   async getDebtTypes() {
+    if (!permissionService.canViewTable("debtTypes")) {
+      return [];
+    }
+
     return await localDbService.getAll("debtTypes");
   }
 
   async getDebtTypeGroups() {
+    if (!permissionService.canViewTable("debtTypeGroups")) {
+      return [];
+    }
+
     return await localDbService.getAll("debtTypeGroups");
   }
 
   async getGroups() {
+    if (!permissionService.canViewTable("groups")) {
+      return [];
+    }
+
     return await localDbService.getAll("groups");
   }
 
@@ -40,12 +60,13 @@ class DebtService {
     return `${idPayer}|${idAsset}|${routeId}|${groupId}`;
   }
 
-  async getCaseBuilderRows({
-    routeId,
-    groupId = "",
-    idPayer = "",
-    idAsset = ""
-  } = {}) {
+  async getCaseBuilderRows({ routeId, groupId = "", idPayer = "", idAsset = "" } = {}) {
+    // אם אחת מטבלאות הבסיס חסומה, השירות מחזיר מערך ריק.
+    // המסך עצמו אחראי להציג "אין הרשאה לנתונים".
+    if (!permissionService.canViewAllTables(["hovgvia", "debtTypes", "debtTypeGroups", "groups"])) {
+      return [];
+    }
+
     const [gviaDebts, achifaDebts, debtTypes, debtTypeGroups, groups] =
       await Promise.all([
         this.getAllGviaDebts(),
@@ -121,6 +142,10 @@ class DebtService {
   }
 
   async getAchifaDebtsByCase(caseId) {
+    if (!permissionService.canViewTable("hovachifa")) {
+      return [];
+    }
+
     const [achifaDebts, debtTypes] = await Promise.all([
       this.getAllAchifaDebts(),
       this.getDebtTypes()
@@ -140,53 +165,34 @@ class DebtService {
       });
   }
 
-  // async addDebtsToCase(caseId, gviaDebts) {
-  //   const achifaDebts = await this.getAllAchifaDebts();
-  //   const nextKey = localDbService.getNextId(achifaDebts, "key");
-  //   const now = new Date().toISOString();
-
-  //   const rows = gviaDebts.map((debt, index) => ({
-  //     key: nextKey + index,
-  //     caseId,
-  //     idhov: debt.idhov,
-  //     idPayer: debt.idPayer,
-  //     idAsset: debt.idAsset,
-  //     enforcementCode: debt.enforcementCode,
-  //     debtTypeId: debt.debtTypeId,
-  //     ribit: debt.ribit,
-  //     sum: debt.sum,
-  //     pulledAt: now
-  //   }));
-
-  //   achifaDebts.push(...rows);
-  //   localDbService.warnMemoryOnly("hovachifa", "insert");
-
-  //   return rows;
-  // }
-
   async addDebtsToCase(caseId, gviaDebts) {
-  const achifaTable = await localDbService.getAll("hovachifa");
-  const nextKey = localDbService.getNextId(achifaTable, "key");
-  const now = new Date().toISOString();
+    // הקמת חובות באכיפה היא כתיבה ל-hovachifa.
+    if (!permissionService.canEditTable("hovachifa")) {
+      return [];
+    }
 
-  const rows = gviaDebts.map((debt, index) => ({
-    key: nextKey + index,
-    caseId,
-    idhov: debt.idhov,
-    idPayer: debt.idPayer,
-    idAsset: debt.idAsset,
-    enforcementCode: debt.enforcementCode,
-    debtTypeId: debt.debtTypeId,
-    ribit: debt.ribit,
-    sum: debt.sum,
-    pulledAt: now
-  }));
+    const achifaTable = await localDbService.getAll("hovachifa");
+    const nextKey = localDbService.getNextId(achifaTable, "key");
+    const now = new Date().toISOString();
 
-  achifaTable.push(...rows);
-  localDbService.warnMemoryOnly("hovachifa", "insert");
+    const rows = gviaDebts.map((debt, index) => ({
+      key: nextKey + index,
+      caseId,
+      idhov: debt.idhov,
+      idPayer: debt.idPayer,
+      idAsset: debt.idAsset,
+      enforcementCode: debt.enforcementCode,
+      debtTypeId: debt.debtTypeId,
+      ribit: debt.ribit,
+      sum: debt.sum,
+      pulledAt: now
+    }));
 
-  return rows;
-}
+    achifaTable.push(...rows);
+    localDbService.warnMemoryOnly("hovachifa", "insert");
+
+    return rows;
+  }
 }
 
 window.debtService = new DebtService();

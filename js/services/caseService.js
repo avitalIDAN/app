@@ -1,6 +1,6 @@
 class CaseService {
   async getAllCasesHis() {
-    if (!authService.hasViewDBPermission("cases")) {
+    if (!permissionService.canViewTable("caseStatusHistory")) {
       return [];
     }
 
@@ -20,8 +20,30 @@ class CaseService {
     return history.at(-1) || null;
   }
 
+  // async addToStatusHis(statusHistoryRecord) {
+  //   if (
+  //     !permissionService.canEditTable("cases") ||
+  //     !permissionService.canEditTable("caseStatusHistory")
+  //   ) {
+  //     return null;
+  //   }
+
+  //   const history = await localDbService.getAll("caseStatusHistory");
+
+  //   const newRecord = {
+  //     key: localDbService.getNextId(history, "key"),
+  //     historyId: localDbService.getNextId(history, "historyId"),
+  //     ...statusHistoryRecord
+  //   };
+
+  //   history.push(newRecord);
+  //   localDbService.warnMemoryOnly("caseStatusHistory", "insert");
+
+  //   return newRecord;
+  // }
+
   async addToStatusHis(statusHistoryRecord) {
-    if (!authService.hasEditDBPermission("cases")) {
+    if (!permissionService.canEditTable("caseStatusHistory")) {
       return null;
     }
 
@@ -39,34 +61,63 @@ class CaseService {
     return newRecord;
   }
 
+  // async getAllCases() {
+  //   if (!authService.hasViewDBPermission("cases")) {
+  //     return [];
+  //   }
+
+  //   const [cases, routes, statuses, groups] = await Promise.all([
+  //     localDbService.getAll("cases"),
+  //     routeService.getAll(),
+  //     statusService.getAll(),
+  //     debtService.getGroups()
+  //   ]);
+
+  //   return cases.map(c => {
+  //     const route = routes.find(r => r.routeId == c.routeId);
+  //     const status = statuses.find(s =>
+  //       s.statusId == c.currentStatusId &&
+  //       s.routeId == c.routeId
+  //     );
+  //     const group = groups.find(g => g.groupId == c.groupId);
+
+  //     return {
+  //       ...c,
+  //       routeName: route ? route.name : "",
+  //       statusName: status ? (status.statusName || status.name) : "",
+  //       groupName: group ? group.name : ""
+  //     };
+  //   });
+  // }
+
   async getAllCases() {
-    if (!authService.hasViewDBPermission("cases")) {
-      return [];
-    }
-
-    const [cases, routes, statuses, groups] = await Promise.all([
-      localDbService.getAll("cases"),
-      routeService.getAll(),
-      statusService.getAll(),
-      debtService.getGroups()
-    ]);
-
-    return cases.map(c => {
-      const route = routes.find(r => r.routeId == c.routeId);
-      const status = statuses.find(s =>
-        s.statusId == c.currentStatusId &&
-        s.routeId == c.routeId
-      );
-      const group = groups.find(g => g.groupId == c.groupId);
-
-      return {
-        ...c,
-        routeName: route ? route.name : "",
-        statusName: status ? (status.statusName || status.name) : "",
-        groupName: group ? group.name : ""
-      };
-    });
+  if (!permissionService.canViewTable("cases")) {
+    return [];
   }
+
+  const [cases, routes, statuses, groups] = await Promise.all([
+    localDbService.getAll("cases"),
+    routeService.getAll(),
+    statusService.getAll(),
+    debtService.getGroups()
+  ]);
+
+  return cases.map(c => {
+    const route = routes.find(r => r.routeId == c.routeId);
+    const status = statuses.find(s =>
+      s.statusId == c.currentStatusId &&
+      s.routeId == c.routeId
+    );
+    const group = groups.find(g => g.groupId == c.groupId);
+
+    return {
+      ...c,
+      routeName: route ? route.name : "",
+      statusName: status ? (status.statusName || status.name) : "",
+      groupName: group ? group.name : ""
+    };
+  });
+}
 
   async getNumCases() {
     const cases = await this.getAllCases();
@@ -97,9 +148,12 @@ class CaseService {
     delta = 0,
     parentCaseId = null
   }) {
-    if (!authService.hasEditDBPermission("cases")) {
-      return null;
-    }
+  if (
+    !permissionService.canEditTable("cases") ||
+    !permissionService.canEditTable("caseStatusHistory")
+  ) {
+    return null;
+  }
 
     const cases = await localDbService.getAll("cases");
     const now = new Date().toISOString();
@@ -239,7 +293,13 @@ class CaseService {
     changedBy = authService.getCurrentUsername(),
     note = ""
   ) {
-    if (!authService.hasEditDBPermission("cases")) {
+    // if (!authService.hasEditDBPermission("cases")) {
+    //   return null;
+    // }
+    if (
+      !permissionService.canEditTable("cases") ||
+      !permissionService.canEditTable("caseStatusHistory")
+    ) {
       return null;
     }
 

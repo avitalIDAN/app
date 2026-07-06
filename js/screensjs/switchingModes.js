@@ -1,10 +1,69 @@
+let switchingModesAccess = {
+  canViewRoutes: true,
+  canViewStatuses: true,
+  canViewCases: true,
+  canEditCases: true,
+  canOpenCaseScreen: true
+};
+
+// function getSwitchingModesAccess() {
+//   return {
+//     canViewRoutes: permissionService.canViewTable("routes"),
+//     canViewStatuses: permissionService.canViewTable("statuses"),
+//     canViewCases: permissionService.canViewTable("cases"),
+//     canEditCases: permissionService.canEditTable("cases"),
+//     canOpenCaseScreen: permissionService.canViewScreen("case")
+//   };
+// }
+
+function getSwitchingModesAccess() {
+  const canEditStatusFlow =
+    permissionService.canEditScreen("switchingModes") &&
+    permissionService.canEditTable("cases") &&
+    permissionService.canEditTable("caseStatusHistory");
+
+  return {
+    canViewRoutes: permissionService.canViewTable("routes"),
+    canViewStatuses: permissionService.canViewTable("statuses"),
+    canViewCases: permissionService.canViewTable("cases"),
+    canEditCases: canEditStatusFlow,
+    canOpenCaseScreen: permissionService.canViewScreen("case")
+  };
+}
+
+function setBulkChangeEnabled(enabled) {
+  const btn = document.getElementById("changeStatusBtn");
+  if (btn) btn.disabled = !enabled;
+}
+
+function showSwitchingModesNoDataPermission(message = "אין הרשאה לנתונים הנדרשים למסך זה") {
+  const tbody = document.getElementById("casesTable");
+  tbody.innerHTML = `
+    <tr>
+      <td colspan="7">${message}</td>
+    </tr>
+  `;
+}
+
 async function renderSwitchingModes() {
+  switchingModesAccess = getSwitchingModesAccess();
+
   const routeSelect = document.getElementById("routeFilter");
   const statusSelect = document.getElementById("statusFilter");
   const newStatusSelect = document.getElementById("newStatusSelect");
-  const tbody = document.getElementById("casesTable");
+
   statusSelect.disabled = true;
   newStatusSelect.disabled = true;
+
+  // כפתור שינוי גורף נשאר מוצג, אבל נעול אם אין הרשאת עריכת תיקים.
+  setBulkChangeEnabled(switchingModesAccess.canEditCases);
+
+  if (!switchingModesAccess.canViewRoutes || !switchingModesAccess.canViewStatuses) {
+    routeSelect.disabled = true;
+    showSwitchingModesNoDataPermission();
+    setBulkChangeEnabled(false);
+    return;
+  }
 
   await loadRoutes();
 
@@ -30,7 +89,8 @@ async function renderSwitchingModes() {
       routeSelect.innerHTML += `
         <option value="${route.routeId}">
           ${route.routeId} - ${route.name}
-        </option>`;
+        </option>
+      `;
     });
   }
 
@@ -41,19 +101,23 @@ async function renderSwitchingModes() {
     newStatusSelect.innerHTML = `<option value="">בחר מצב חדש</option>`;
 
     statuses.forEach(status => {
+      const statusName = status.statusName || status.name;
+
       statusSelect.innerHTML += `
         <option value="${status.statusId}">
-          ${status.name}
-        </option>`;
+          ${statusName}
+        </option>
+      `;
 
       newStatusSelect.innerHTML += `
         <option value="${status.statusId}">
-          ${status.name}
-        </option>`;
+          ${statusName}
+        </option>
+      `;
     });
 
     statusSelect.disabled = false;
-    newStatusSelect.disabled = false;
+    newStatusSelect.disabled = !switchingModesAccess.canEditCases;
   }
 
   function resetStatusSelect() {
@@ -67,10 +131,15 @@ async function renderSwitchingModes() {
   }
 
   function resetTable() {
-    tbody.innerHTML = "";
+    document.getElementById("casesTable").innerHTML = "";
   }
 
   async function refreshCases() {
+    if (!switchingModesAccess.canViewCases) {
+      showSwitchingModesNoDataPermission("אין הרשאה לנתוני תיקים");
+      return;
+    }
+
     const cases = await caseService.getCasesFiltered({
       routeId: routeSelect.value || null,
       statusId: statusSelect.value || null
@@ -80,47 +149,55 @@ async function renderSwitchingModes() {
   }
 
   async function renderCases(cases) {
+    const tbody = document.getElementById("casesTable");
     tbody.innerHTML = "";
 
     if (!cases.length) {
       tbody.innerHTML = `
         <tr>
           <td colspan="7">לא נמצאו תיקים</td>
-        </tr>`;
+        </tr>
+      `;
       return;
     }
 
     for (const caseItem of cases) {
-      const routeName = await routeService.getNameById(caseItem.routeId);
-      const isClosed = caseItem.currentStatusId == 0;
+      const routeName = caseItem.routeName || await routeService.getNameById(caseItem.routeId);
+      const isClosed = caseItem.isClosed || caseItem.currentStatusId == 0;
       const isExcluded = caseItem.currentStatusId == 5;
       const isFinal = isClosed || isExcluded;
+
+      const canChangeThisCase = switchingModesAccess.canEditCases && !isFinal;
+      const canCloseThisCase = switchingModesAccess.canEditCases && !isClosed;
+      const canOpenCase = switchingModesAccess.canOpenCaseScreen && switchingModesAccess.canViewCases;
+
       const tr = document.createElement("tr");
 
       tr.innerHTML = `
         <td>${caseItem.caseId}</td>
         <td>${routeName || caseItem.routeId}</td>
-        <td>${caseItem.statusName}</td>
+        <td>${caseItem.statusName || "-"}</td>
         <td>
-          <button ${isFinal ? "disabled" : ""} onclick="promote(${caseItem.caseId})">
+          <button ${canChangeThisCase ? "" : "disabled"} onclick="promote(${caseItem.caseId})">
             קידום למצב
           </button>
         </td>
         <td>
-          <button ${isFinal ? "disabled" : ""} onclick="exclusion(${caseItem.caseId})">
+          <button ${canChangeThisCase ? "" : "disabled"} onclick="exclusion(${caseItem.caseId})">
             החרגה
           </button>
         </td>
         <td>
-          <button ${isClosed ? "disabled" : ""} onclick="closeCase(${caseItem.caseId})">
+          <button ${canCloseThisCase ? "" : "disabled"} onclick="closeCase(${caseItem.caseId})">
             סגירה
           </button>
         </td>
         <td>
-          <button onclick="toCaseScreen(${caseItem.caseId})">
+          <button ${canOpenCase ? "" : "disabled"} onclick="toCaseScreen(${caseItem.caseId})">
             הצגת תיק
           </button>
-        </td>`;
+        </td>
+      `;
 
       tbody.appendChild(tr);
     }
@@ -130,6 +207,15 @@ async function renderSwitchingModes() {
 }
 
 async function promote(caseId) {
+  if (
+    !permissionService.canEditScreen("switchingModes") ||
+    !permissionService.canEditTable("cases") ||
+    !permissionService.canEditTable("caseStatusHistory")
+  ) {
+    alert("אין הרשאה לעדכון תיקים");
+    return;
+  }
+
   const caseItem = await caseService.getCaseById(caseId);
 
   if (!caseItem) {
@@ -158,6 +244,15 @@ async function promote(caseId) {
 }
 
 async function exclusion(caseId) {
+  if (
+    !permissionService.canEditScreen("switchingModes") ||
+    !permissionService.canEditTable("cases") ||
+    !permissionService.canEditTable("caseStatusHistory")
+  ) {
+    alert("אין הרשאה לעדכון תיקים");
+    return;
+  }
+
   const caseItem = await caseService.getCaseById(caseId);
 
   if (!caseItem) {
@@ -176,6 +271,15 @@ async function exclusion(caseId) {
 }
 
 async function closeCase(caseId) {
+  if (
+    !permissionService.canEditScreen("switchingModes") ||
+    !permissionService.canEditTable("cases") ||
+    !permissionService.canEditTable("caseStatusHistory")
+  ) {
+    alert("אין הרשאה לעדכון תיקים");
+    return;
+  }
+
   const caseItem = await caseService.getCaseById(caseId);
 
   if (!caseItem) {
@@ -197,7 +301,17 @@ async function getExcludedStatusId(routeId) {
   const excludedStatus = await statusService.getByCode("EXCLUDED", routeId);
   return excludedStatus ? excludedStatus.statusId : 5;
 }
+
 async function changeCaseStatus() {
+  if (
+    !permissionService.canEditScreen("switchingModes") ||
+    !permissionService.canEditTable("cases") ||
+    !permissionService.canEditTable("caseStatusHistory")
+  ) {
+    alert("אין הרשאה לעדכון תיקים");
+    return;
+  }
+
   const routeSelect = document.getElementById("routeFilter");
   const statusSelect = document.getElementById("statusFilter");
   const newStatusSelect = document.getElementById("newStatusSelect");
@@ -241,6 +355,11 @@ async function changeCaseStatus() {
 }
 
 function toCaseScreen(caseId) {
+  if (!permissionService.canViewScreen("case") || !permissionService.canViewTable("cases")) {
+    alert("אין הרשאה לצפייה בתיק");
+    return;
+  }
+
   fetch("ui/screens/case.html")
     .then(res => res.text())
     .then(html => {
@@ -250,50 +369,3 @@ function toCaseScreen(caseId) {
 }
 
 window.renderSwitchingModes = renderSwitchingModes;
-
-// // }
-
-// // routeFilter.onchange = updateCasesPreview;
-// // statusFilter.onchange = updateCasesPreview;
-
-
-// // // // במקום לולאה
-// // // await caseService.bulkChangeStatus({
-// // //   routeId,
-// // //   fromStatusId: currentStatusId,
-// // //   toStatusId: newStatusId
-// // // });
-
-// window.renderSwitchingModes = renderSwitchingModes;
-
-// ////  }
-
-////  routeFilter.onchange = updateCasesPreview;
-////  statusFilter.onchange = updateCasesPreview;
-
-
-////  // // במקום לולאה
-////  // await caseService.bulkChangeStatus({
-////  //   routeId,
-////  //   fromStatusId: currentStatusId,
-////  //   toStatusId: newStatusId
-////  // });
-
-///wi ndow.renderSwitchingModes = renderSwitchingModes;
-
-;
-// }
-
-// routeFilter.onchange = updateCasesPreview;
-// statusFilter.onchange = updateCasesPreview;
-
-
-// // // במקום לולאה
-// // await caseService.bulkChangeStatus({
-// //   routeId,
-// //   fromStatusId: currentStatusId,
-// //   toStatusId: newStatusId
-// // });
-
-window.renderSwitchingModes = renderSwitchingModes;
-

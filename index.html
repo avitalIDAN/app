@@ -12,9 +12,10 @@
 
   <!-- Services -->
    
-  <script src="./js/services/BaseService.js"></script>
-  <script src="./js/services/authService.js"></script>
-  <script src="./js/services/localDbService.js"></script>
+<script src="./js/services/BaseService.js"></script>
+<script src="./js/services/localDbService.js"></script>
+<script src="./js/services/authService.js"></script>
+<script src="./js/services/PermissionService.js"></script>
 
   <script src="./js/services/historyService.js"></script>
   <script src="./js/services/debtService.js"></script>
@@ -37,13 +38,18 @@
   <script src="./js/app.js"></script>
 
 
-  <script>
-    if (!authService.isLoggedIn()) { //??
+<script>
+  (async function initApp() {
+    await authService.init();
+    await permissionService.init();
+
+    if (!authService.isLoggedIn()) {
       loadLogin();
-    } else{
+    } else {
       loadMainLayout();
     }
-  </script>
+  })();
+</script>
 
 </body>
 </html>

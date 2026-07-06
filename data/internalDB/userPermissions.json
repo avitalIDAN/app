@@ -1,9 +1,36 @@
 [
-  { "userPermissionId": 1, "userId": 1, "resourceType": "screen", "resourceName": "*", "canView": true, "canEdit": true, "isBlocked": false, "sourceRoleId": 1, "isManualOverride": false },
-  { "userPermissionId": 2, "userId": 1, "resourceType": "table", "resourceName": "*", "canView": true, "canEdit": true, "isBlocked": false, "sourceRoleId": 1, "isManualOverride": false },
+  { "userPermissionId": 1, "userId": 1, "resourceType": "screen", "resourceName": "dashboard", "canView": true, "canEdit": false, "blockView": false, "blockEdit": false, "sourceRoleId": 1, "isManualOverride": false },
+  { "userPermissionId": 2, "userId": 1, "resourceType": "screen", "resourceName": "cases", "canView": true, "canEdit": true, "blockView": false, "blockEdit": false, "sourceRoleId": 1, "isManualOverride": false },
+  { "userPermissionId": 3, "userId": 1, "resourceType": "screen", "resourceName": "case", "canView": true, "canEdit": true, "blockView": false, "blockEdit": false, "sourceRoleId": 1, "isManualOverride": false },
+  { "userPermissionId": 4, "userId": 1, "resourceType": "screen", "resourceName": "switchingModes", "canView": true, "canEdit": true, "blockView": false, "blockEdit": false, "sourceRoleId": 1, "isManualOverride": false },
+  { "userPermissionId": 5, "userId": 1, "resourceType": "screen", "resourceName": "lettersAndVouchers", "canView": true, "canEdit": true, "blockView": false, "blockEdit": false, "sourceRoleId": 1, "isManualOverride": false },
+  { "userPermissionId": 6, "userId": 1, "resourceType": "screen", "resourceName": "routes", "canView": true, "canEdit": true, "blockView": false, "blockEdit": false, "sourceRoleId": 1, "isManualOverride": false },
+  { "userPermissionId": 7, "userId": 1, "resourceType": "screen", "resourceName": "groups", "canView": true, "canEdit": true, "blockView": false, "blockEdit": false, "sourceRoleId": 1, "isManualOverride": false },
+  { "userPermissionId": 8, "userId": 1, "resourceType": "screen", "resourceName": "statusesInRoute", "canView": true, "canEdit": true, "blockView": false, "blockEdit": false, "sourceRoleId": 1, "isManualOverride": false },
+  { "userPermissionId": 9, "userId": 1, "resourceType": "screen", "resourceName": "debtTypes", "canView": true, "canEdit": true, "blockView": false, "blockEdit": false, "sourceRoleId": 1, "isManualOverride": false },
+  { "userPermissionId": 10, "userId": 1, "resourceType": "screen", "resourceName": "debtTypeGroups", "canView": true, "canEdit": true, "blockView": false, "blockEdit": false, "sourceRoleId": 1, "isManualOverride": false },
+  { "userPermissionId": 11, "userId": 1, "resourceType": "screen", "resourceName": "casesInRoute", "canView": true, "canEdit": true, "blockView": false, "blockEdit": false, "sourceRoleId": 1, "isManualOverride": false },
+  { "userPermissionId": 12, "userId": 1, "resourceType": "screen", "resourceName": "history", "canView": true, "canEdit": false, "blockView": false, "blockEdit": false, "sourceRoleId": 1, "isManualOverride": false },
+  { "userPermissionId": 13, "userId": 1, "resourceType": "screen", "resourceName": "reports", "canView": true, "canEdit": false, "blockView": false, "blockEdit": false, "sourceRoleId": 1, "isManualOverride": false },
+  { "userPermissionId": 14, "userId": 1, "resourceType": "screen", "resourceName": "parameters", "canView": true, "canEdit": true, "blockView": false, "blockEdit": false, "sourceRoleId": 1, "isManualOverride": false },
+  { "userPermissionId": 15, "userId": 1, "resourceType": "screen", "resourceName": "userPermissions", "canView": true, "canEdit": true, "blockView": false, "blockEdit": false, "sourceRoleId": 1, "isManualOverride": false },
 
-  { "userPermissionId": 3, "userId": 0, "resourceType": "screen", "resourceName": "dashboard", "canView": true, "canEdit": false, "isBlocked": false, "sourceRoleId": 3, "isManualOverride": false },
-  { "userPermissionId": 4, "userId": 0, "resourceType": "screen", "resourceName": "case", "canView": true, "canEdit": false, "isBlocked": false, "sourceRoleId": 3, "isManualOverride": false },
-  { "userPermissionId": 5, "userId": 0, "resourceType": "table", "resourceName": "cases", "canView": true, "canEdit": false, "isBlocked": false, "sourceRoleId": 3, "isManualOverride": false },
-  { "userPermissionId": 6, "userId": 0, "resourceType": "screen", "resourceName": "cases", "canView": false, "canEdit": false, "isBlocked": true, "sourceRoleId": null, "isManualOverride": true }
+  { "userPermissionId": 16, "userId": 0, "resourceType": "screen", "resourceName": "dashboard", "canView": true, "canEdit": false, "blockView": false, "blockEdit": false, "sourceRoleId": 3, "isManualOverride": false },
+  { "userPermissionId": 17, "userId": 0, "resourceType": "screen", "resourceName": "case", "canView": true, "canEdit": false, "blockView": false, "blockEdit": false, "sourceRoleId": 3, "isManualOverride": false },
+  { "userPermissionId": 18, "userId": 0, "resourceType": "screen", "resourceName": "casesInRoute", "canView": true, "canEdit": false, "blockView": false, "blockEdit": false, "sourceRoleId": 3, "isManualOverride": false },
+  { "userPermissionId": 19, "userId": 0, "resourceType": "screen", "resourceName": "history", "canView": true, "canEdit": false, "blockView": false, "blockEdit": false, "sourceRoleId": 3, "isManualOverride": false },
+
+  { "userPermissionId": 20, "userId": 0, "resourceType": "screen", "resourceName": "cases", "canView": false, "canEdit": false, "blockView": false, "blockEdit": false, "sourceRoleId": null, "isManualOverride": true },
+
+  { "userPermissionId": 21, "userId": 0, "resourceType": "table", "resourceName": "hovgvia", "canView": false, "canEdit": false, "blockView": false, "blockEdit": true, "sourceRoleId": 3, "isManualOverride": false },
+  { "userPermissionId": 22, "userId": 0, "resourceType": "table", "resourceName": "hovachifa", "canView": false, "canEdit": false, "blockView": false, "blockEdit": true, "sourceRoleId": 3, "isManualOverride": false },
+  { "userPermissionId": 23, "userId": 0, "resourceType": "table", "resourceName": "cases", "canView": false, "canEdit": false, "blockView": false, "blockEdit": true, "sourceRoleId": 3, "isManualOverride": false },
+  { "userPermissionId": 24, "userId": 0, "resourceType": "table", "resourceName": "caseStatusHistory", "canView": false, "canEdit": false, "blockView": false, "blockEdit": true, "sourceRoleId": 3, "isManualOverride": false },
+  { "userPermissionId": 25, "userId": 0, "resourceType": "table", "resourceName": "history", "canView": false, "canEdit": false, "blockView": false, "blockEdit": true, "sourceRoleId": 3, "isManualOverride": false },
+  { "userPermissionId": 26, "userId": 2, "resourceType": "screen", "resourceName": "dashboard", "canView": true, "canEdit": false, "blockView": false, "blockEdit": false, "sourceRoleId": null, "isManualOverride": true },
+  { "userPermissionId": 27, "userId": 2, "resourceType": "screen", "resourceName": "case", "canView": true, "canEdit": false, "blockView": false, "blockEdit": false, "sourceRoleId": null, "isManualOverride": true },
+  { "userPermissionId": 28, "userId": 2, "resourceType": "screen", "resourceName": "cases", "canView": true, "canEdit": false, "blockView": false, "blockEdit": false, "sourceRoleId": null, "isManualOverride": true },
+  { "userPermissionId": 29, "userId": 2, "resourceType": "screen", "resourceName": "switchingModes", "canView": true, "canEdit": false, "blockView": false, "blockEdit": false, "sourceRoleId": 1, "isManualOverride": false },
+  { "userPermissionId": 30, "userId": 2, "resourceType": "table", "resourceName": "routes", "canView": false, "canEdit": false, "blockView": true, "blockEdit": true, "sourceRoleId": null, "isManualOverride": true },
+  { "userPermissionId": 31, "userId": 2, "resourceType": "table", "resourceName": "hovachifa", "canView": false, "canEdit": false, "blockView": true, "blockEdit": true, "sourceRoleId": null, "isManualOverride": true }
 ]

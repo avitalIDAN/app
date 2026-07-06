@@ -1,4 +1,10 @@
 let caseBuilderRows = [];
+let caseBuilderAccess = {
+  canViewBaseData: true,
+  canViewCases: true,
+  canViewAchifa: true,
+  canCreateCase: true
+};
 
 function formatCurrency(value) {
   return Number(value || 0).toLocaleString("he-IL", {
@@ -7,23 +13,76 @@ function formatCurrency(value) {
   });
 }
 
+function showCaseBuilderNoDataPermission(message = "אין הרשאה לנתונים הנדרשים למסך זה") {
+  const tbody = document.getElementById("casesTable");
+
+  tbody.innerHTML = `
+    <tr>
+      <td colspan="12">${message}</td>
+    </tr>
+  `;
+}
+
+function getCaseBuilderAccess() {
+  // טבלאות בסיסיות שבלעדיהן אי אפשר לבנות את שורות המסך בצורה אמינה.
+  const baseTables = ["hovgvia", "debtTypes", "debtTypeGroups", "groups", "routes"];
+  const blockedBaseTables = permissionService.getBlockedTables(baseTables, "view");
+
+  const canViewCases = permissionService.canViewTable("cases");
+  const canViewAchifa = permissionService.canViewTable("hovachifa");
+
+  // הקמת תיק דורשת גם יצירת תיק וגם יצירת שורות חוב באכיפה.
+  const canCreateCase =
+    canViewCases &&
+    canViewAchifa &&
+    permissionService.canEditTable("cases") &&
+    permissionService.canEditTable("hovachifa");
+
+  return {
+    canViewBaseData: blockedBaseTables.length === 0,
+    blockedBaseTables,
+    canViewCases,
+    canViewAchifa,
+    canCreateCase
+  };
+}
+
 function getReason(row) {
+  if (!caseBuilderAccess.canViewCases) {
+    return "אין הרשאה לנתוני תיקים";
+  }
+
+  if (!caseBuilderAccess.canViewAchifa) {
+    return "אין הרשאה לנתוני אכיפה";
+  }
+
   if (!row.caseInfo.hasCase) return "לא קיים תיק";
   if (row.gap === 0) return "אין שינוי";
   if (row.gap > 0) return `נמצא פער של ${formatCurrency(row.gap)}`;
+
   return "החוב באכיפה גבוה מהגבייה";
 }
 
 function getActionHtml(row) {
-  if (!row.caseInfo.hasCase) {
-    return `
-      <button onclick="createCaseFromBuilderRow('${row.rowId}')">
-        הקמת תיק
-      </button>
-    `;
+  // אם אין הרשאת צפייה ל-cases, אי אפשר לדעת אם תיק קיים.
+  // לכן לא מציגים "הקמת תיק", אלא פעולה חסומה כדי לא להטעות.
+  if (!caseBuilderAccess.canViewCases) {
+    return `<button disabled>פעולה חסומה</button>`;
   }
 
-  return `<span>—</span>`;
+  if (row.caseInfo.hasCase) {
+    return `<button disabled>קיים תיק</button>`;
+  }
+
+  if (!caseBuilderAccess.canCreateCase) {
+    return `<button disabled>הקמת תיק</button>`;
+  }
+
+  return `
+    <button onclick="createCaseFromBuilderRow('${row.rowId}')">
+      הקמת תיק
+    </button>
+  `;
 }
 
 async function loadCaseBuilderFilters() {
@@ -55,6 +114,21 @@ async function loadCaseBuilderFilters() {
 }
 
 async function enrichRowsWithCaseInfo(rows) {
+  // אם אין הרשאת צפייה ל-cases, אסור לנסות להסיק אם תיק קיים או לא.
+  // לכן כל שורה תקבל מצב ניטרלי שמונע פעולה.
+  if (!caseBuilderAccess.canViewCases) {
+    return rows.map(row => ({
+      ...row,
+      rowId: debtService.buildRowKey(row),
+      caseInfo: {
+        hasCase: null,
+        caseId: null,
+        statusName: "אין הרשאה לנתונים",
+        freezeMode: null
+      }
+    }));
+  }
+
   const cases = await caseService.getAllCases();
 
   return rows.map(row => {
@@ -86,22 +160,15 @@ async function enrichRowsWithCaseInfo(rows) {
   });
 }
 
-// async function loadCaseBuilderRows() {
-//   const routeId = document.getElementById("routeFilter").value;
-//   const groupId = document.getElementById("groupFilter").value;
-
-//   if (!routeId) {
-//     caseBuilderRows = [];
-//     renderCaseBuilderTable();
-//     return;
-//   }
-
-//   const rows = await debtService.getCaseBuilderRows({ routeId, groupId });
-//   caseBuilderRows = await enrichRowsWithCaseInfo(rows);
-
-//   renderCaseBuilderTable();
-// }
 async function loadCaseBuilderRows() {
+  caseBuilderAccess = getCaseBuilderAccess();
+
+  if (!caseBuilderAccess.canViewBaseData) {
+    caseBuilderRows = [];
+    showCaseBuilderNoDataPermission();
+    return;
+  }
+
   const routeId = document.getElementById("routeFilter").value;
   const groupId = document.getElementById("groupFilter").value;
   const idPayer = document.getElementById("payerFilter").value;
@@ -125,6 +192,13 @@ async function loadCaseBuilderRows() {
 }
 
 async function renderCasesBuilder() {
+  caseBuilderAccess = getCaseBuilderAccess();
+
+  if (!caseBuilderAccess.canViewBaseData) {
+    showCaseBuilderNoDataPermission();
+    return;
+  }
+
   await loadCaseBuilderFilters();
 
   document.getElementById("routeFilter").onchange = loadCaseBuilderRows;
@@ -158,8 +232,8 @@ function renderCaseBuilderTable() {
         <td>${row.groupName}</td>
         <td>${row.debtsCount}</td>
         <td>${formatCurrency(row.gviaDebt)}</td>
-        <td>${formatCurrency(row.achifaDebt)}</td>
-        <td>${formatCurrency(row.gap)}</td>
+        <td>${caseBuilderAccess.canViewAchifa ? formatCurrency(row.achifaDebt) : "אין הרשאה"}</td>
+        <td>${caseBuilderAccess.canViewAchifa ? formatCurrency(row.gap) : "אין הרשאה"}</td>
         <td>${row.caseInfo.caseId || ""}</td>
         <td>${row.caseInfo.statusName}</td>
         <td>${getReason(row)}</td>
@@ -173,12 +247,17 @@ async function createCaseFromBuilderRow(rowId) {
   const row = caseBuilderRows.find(r => r.rowId === rowId);
   if (!row || row.caseInfo.hasCase) return;
 
+  // בדיקה חוזרת בזמן פעולה, כדי שלא נסתמך רק על מצב הכפתור במסך.
+  if (!caseBuilderAccess.canCreateCase) {
+    alert("אין הרשאה להקמת תיק");
+    return;
+  }
+
   const caseItem = await caseService.createCase({
     routeId: row.routeId,
     groupId: row.groupId,
     idPayer: row.idPayer,
-    idAsset: row.idAsset,
-    debt: row.gviaDebt
+    idAsset: row.idAsset
   });
 
   if (!caseItem) {
@@ -190,161 +269,5 @@ async function createCaseFromBuilderRow(rowId) {
   await loadCaseBuilderRows();
 }
 
-async function renderCasesBuilder() {
-  await loadCaseBuilderFilters();
-
-  document.getElementById("routeFilter").onchange = loadCaseBuilderRows;
-  document.getElementById("groupFilter").onchange = loadCaseBuilderRows;
-  document.getElementById("refreshBtn").onclick = loadCaseBuilderRows;
-
-  await loadCaseBuilderRows();
-}
-
 window.renderCasesBuilder = renderCasesBuilder;
 window.createCaseFromBuilderRow = createCaseFromBuilderRow;
-// let caseBuilderDebts = [];
-
-// async function renderCasesBuilder() {
-//   await loadCaseBuilderRoutes();
-//   await loadCaseBuilderGroups();
-//   await loadDebtsForCaseBuilder();
-// }
-
-// async function loadCaseBuilderRoutes() {
-//   const routeSelect = document.getElementById("caseRouteSelect");
-//   const routes = await routeService.getAll();
-
-//   routeSelect.innerHTML = `<option value="">בחר מסלול</option>`;
-//   routes.forEach(route => {
-//     routeSelect.innerHTML += `
-//       <option value="${route.routeId}">
-//         ${route.routeId} - ${route.name}
-//       </option>`;
-//   });
-
-//   if (routes.length) {
-//     routeSelect.value = routes[0].routeId;
-//   }
-// }
-
-// async function loadCaseBuilderGroups() {
-//   const groupSelect = document.getElementById("debtGroupSelect");
-//   const groups = await debtService.getGroups();
-
-//   groupSelect.innerHTML = `<option value="">כל הקבוצות</option>`;
-//   groups.forEach(groupId => {
-//     groupSelect.innerHTML += `<option value="${groupId}">קבוצה ${groupId}</option>`;
-//   });
-// }
-
-// async function loadDebtsForCaseBuilder() {
-//   const groupId = document.getElementById("debtGroupSelect").value;
-//   const payerId = document.getElementById("payerFilter").value;
-//   const assetId = document.getElementById("assetFilter").value;
-
-//   caseBuilderDebts = await debtService.getGviaDebtsFiltered({
-//     groupId: groupId || null,
-//     payerId: payerId || null,
-//     assetId: assetId || null
-//   });
-
-//   renderGviaDebtsTable(caseBuilderDebts);
-//   updateSelectedDebtsSummary();
-// }
-
-// function renderGviaDebtsTable(debts) {
-//   const tbody = document.getElementById("gviaDebtsTable");
-//   tbody.innerHTML = "";
-
-//   if (!debts.length) {
-//     tbody.innerHTML = `
-//       <tr>
-//         <td colspan="8">לא נמצאו חובות מתאימים</td>
-//       </tr>`;
-//     return;
-//   }
-
-//   debts.forEach(debt => {
-//     const tr = document.createElement("tr");
-
-//     tr.innerHTML = `
-//       <td>
-//         <input type="checkbox" class="debt-checkbox" value="${debt.idhov}" onchange="updateSelectedDebtsSummary()" />
-//       </td>
-//       <td>${debt.idhov}</td>
-//       <td>${debt.idPayer}</td>
-//       <td>${debt.idAsset}</td>
-//       <td>${debt.sugHov}</td>
-//       <td>${debt.year}</td>
-//       <td>${debt.ribit ? "כן" : "לא"}</td>
-//       <td>${formatCurrency(debt.sum)}</td>`;
-
-//     tbody.appendChild(tr);
-//   });
-// }
-
-// function getSelectedGviaDebts() {
-//   const selectedIds = [...document.querySelectorAll(".debt-checkbox:checked")]
-//     .map(input => Number(input.value));
-
-//   return caseBuilderDebts.filter(debt => selectedIds.includes(debt.idhov));
-// }
-
-// function updateSelectedDebtsSummary() {
-//   const selectedDebts = getSelectedGviaDebts();
-//   const total = debtService.sumDebts(selectedDebts);
-
-//   document.getElementById("selectedDebtsCount").innerText = selectedDebts.length;
-//   document.getElementById("selectedDebtsSum").innerText = formatCurrency(total);
-// }
-
-// async function createCaseFromSelectedDebts() {
-//   const routeId = document.getElementById("caseRouteSelect").value;
-//   const selectedDebts = getSelectedGviaDebts();
-
-//   if (!routeId) {
-//     alert("יש לבחור מסלול");
-//     return;
-//   }
-
-//   if (!selectedDebts.length) {
-//     alert("יש לבחור לפחות חוב אחד להקמת תיק");
-//     return;
-//   }
-
-//   const firstDebt = selectedDebts[0];
-//   const samePayerAndAsset = selectedDebts.every(debt =>
-//     debt.idPayer == firstDebt.idPayer && debt.idAsset == firstDebt.idAsset
-//   );
-
-//   if (!samePayerAndAsset) {
-//     alert("בשלב האב-טיפוס ניתן להקים תיק רק לחובות של אותו משלם ואותו נכס");
-//     return;
-//   }
-
-//   const caseItem = await caseService.createCase({
-//     routeId,
-//     groupId: firstDebt.sugHov,
-//     idPayer: firstDebt.idPayer,
-//     idAsset: firstDebt.idAsset,
-//     debt: debtService.sumDebts(selectedDebts)
-//   });
-
-//   if (!caseItem) {
-//     alert("אין הרשאה להקמת תיק");
-//     return;
-//   }
-
-//   await debtService.addDebtsToCase(caseItem.caseId, selectedDebts);
-//   alert(`תיק ${caseItem.caseId} הוקם בהצלחה`);
-//   toCaseScreen(caseItem.caseId);
-// }
-
-// function formatCurrency(value) {
-//   return Number(value || 0).toLocaleString("he-IL", {
-//     style: "currency",
-//     currency: "ILS"
-//   });
-// }
-
-// window.renderCasesBuilder = renderCasesBuilder;
