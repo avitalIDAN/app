@@ -1,7 +1,15 @@
-<h2>מעבר מצבים ומכתבים</h2>
+<h2>העברת מצבים</h2>
 
 <div class="filters-bar">
-  <select id="routeFilter"></select>
+  <label>
+    <b>מסלול</b>
+    <select id="routeFilter"></select>
+  </label>
+
+  <label>
+    <b>קבוצה</b>
+    <select id="groupFilter" disabled></select>
+  </label>
 </div>
 
 <div class="filters-bar">
@@ -15,14 +23,30 @@
     <select id="newStatusSelect" disabled></select>
   </label>
 
-  <button id="changeStatusBtn" onclick="changeCaseStatus()">שינוי מצב בתיקים</button>
+  <button id="selectAllCasesBtn" onclick="selectAllSwitchingCases()" disabled>
+    סימון הכל
+  </button>
+
+  <button id="clearSelectedCasesBtn" onclick="clearSelectedSwitchingCases()" disabled>
+    בטל סימון
+  </button>
+
+  <button id="changeStatusBtn" onclick="changeCaseStatus()" disabled>
+    שינוי מצב לתיקים המסומנים
+  </button>
+</div>
+
+<div class="case-builder-summary">
+  <span>נבחרו <b id="selectedCasesCount">0</b> תיקים</span>
 </div>
 
 <table class="table table--switch table--striped table--hover">
   <thead>
     <tr>
+      <th>בחירה</th>
       <th>מספר תיק</th>
       <th>מסלול</th>
+      <th>קבוצה</th>
       <th>סטטוס נוכחי</th>
       <th>קידום למצב הבא</th>
       <th>החרגה</th>

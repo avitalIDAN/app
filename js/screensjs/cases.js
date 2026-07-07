@@ -153,7 +153,10 @@ async function loadCaseBuilderFilters() {
     `;
   });
 
-  groupSelect.innerHTML = `<option value="">כל הקבוצות</option>`;
+  // במסך בניית תיקים תמיד עובדים מול קבוצה אחת.
+  // גם בחתך לא מציגים "כל הקבוצות", כי אותו סוג חיוב יכול להיות משויך למספר קבוצות.
+  groupSelect.innerHTML = "";
+
   groups.forEach(group => {
     groupSelect.innerHTML += `
       <option value="${group.groupId}">
@@ -161,6 +164,11 @@ async function loadCaseBuilderFilters() {
       </option>
     `;
   });
+
+  // ברירת מחדל: הקבוצה הראשונה, כדי שהמסך ייפתח מיד עם שורות לתצוגה.
+  if (groups.length && !groupSelect.value) {
+    groupSelect.value = groups[0].groupId;
+  }
 
   renderCheckboxList(
     cutDebtTypes,
@@ -222,10 +230,12 @@ function isCutModeEnabled() {
 function syncCutModeUi() {
   const isCutMode = isCutModeEnabled();
   const panel = document.getElementById("cutModePanel");
-  const groupSelect = document.getElementById("groupFilter");
 
-  if (panel) panel.classList.toggle("cut-panel--hidden", !isCutMode);
-  if (groupSelect) groupSelect.disabled = isCutMode;
+  // מצב חתך רק מציג את אזור הגדרת החתך.
+  // בחירת קבוצה נשארת פעילה גם בחתך, כי הקבוצה נדרשת כדי למנוע כפילות ושיוך שגוי של סוגי חיוב.
+  if (panel) {
+    panel.classList.toggle("cut-panel--hidden", !isCutMode);
+  }
 }
 
 async function loadCaseBuilderRows() {
@@ -238,11 +248,12 @@ async function loadCaseBuilderRows() {
   }
 
   const routeId = document.getElementById("routeFilter").value;
-  const groupId = isCutModeEnabled() ? "" : document.getElementById("groupFilter").value;
+  // תמיד עובדים מול קבוצה נבחרת אחת, גם במצב חתך.
+  const groupId = document.getElementById("groupFilter").value;
   const idPayer = document.getElementById("payerFilter").value;
   const idAsset = document.getElementById("assetFilter").value;
 
-  if (!routeId) {
+  if (!routeId || !groupId) {
     caseBuilderRows = [];
     renderCaseBuilderTable();
     return;
@@ -392,6 +403,14 @@ async function createCaseFromBuilderRow(rowId) {
     return;
   }
 
+  const approved = confirm(
+    `האם להקים תיק למשלם ${row.idPayer}, נכס ${row.idAsset}?`
+  );
+
+  if (!approved) {
+    return;
+  }
+
   const caseItem = await caseService.createCase({
     routeId: row.routeId,
     groupId: row.groupId,
@@ -427,6 +446,12 @@ function clearSelectedRows() {
 async function createSelectedCases() {
   const rows = getSelectedCreateRows();
   if (!rows.length) return;
+
+  const approved = confirm(`האם להקים ${rows.length} תיקים מסומנים?`);
+
+  if (!approved) {
+    return;
+  }
 
   const button = document.getElementById("bulkCreateCasesBtn");
   if (button) button.disabled = true;

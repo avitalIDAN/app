@@ -132,6 +132,10 @@ function handleMenuClick(screenName) {
   navigate(screenName);
 }
 
+function handleComingSoon(screenLabel) {
+  alert(`${screenLabel} עדיין בפיתוח`);
+}
+
 function toggleSubmenu(element) {
   const menuItem = element.parentElement;
   menuItem.classList.toggle("open");

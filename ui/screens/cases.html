@@ -31,19 +31,36 @@
     </label>
   </div>
 
-  <div id="cutModePanel" class="cut-panel cut-panel--hidden">
-    <div class="cut-panel__title">הגדרת חתך</div>
+<div id="cutModePanel" class="cut-panel cut-panel--hidden">
+  <div class="cut-panel__header">
+    <div class="cut-panel__title">הגדר חתך:</div>
 
-    <div class="cut-panel__grid">
+
+    <div class="cut-panel__note">
+      לתצוגה בלבד - שמירה וסינון לפי חתך יופעלו בהמשך.
+    </div>
+
+    <!-- <span class="cut-panel__badge">בפיתוח</span> -->
+
+    
+    <label class="cut-panel__name">
+      <b>שם החתך</b>
+      <input id="cutName" type="text" placeholder="לדוגמה: חובות פעילים 2024-2026" disabled>
+    </label>
+  </div>
+
+  <div class="cut-panel__grid">
       <label>
         <b>משנה</b>
         <input id="cutYearFrom" type="number" placeholder="לדוגמה 2024">
-      </label>
-
-      <label>
         <b>עד שנה</b>
         <input id="cutYearTo" type="number" placeholder="לדוגמה 2026">
       </label>
+
+      <!-- <label>
+        <b>עד שנה</b>
+        <input id="cutYearTo" type="number" placeholder="לדוגמה 2026">
+      </label> -->
 
       <label>
         <b>בעלי חוב היום וגם נכון ל-</b>
@@ -81,9 +98,14 @@
           <input id="includeNoAssetType" type="checkbox">
           <b>ללא סוגי נכס</b>
         </label>
-      </div>
-    </div>
+     </div>
   </div>
+
+  <div class="cut-panel__actions">
+    <button id="saveCutBtn" type="button" disabled>שמירת חתך</button>
+    <button id="saveAndApplyCutBtn" type="button" disabled>שמירה וסינון</button>
+  </div>
+</div>
 
   <div class="case-builder-summary">
     <span>נבחרו <b id="selectedRowsCount">0</b> שורות</span>

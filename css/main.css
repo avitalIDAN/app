@@ -576,3 +576,63 @@ select:disabled {
 .modal-body {
   padding: 16px;
 }
+
+
+.cut-panel__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.cut-panel__title {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.cut-panel__name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+}
+
+.cut-panel__name input {
+  min-width: 240px;
+}
+
+.cut-panel__note {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.cut-panel__badge {
+  padding: 4px 8px;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  color: #666;
+  background: #f5f5f5;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.cut-panel__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.menu-badge {
+  margin-inline-start: 6px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: #f1f1f1;
+  color: #666;
+  font-size: 0.75rem;
+}
+
+.menu-disabled {
+  color: #888;
+  cursor: not-allowed;
+}

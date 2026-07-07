@@ -1,30 +1,90 @@
 <div class="app-container">
   <div id="sidebar">
 
-    <nav class="sidebar">
-      <ul>
-        <li data-screen="dashboard" onclick="navigate('dashboard')">דף הבית</li>
-        <li data-screen="cases" onclick="handleMenuClick('cases')">בניית תיקים ועדכון חוב</li>
-        <li data-screen="case" onclick="handleMenuClick('case')">הצגת תיק</li>
-        <li data-screen="switchingModes" onclick="handleMenuClick('switchingModes')">מעבר מצבים ומכתבים</li>
-        <li class="menu-item has-submenu">
-          <div class="menu-title" onclick="toggleSubmenu(this)">
-            טבלאות ודוחות
-            <span class="arrow">▸</span>
-          </div>
+  <nav class="sidebar">
+    <ul>
+      <li data-screen="dashboard" onclick="navigate('dashboard')">דף הבית</li>
 
-          <ul class="submenu">
-            <li data-screen="routes" onclick="handleMenuClick('routes')">מסלולים</li>
-            <li data-screen="statusesInRoute" onclick="handleMenuClick('statusesInRoute')">מצבים במסלול</li>
-            <li data-screen="casesInRoute" onclick="handleMenuClick('casesInRoute')">תיקים במסלול</li>
-            <li data-screen="allCases" onclick="handleMenuClick('allCases')">כלל התיקים</li>
-          </ul>
-        </li>
+      <li data-screen="cases" onclick="handleMenuClick('cases')">בניית תיקים</li>
 
-        <li data-screen="report" onclick="handleMenuClick('report')">דוחות</li>
-        <li data-screen="history" onclick="handleMenuClick('history')">היסטוריה</li>
-      </ul>
-    </nav>
+      <li data-screen="switchingModes" onclick="handleMenuClick('switchingModes')">העברת מצבים</li>
+
+      <li class="menu-disabled" onclick="handleComingSoon('מכתבים ושוברים')">
+        מכתבים ושוברים
+        <span class="menu-badge">בפיתוח</span>
+      </li>
+
+      <!-- <li class="menu-item has-submenu">
+        <div class="menu-title" onclick="toggleSubmenu(this)">
+          תיקים
+          <span class="arrow">▾</span>
+        </div>
+
+        <ul class="submenu">
+          <li data-screen="case" onclick="handleMenuClick('case')">הצגת תיק</li>
+          <li data-screen="casesInRoute" onclick="handleMenuClick('casesInRoute')">תיקים במסלול / איתור תיקים</li>
+        </ul>
+      </li> -->
+      <li class="menu-item has-submenu">
+        <div class="menu-title" onclick="toggleSubmenu(this)">
+          תיקים
+          <span class="arrow">▾</span>
+        </div>
+
+        <ul class="submenu">
+          <li data-screen="case" onclick="handleMenuClick('case')">הצגת תיק</li>
+
+          <li class="menu-disabled" onclick="handleComingSoon('כרטיס משלם')">
+            כרטיס משלם
+            <span class="menu-badge">בפיתוח</span>
+          </li>
+
+          <li data-screen="casesInRoute" onclick="handleMenuClick('casesInRoute')">איתור תיקים</li>
+        </ul>
+      </li>
+
+      <li class="menu-item has-submenu">
+        <div class="menu-title" onclick="toggleSubmenu(this)">
+          טבלאות
+          <span class="arrow">▾</span>
+        </div>
+
+        <ul class="submenu">
+          <li data-screen="routes" onclick="handleMenuClick('routes')">מסלולים</li>
+          <li class="menu-disabled" onclick="handleComingSoon('קבוצות')">קבוצות</li>
+          <li data-screen="statusesInRoute" onclick="handleMenuClick('statusesInRoute')">מצבים במסלול</li>
+          <li class="menu-disabled" onclick="handleComingSoon('סוגי חיוב')">סוגי חיוב</li>
+          <li class="menu-disabled" onclick="handleComingSoon('שיוך סוגי חיוב לקבוצה')">שיוך סוגי חיוב לקבוצה</li>
+        </ul>
+      </li>
+
+      <li class="menu-item has-submenu">
+        <div class="menu-title" onclick="toggleSubmenu(this)">
+          דוחות
+          <span class="arrow">▾</span>
+        </div>
+
+        <ul class="submenu">
+          <li class="menu-disabled" onclick="handleComingSoon('בניית קובץ לעיקולים')">בניית קובץ לעיקולים</li>
+          <li class="menu-disabled" onclick="handleComingSoon('דוחות תיקים')">דוחות תיקים</li>
+          <li class="menu-disabled" onclick="handleComingSoon('דוח פעולות מוצלחות')">דוח פעולות מוצלחות</li>
+          <li class="menu-disabled" onclick="handleComingSoon('בעלי חובות בגבייה')">בעלי חובות בגבייה</li>
+        </ul>
+      </li>
+
+      <li data-screen="history" onclick="handleMenuClick('history')">היסטוריה</li>
+
+      <li class="menu-disabled" onclick="handleComingSoon('פרמטרים')">
+        פרמטרים
+        <span class="menu-badge">בפיתוח</span>
+      </li>
+
+      <li class="menu-disabled" onclick="handleComingSoon('הרשאות משתמשים')">
+        הרשאות משתמשים
+        <span class="menu-badge">בפיתוח</span>
+      </li>
+    </ul>
+  </nav>
   </div>
 
   <div class="main-area">
