@@ -1,5 +1,6 @@
 [
   { "roleId": 1, "roleName": "מנהל מערכת", "description": "גישה מלאה לכל המסכים והטבלאות", "isActive": true },
   { "roleId": 2, "roleName": "מנהל תיקים", "description": "ניהול תיקים, חובות ומעבר מצבים", "isActive": true },
-  { "roleId": 3, "roleName": "צופה", "description": "צפייה בלבד במסכים מרכזיים", "isActive": true }
+  { "roleId": 3, "roleName": "צופה", "description": "צפייה בלבד במסכים מרכזיים", "isActive": true },
+  { "roleId": 4, "roleName": "מודול עיקולים",  "description": "גישה למסכי בניית תיקי עיקול, תהליך עיקול וחיתום",  "isActive": true}
 ]

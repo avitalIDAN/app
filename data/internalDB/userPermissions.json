@@ -15,6 +15,9 @@
   { "userPermissionId": 14, "userId": 1, "resourceType": "screen", "resourceName": "parameters", "canView": true, "canEdit": true, "blockView": false, "blockEdit": false, "sourceRoleId": 1, "isManualOverride": false },
   { "userPermissionId": 15, "userId": 1, "resourceType": "screen", "resourceName": "userPermissions", "canView": true, "canEdit": true, "blockView": false, "blockEdit": false, "sourceRoleId": 1, "isManualOverride": false },
   { "userPermissionId": 100, "userId": 1, "resourceType": "screen", "resourceName": "groups", "canView": true, "canEdit": true, "blockView": false, "blockEdit": false, "sourceRoleId": null, "isManualOverride": true },
+  { "userPermissionId": 101, "userId": 1, "resourceType": "screen", "resourceName": "foreclosureCaseBuilder", "canView": true, "canEdit": true, "blockView": false, "blockEdit": false, "sourceRoleId": 4, "isManualOverride": false },
+{ "userPermissionId": 102, "userId": 1, "resourceType": "screen", "resourceName": "foreclosureProcess", "canView": true, "canEdit": true, "blockView": false, "blockEdit": false, "sourceRoleId": 4, "isManualOverride": false },
+{ "userPermissionId": 103, "userId": 1, "resourceType": "screen", "resourceName": "foreclosureApproval", "canView": true, "canEdit": true, "blockView": false, "blockEdit": false, "sourceRoleId": 4, "isManualOverride": false },
 
   { "userPermissionId": 16, "userId": 0, "resourceType": "screen", "resourceName": "dashboard", "canView": true, "canEdit": false, "blockView": false, "blockEdit": false, "sourceRoleId": 3, "isManualOverride": false },
   { "userPermissionId": 17, "userId": 0, "resourceType": "screen", "resourceName": "case", "canView": true, "canEdit": false, "blockView": false, "blockEdit": false, "sourceRoleId": 3, "isManualOverride": false },

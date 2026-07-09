@@ -18,5 +18,9 @@
   { "roleId": 3, "resourceType": "screen", "resourceName": "case", "canView": true, "canEdit": false, "isBlocked": false },
   { "roleId": 3, "resourceType": "screen", "resourceName": "casesInRoute", "canView": true, "canEdit": false, "isBlocked": false },
   { "roleId": 3, "resourceType": "table", "resourceName": "cases", "canView": true, "canEdit": false, "isBlocked": false },
-  { "roleId": 3, "resourceType": "table", "resourceName": "hovachifa", "canView": true, "canEdit": false, "isBlocked": false }
+  { "roleId": 3, "resourceType": "table", "resourceName": "hovachifa", "canView": true, "canEdit": false, "isBlocked": false },
+
+  { "roleId": 4, "resourceType": "screen", "resourceName": "foreclosureCaseBuilder", "canView": true, "canEdit": true, "isBlocked": false },
+  { "roleId": 4, "resourceType": "screen", "resourceName": "foreclosureProcess", "canView": true, "canEdit": true, "isBlocked": false },
+  { "roleId": 4, "resourceType": "screen", "resourceName": "foreclosureApproval", "canView": true, "canEdit": true, "isBlocked": false }
 ]

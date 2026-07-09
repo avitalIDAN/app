@@ -72,29 +72,26 @@
         </ul>
       </li>
 
-      <li class="menu-item has-submenu">
-        <div class="menu-title" onclick="toggleSubmenu(this)">
-          מודול עיקולים
-          <span class="arrow">▾</span>
-        </div>
+    <li class="menu-item has-submenu">
+      <div class="menu-title" onclick="toggleSubmenu(this)">
+        מודול עיקולים
+        <span class="arrow">▾</span>
+      </div>
 
-        <ul class="submenu">
-          <li class="menu-disabled" onclick="handleComingSoon('בניית תיק עיקולים')">
-            בניית תיק עיקולים
-            <span class="menu-badge">בפיתוח</span>
-          </li>
+      <ul class="submenu">
+        
+        <li class="menu-disabled" onclick="handleComingSoon('ניתוח תיקי עיקולים')"> ניתוח תיקי עיקולים
+          <span class="menu-badge">בפיתוח</span></li>
 
-          <li class="menu-disabled" onclick="handleComingSoon('תהליך עיקול וביצוע מעקב')">
-            תהליך עיקול וביצוע מעקב
-            <span class="menu-badge">בפיתוח</span>
-          </li>
+        <li data-screen="foreclosureCaseBuilder" onclick="handleMenuClick('foreclosureCaseBuilder')">בניית תיק עיקולים</li>
 
-          <li class="menu-disabled" onclick="handleComingSoon('ביצוע חיתום')">
-            ביצוע חיתום
-            <span class="menu-badge">בפיתוח</span>
-          </li>
-        </ul>
-      </li>
+        <li class="menu-disabled" onclick="handleComingSoon('הצגת תיק עיקולים')"> הצגת תיק עיקולים
+          <span class="menu-badge">בפיתוח</span>
+        </li>
+        <li data-screen="foreclosureProcess" onclick="handleMenuClick('foreclosureProcess')">תהליך עיקול וביצוע מעקב</li>
+        <li data-screen="foreclosureApproval" onclick="handleMenuClick('foreclosureApproval')">ביצוע חיתום</li>
+      </ul>
+    </li>
 
       <li data-screen="history" onclick="handleMenuClick('history')">היסטוריה</li>
 

@@ -8,6 +8,9 @@ const screenControllers = {
   statusesInRoute: { onEnter: renderStatusesInRoute },
   switchingModes: { onEnter: renderSwitchingModes },
   groups: { onEnter: renderGroups },
+  foreclosureCaseBuilder: { onEnter: renderForeclosureCaseBuilder },
+foreclosureProcess: { onEnter: renderForeclosureProcess },
+foreclosureApproval: { onEnter: renderForeclosureApproval }
 };
 
 function canViewScreen(screenName) {

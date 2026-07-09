@@ -636,3 +636,74 @@ select:disabled {
   color: #888;
   cursor: not-allowed;
 }
+
+/* פריט מסך רגיל בתפריט */
+.sidebar li {
+  cursor: pointer;
+  padding: 10px 15px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  transition: all 0.2s ease-in-out;
+}
+
+/* כותרת של תת תפריט: תיקים / טבלאות / דוחות / מודול עיקולים */
+.menu-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 10px;
+  margin-bottom: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #cbd5e1;
+  background-color: transparent;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 0;
+}
+
+/* שה־li שעוטף תת תפריט לא ייראה כמו כפתור בעצמו */
+.sidebar li.menu-item {
+  padding: 0;
+  margin-bottom: 12px;
+  border-radius: 0;
+}
+
+/* לא לצבוע את כל הקבוצה בריחוף, אלא רק את הכותרת */
+.sidebar li.menu-item:hover {
+  background-color: transparent;
+}
+
+/* ריחוף רק על כותרת הקבוצה */
+.menu-title:hover {
+  color: #fff;
+}
+
+/* פריטים בתוך תת תפריט */
+.submenu {
+  display: none;
+  padding-right: 12px;
+  margin-top: 4px;
+}
+
+.submenu li {
+  padding: 8px 12px;
+  margin-bottom: 4px;
+  font-size: 0.9rem;
+  border-radius: 8px;
+}
+
+/* חץ של תת תפריט */
+.arrow {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  transition: transform 0.2s ease;
+}
+
+.menu-title::before {
+  content: "";
+  width: 4px;
+  height: 16px;
+  border-radius: 4px;
+  background: #64748b;
+  margin-left: 8px;
+}
