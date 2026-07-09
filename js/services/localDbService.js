@@ -19,6 +19,7 @@ class LocalDbService {
       freezeModes: "data/internalDB/freezeModes.json",
 
       hovgvia: "data/externalDB/hovgvia.json",
+      originalDebtTypes: "data/externalDB/originalDebtTypes.json",
       hovachifa: "data/internalDB/hovachifa.json",
 
       nameHistory: "data/internalDB/namehist.json",

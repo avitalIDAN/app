@@ -1,0 +1,33 @@
+<div class="table-screen">
+  <h2>קבוצות</h2>
+
+  <!-- <div class="filters-bar">
+    <label>
+      <b>שם קבוצה</b>
+      <input id="groupNameInput" type="text" placeholder="שם קבוצה">
+    </label>
+
+    <button id="saveGroupBtn" onclick="saveGroup()">שמירה</button>
+    <button id="cancelGroupEditBtn" onclick="cancelGroupEdit()" disabled>ביטול עריכה</button>
+  </div> -->
+
+  <div class="filters-bar">
+    <label>
+        <b>שם קבוצה חדשה</b>
+        <input id="groupNameInput" type="text" placeholder="שם קבוצה חדשה">
+    </label>
+
+    <button id="addGroupBtn" onclick="addGroup()">הוספה</button>
+    </div>
+
+  <table class="table table--striped table--hover">
+    <thead>
+      <tr>
+        <th>קוד קבוצה</th>
+        <th>שם קבוצה</th>
+        <th>פעולות</th>
+      </tr>
+    </thead>
+    <tbody id="groupsTable"></tbody>
+  </table>
+</div>

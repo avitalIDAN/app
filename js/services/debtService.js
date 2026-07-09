@@ -7,6 +7,14 @@ class DebtService {
     return await localDbService.getAll("hovgvia");
   }
 
+  async getOriginalDebtTypes() {
+  if (!permissionService.canViewTable("originalDebtTypes")) {
+    return [];
+  }
+
+  return await localDbService.getAll("originalDebtTypes");
+}
+
   async getAllAchifaDebts() {
     if (!permissionService.canViewTable("hovachifa")) {
       return [];

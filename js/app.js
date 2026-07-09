@@ -6,7 +6,8 @@ const screenControllers = {
   casesInRoute: { onEnter: rendercasesInRouteTable },
   routes: { onEnter: renderRoutes },
   statusesInRoute: { onEnter: renderStatusesInRoute },
-  switchingModes: { onEnter: renderSwitchingModes }
+  switchingModes: { onEnter: renderSwitchingModes },
+  groups: { onEnter: renderGroups },
 };
 
 function canViewScreen(screenName) {

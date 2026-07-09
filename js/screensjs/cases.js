@@ -25,7 +25,7 @@ function showCaseBuilderNoDataPermission(message = "אין הרשאה לנתונ
 }
 
 function getCaseBuilderAccess() {
-  const baseTables = ["hovgvia", "debtTypes", "debtTypeGroups", "groups", "routes"];
+  const baseTables = ["hovgvia", "debtTypes", "debtTypeGroups", "groups", "routes", "originalDebtTypes"];
   const blockedBaseTables = permissionService.getBlockedTables(baseTables, "view");
 
   const canViewCases = permissionService.canViewTable("cases");
@@ -133,15 +133,59 @@ function renderCheckboxList(container, items, getValue, getLabel) {
   `).join("");
 }
 
+// async function loadCaseBuilderFilters() {
+//   const routeSelect = document.getElementById("routeFilter");
+//   const groupSelect = document.getElementById("groupFilter");
+//   const cutDebtTypes = document.getElementById("cutDebtTypes");
+
+//   const [routes, groups, debtTypes] = await Promise.all([
+//     routeService.getActive(),
+//     debtService.getGroups(),
+//     debtService.getOriginalDebtTypes()
+//   ]);
+
+//   routeSelect.innerHTML = "";
+//   routes.forEach(route => {
+//     routeSelect.innerHTML += `
+//       <option value="${route.routeId}">
+//         ${route.name}
+//       </option>
+//     `;
+//   });
+
+//   // במסך בניית תיקים תמיד עובדים מול קבוצה אחת.
+//   // גם בחתך לא מציגים "כל הקבוצות", כי אותו סוג חיוב יכול להיות משויך למספר קבוצות.
+//   groupSelect.innerHTML = "";
+
+//   groups.forEach(group => {
+//     groupSelect.innerHTML += `
+//       <option value="${group.groupId}">
+//         ${group.name}
+//       </option>
+//     `;
+//   });
+
+//   // ברירת מחדל: הקבוצה הראשונה, כדי שהמסך ייפתח מיד עם שורות לתצוגה.
+//   if (groups.length && !groupSelect.value) {
+//     groupSelect.value = groups[0].groupId;
+//   }
+
+//   renderCheckboxList(
+//     cutDebtTypes,
+//     originalDebtTypes.filter(type => type.isActive !== false),
+//     type => type.originalCode,
+//     type => `${type.originalCode} - ${type.originalName}`
+//   );
+// }
 async function loadCaseBuilderFilters() {
   const routeSelect = document.getElementById("routeFilter");
   const groupSelect = document.getElementById("groupFilter");
   const cutDebtTypes = document.getElementById("cutDebtTypes");
 
-  const [routes, groups, debtTypes] = await Promise.all([
+  const [routes, groups, originalDebtTypes] = await Promise.all([
     routeService.getActive(),
     debtService.getGroups(),
-    debtService.getDebtTypes()
+    debtService.getOriginalDebtTypes()
   ]);
 
   routeSelect.innerHTML = "";
@@ -153,8 +197,6 @@ async function loadCaseBuilderFilters() {
     `;
   });
 
-  // במסך בניית תיקים תמיד עובדים מול קבוצה אחת.
-  // גם בחתך לא מציגים "כל הקבוצות", כי אותו סוג חיוב יכול להיות משויך למספר קבוצות.
   groupSelect.innerHTML = "";
 
   groups.forEach(group => {
@@ -170,11 +212,15 @@ async function loadCaseBuilderFilters() {
     groupSelect.value = groups[0].groupId;
   }
 
+  // רשימת סוגי חיוב לחתך מגיעה מהגבייה: originalDebtTypes.
+  // כרגע החתך הוא לתצוגה בלבד, אבל הרשימה צריכה להיות לפי קוד מקורי ולא לפי קוד אכיפה שנתי.
   renderCheckboxList(
     cutDebtTypes,
-    debtTypes,
-    type => type.debtTypeId,
-    type => type.name
+    Array.isArray(originalDebtTypes)
+      ? originalDebtTypes.filter(type => type.isActive !== false)
+      : [],
+    type => type.originalCode,
+    type => `${type.originalCode} - ${type.originalName}`
   );
 }
 

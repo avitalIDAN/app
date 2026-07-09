@@ -25,7 +25,7 @@
           <li data-screen="casesInRoute" onclick="handleMenuClick('casesInRoute')">תיקים במסלול / איתור תיקים</li>
         </ul>
       </li> -->
-      <li class="menu-item has-submenu">
+      <li class="menu-item has-submenu open">
         <div class="menu-title" onclick="toggleSubmenu(this)">
           תיקים
           <span class="arrow">▾</span>
@@ -51,7 +51,7 @@
 
         <ul class="submenu">
           <li data-screen="routes" onclick="handleMenuClick('routes')">מסלולים</li>
-          <li class="menu-disabled" onclick="handleComingSoon('קבוצות')">קבוצות</li>
+          <li data-screen="groups" onclick="handleMenuClick('groups')">קבוצות</li>
           <li data-screen="statusesInRoute" onclick="handleMenuClick('statusesInRoute')">מצבים במסלול</li>
           <li class="menu-disabled" onclick="handleComingSoon('סוגי חיוב')">סוגי חיוב</li>
           <li class="menu-disabled" onclick="handleComingSoon('שיוך סוגי חיוב לקבוצה')">שיוך סוגי חיוב לקבוצה</li>
@@ -69,6 +69,30 @@
           <li class="menu-disabled" onclick="handleComingSoon('דוחות תיקים')">דוחות תיקים</li>
           <li class="menu-disabled" onclick="handleComingSoon('דוח פעולות מוצלחות')">דוח פעולות מוצלחות</li>
           <li class="menu-disabled" onclick="handleComingSoon('בעלי חובות בגבייה')">בעלי חובות בגבייה</li>
+        </ul>
+      </li>
+
+      <li class="menu-item has-submenu">
+        <div class="menu-title" onclick="toggleSubmenu(this)">
+          מודול עיקולים
+          <span class="arrow">▾</span>
+        </div>
+
+        <ul class="submenu">
+          <li class="menu-disabled" onclick="handleComingSoon('בניית תיק עיקולים')">
+            בניית תיק עיקולים
+            <span class="menu-badge">בפיתוח</span>
+          </li>
+
+          <li class="menu-disabled" onclick="handleComingSoon('תהליך עיקול וביצוע מעקב')">
+            תהליך עיקול וביצוע מעקב
+            <span class="menu-badge">בפיתוח</span>
+          </li>
+
+          <li class="menu-disabled" onclick="handleComingSoon('ביצוע חיתום')">
+            ביצוע חיתום
+            <span class="menu-badge">בפיתוח</span>
+          </li>
         </ul>
       </li>
 

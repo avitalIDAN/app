@@ -1,0 +1,38 @@
+[
+  {
+    "originalCode": 100,
+    "originalName": "ארנונה",
+    "isYearly": true,
+    "isActive": true
+  },
+  {
+    "originalCode": 101,
+    "originalName": "מים",
+    "isYearly": true,
+    "isActive": true
+  },
+  {
+    "originalCode": 102,
+    "originalName": "ביוב",
+    "isYearly": true,
+    "isActive": true
+  },
+  {
+    "originalCode": 103,
+    "originalName": "אגרות",
+    "isYearly": true,
+    "isActive": true
+  },
+  {
+    "originalCode": 200,
+    "originalName": "שילוט",
+    "isYearly": true,
+    "isActive": true
+  },
+  {
+    "originalCode": 300,
+    "originalName": "פיקוח",
+    "isYearly": true,
+    "isActive": true
+  }
+]
