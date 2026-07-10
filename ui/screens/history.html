@@ -1,4 +1,4 @@
-<div class="actions-bar">
+﻿<div class="actions-bar">
   <button id="exportExcelBtn" class="btn btn--excel">
       הורד כקובץ Excel 📥
   </button>
@@ -12,7 +12,7 @@
   <h2>היסטוריית פעולות</h2>
 
   <!-- אזור סינון -->
-  <div class="history-filters">
+  <div class="history-filters muni-filters">
     <select id="filterUser">
       <option value="">כל המשתמשים</option>
     </select>
@@ -24,22 +24,24 @@
     <input type="date" id="filterFromDate">
     <input type="date" id="filterToDate">
 
-    <button onclick="applyHistoryFilters()">סינון</button>
-    <button onclick="resetHistoryFilters()">איפוס</button>
+    <button class="btn btn--secondary" onclick="applyHistoryFilters()">סינון</button>
+    <button class="btn btn--secondary" onclick="resetHistoryFilters()">איפוס</button>
   </div>
 
   <!-- טבלה -->
-  <table class="table table--history table--striped table--hover">
-    <thead>
-      <tr>
-        <th>פעולה</th>
-        <th>משתמש</th>
-        <th>לפני השינוי</th>
-        <th>אחרי השינוי</th>
-        <th>זמן</th>
-      </tr>
-    </thead>
-    <tbody id="historyTableBody">
-    </tbody>
-  </table>
+  <div class="table-scroll" dir="rtl">
+    <table class="table table--history table--striped table--hover">
+      <thead>
+        <tr>
+          <th>פעולה</th>
+          <th>משתמש</th>
+          <th>לפני השינוי</th>
+          <th>אחרי השינוי</th>
+          <th>זמן</th>
+        </tr>
+      </thead>
+      <tbody id="historyTableBody">
+      </tbody>
+    </table>
+  </div>
 </div>

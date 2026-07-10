@@ -22,6 +22,20 @@ function showNoScreenPermission() {
     `<h3>אין הרשאה לצפייה במסך זה</h3>`;
 }
 
+function setActiveMenuItem(screenName) {
+  document.querySelectorAll(".sidebar [data-screen]").forEach(item => {
+    const isActive = item.dataset.screen === screenName;
+
+    item.classList.toggle("menu-screen--active", isActive);
+
+    if (isActive) {
+      item.setAttribute("aria-current", "page");
+    } else {
+      item.removeAttribute("aria-current");
+    }
+  });
+}
+
 function navigate(screenName) {
   if (!authService.isLoggedIn()) {
     loadLogin();
@@ -45,6 +59,7 @@ function navigate(screenName) {
     })
     .then(html => {
       document.getElementById("content").innerHTML = html;
+      setActiveMenuItem(screenName);
 
       const controller = screenControllers[screenName];
       if (controller?.onEnter) {
@@ -144,3 +159,26 @@ function toggleSubmenu(element) {
   const menuItem = element.parentElement;
   menuItem.classList.toggle("open");
 }
+
+function toggleMobileMenu() {
+  const sidebar = document.getElementById("sidebar");
+  const button = document.getElementById("mobileMenuToggle");
+
+  if (!sidebar || !button) return;
+
+  const isOpen = sidebar.classList.toggle("mobile-menu-open");
+  button.setAttribute("aria-expanded", String(isOpen));
+}
+
+function toggleDesktopSidebar() {
+  const app = document.querySelector(".app-container");
+  const button = document.getElementById("desktopSidebarToggle");
+
+  if (!app || !button) return;
+
+  const isCollapsed = app.classList.toggle("sidebar-collapsed");
+  button.setAttribute("aria-expanded", String(!isCollapsed));
+}
+
+window.toggleMobileMenu = toggleMobileMenu;
+window.toggleDesktopSidebar = toggleDesktopSidebar;

@@ -1,4 +1,4 @@
-function renderForeclosureApproval() {
+﻿function renderForeclosureApproval() {
   const tbody = document.getElementById("foreclosureApprovalTable");
   const canEdit = permissionService.canEditScreen("foreclosureApproval");
 
@@ -19,10 +19,10 @@ function renderForeclosureApproval() {
       <td>${request.requestedBy}</td>
       <td>${request.status}</td>
       <td>
-        <button ${canEdit ? "" : "disabled"} onclick="approveForeclosureRequest(${request.requestId})">
+        <button class="btn btn--destructive" ${canEdit ? "" : "disabled"} onclick="approveForeclosureRequest(${request.requestId})">
           אישור
         </button>
-        <button ${canEdit ? "" : "disabled"} onclick="rejectForeclosureRequest(${request.requestId})">
+        <button class="btn btn--destructive" ${canEdit ? "" : "disabled"} onclick="rejectForeclosureRequest(${request.requestId})">
           דחייה
         </button>
       </td>

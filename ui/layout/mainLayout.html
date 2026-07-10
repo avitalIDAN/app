@@ -1,8 +1,35 @@
-<div class="app-container">
+﻿<div class="app-container">
   <div id="sidebar">
 
-  <nav class="sidebar">
-    <ul>
+    <button
+  id="mobileMenuToggle"
+  class="mobile-menu-toggle"
+  type="button"
+  aria-expanded="false"
+  aria-controls="mainSidebarNav"
+  onclick="toggleMobileMenu()"
+>
+  תפריט
+</button>
+  <nav id="mainSidebarNav" class="sidebar" aria-label="ניווט ראשי">
+    <div class="sidebar-brand" aria-label="מערכת אכיפה">
+      <span class="sidebar-brand__mark" aria-hidden="true">M</span>
+      <span>
+        <strong>מערכת אכיפה</strong>
+        <small>ניהול תיקים</small>
+      </span>
+      <button
+        id="desktopSidebarToggle"
+        class="desktop-sidebar-toggle"
+        type="button"
+        aria-expanded="true"
+        aria-label="צמצום והרחבת תפריט"
+        onclick="toggleDesktopSidebar()"
+      >
+        ☰
+      </button>
+    </div>
+    <ul class="sidebar-menu">
       <li data-screen="dashboard" onclick="navigate('dashboard')">דף הבית</li>
 
       <li data-screen="cases" onclick="handleMenuClick('cases')">בניית תיקים</li>
@@ -112,7 +139,7 @@
 
     <div class="topbar">
       <span id="usernameDisplay"></span>
-      <button onclick="handleLogout()">יציאה</button>
+      <button type="button" onclick="handleLogout()">יציאה</button>
     </div>
 
 

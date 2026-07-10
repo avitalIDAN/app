@@ -12,27 +12,27 @@
 
   <h2>מצבים במסלול</h2>
 
-  <div class="filter-bar">
+  <div class="filter-bar muni-filters">
     <label for="routeSelect">בחר מסלול:</label>
     <select id="routeSelect">
       <option value="">בחר מסלול</option>
     </select>
   </div>
-
-  <table class="table table--striped table--hover">
-    <thead>
-      <tr>
-        <th>קוד מצב</th>
-        <th>שם מצב</th>
-        <th>סדר</th>
-        <th>פעיל</th>
-      </tr>
-    </thead>
-    <tbody id="statusesTable">
-      <tr>
-        <td colspan="4">בחר מסלול להצגת מצבים</td>
-      </tr>
-    </tbody>
-  </table>
-
+  <div class="table-scroll" dir="rtl">
+    <table class="table table--striped table--hover">
+      <thead>
+        <tr>
+          <th>קוד מצב</th>
+          <th>שם מצב</th>
+          <th>סדר</th>
+          <th>פעיל</th>
+        </tr>
+      </thead>
+      <tbody id="statusesTable">
+        <tr>
+          <td colspan="4">בחר מסלול להצגת מצבים</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>

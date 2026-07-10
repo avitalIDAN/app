@@ -1,4 +1,4 @@
-<div class="table-screen">
+﻿<div class="table-screen">
   <h2>קבוצות</h2>
 
   <!-- <div class="filters-bar">
@@ -17,17 +17,19 @@
         <input id="groupNameInput" type="text" placeholder="שם קבוצה חדשה">
     </label>
 
-    <button id="addGroupBtn" onclick="addGroup()">הוספה</button>
+    <button id="addGroupBtn" class="btn btn--primary" onclick="addGroup()">הוספה</button>
     </div>
 
-  <table class="table table--striped table--hover">
-    <thead>
-      <tr>
-        <th>קוד קבוצה</th>
-        <th>שם קבוצה</th>
-        <th>פעולות</th>
-      </tr>
-    </thead>
-    <tbody id="groupsTable"></tbody>
-  </table>
+    <div class="table-scroll" dir="rtl">
+        <table class="table table--striped table--hover">
+            <thead>
+            <tr>
+                <th>קוד קבוצה</th>
+                <th>שם קבוצה</th>
+                <th>פעולות</th>
+            </tr>
+            </thead>
+            <tbody id="groupsTable"></tbody>
+        </table>
+    </div>
 </div>

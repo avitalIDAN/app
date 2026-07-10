@@ -1,4 +1,4 @@
-const demoForeclosureFiles = [
+﻿const demoForeclosureFiles = [
   { foreclosureId: 1, caseId: 1001, idPayer: 1, statusName: "ממתין ליצירת עיקול" },
   { foreclosureId: 2, caseId: 1002, idPayer: 2, statusName: "עיקול פעיל" },
   { foreclosureId: 3, caseId: 1003, idPayer: 3, statusName: "ממתין למימוש" }
@@ -19,13 +19,13 @@ function renderForeclosureProcess() {
       <td>${item.idPayer}</td>
       <td>${item.statusName}</td>
       <td>
-        <button ${canEdit ? "" : "disabled"} onclick="createForeclosureRequest(${item.foreclosureId}, ${item.caseId}, 'יצירת עיקול')">
+        <button class="btn btn--destructive" ${canEdit ? "" : "disabled"} onclick="createForeclosureRequest(${item.foreclosureId}, ${item.caseId}, 'יצירת עיקול')">
           יצירת עיקול
         </button>
-        <button ${canEdit ? "" : "disabled"} onclick="createForeclosureRequest(${item.foreclosureId}, ${item.caseId}, 'ביטול עיקול')">
+        <button class="btn btn--destructive" ${canEdit ? "" : "disabled"} onclick="createForeclosureRequest(${item.foreclosureId}, ${item.caseId}, 'ביטול עיקול')">
           ביטול עיקול
         </button>
-        <button ${canEdit ? "" : "disabled"} onclick="createForeclosureRequest(${item.foreclosureId}, ${item.caseId}, 'מימוש עיקול')">
+        <button class="btn btn--destructive" ${canEdit ? "" : "disabled"} onclick="createForeclosureRequest(${item.foreclosureId}, ${item.caseId}, 'מימוש עיקול')">
           מימוש עיקול
         </button>
       </td>

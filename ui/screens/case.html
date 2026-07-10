@@ -1,10 +1,10 @@
-<div class="case-page">
+﻿<div class="case-page">
   <div class="case-nav">
-    <button id="prevCaseBtn" onclick="goToPrevCase()">תיק קודם</button>
+    <button id="prevCaseBtn" class="btn btn--secondary" onclick="goToPrevCase()">תיק קודם</button>
     <span class="case-counter">
       תיק <span id="currentIndex"></span> מתוך <span id="totalCases"></span>
     </span>
-    <button id="nextCaseBtn" onclick="goToNextCase()">תיק הבא</button>
+    <button id="nextCaseBtn" class="btn btn--secondary" onclick="goToNextCase()">תיק הבא</button>
   </div>
 
   <div class="case-header">
@@ -30,20 +30,22 @@
 
     <div class="case-card case-card--wide">
       <h4>חוב באכיפה</h4>
-      <table class="table table--compact table--hover">
-        <thead>
-          <tr>
-            <th>מזהה חוב</th>
-            <th>משלם</th>
-            <th>נכס</th>
-            <th>קבוצת חיוב</th>
-            <th>שנה</th>
-            <th>ריבית</th>
-            <th>סכום</th>
-          </tr>
-        </thead>
-        <tbody id="caseAchifaDebts"></tbody>
-      </table>
+      <div class="table-scroll" dir="rtl">
+        <table class="table table--compact table--hover">
+          <thead>
+            <tr>
+              <th>מזהה חוב</th>
+              <th>משלם</th>
+              <th>נכס</th>
+              <th>קבוצת חיוב</th>
+              <th>שנה</th>
+              <th>ריבית</th>
+              <th>סכום</th>
+            </tr>
+          </thead>
+          <tbody id="caseAchifaDebts"></tbody>
+        </table>
+      </div>
       <p class="case-debt-total">סה"כ חוב באכיפה: <b id="caseAchifaDebtTotal">0</b></p>
     </div>
   </div>

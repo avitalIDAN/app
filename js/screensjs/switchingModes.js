@@ -1,4 +1,4 @@
-let switchingModesAccess = {
+﻿let switchingModesAccess = {
   canViewRoutes: true,
   canViewGroups: true,
   canViewStatuses: true,
@@ -261,22 +261,22 @@ async function renderSwitchingCasesTable() {
       <td>${caseItem.groupName || caseItem.groupId || "-"}</td>
       <td>${caseItem.statusName || "-"}</td>
       <td>
-        <button ${canChangeThisCase ? "" : "disabled"} onclick="promote(${caseItem.caseId})">
+        <button class="btn btn--secondary" ${canChangeThisCase ? "" : "disabled"} onclick="promote(${caseItem.caseId})">
           קידום למצב
         </button>
       </td>
       <td>
-        <button ${canChangeThisCase ? "" : "disabled"} onclick="exclusion(${caseItem.caseId})">
+        <button class="btn btn--secondary" ${canChangeThisCase ? "" : "disabled"} onclick="exclusion(${caseItem.caseId})">
           החרגה
         </button>
       </td>
       <td>
-        <button ${canCloseThisCase ? "" : "disabled"} onclick="closeCase(${caseItem.caseId})">
+        <button class="btn btn--destructive" ${canCloseThisCase ? "" : "disabled"} onclick="closeCase(${caseItem.caseId})">
           סגירה
         </button>
       </td>
       <td>
-        <button ${canOpenCase ? "" : "disabled"} onclick="toCaseScreen(${caseItem.caseId})">
+        <button class="btn btn--secondary" ${canOpenCase ? "" : "disabled"} onclick="toCaseScreen(${caseItem.caseId})">
           הצגת תיק
         </button>
       </td>

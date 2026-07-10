@@ -1,4 +1,4 @@
-const demoForeclosureCases = [
+﻿const demoForeclosureCases = [
   { caseId: 1001, idPayer: 1, idAsset: 101, routeName: "אכיפה רגילה", groupName: "ארנונה ומים", statusName: "עיקולי", hasForeclosureCase: false },
   { caseId: 1002, idPayer: 2, idAsset: 201, routeName: "אכיפה רגילה", groupName: "שילוט", statusName: "עיקולי", hasForeclosureCase: false },
   { caseId: 1003, idPayer: 3, idAsset: 301, routeName: "אכיפה מהירה", groupName: "ארנונה ומים", statusName: "עיקולי", hasForeclosureCase: true }
@@ -24,7 +24,7 @@ function renderForeclosureCaseBuilder() {
       <td>${item.groupName}</td>
       <td>${item.statusName}</td>
       <td>
-        <button ${canEdit ? "" : "disabled"} onclick="openForeclosureCase(${item.caseId})">
+        <button class="btn btn--secondary" ${canEdit ? "" : "disabled"} onclick="openForeclosureCase(${item.caseId})">
           פתיחת תיק עיקול
         </button>
       </td>

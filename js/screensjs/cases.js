@@ -1,4 +1,4 @@
-let caseBuilderRows = [];
+﻿let caseBuilderRows = [];
 let caseBuilderAccess = {
   canViewBaseData: true,
   canViewCases: true,
@@ -109,7 +109,7 @@ function getActionHtml(row) {
 
   if (action.code === "CREATE_CASE") {
     return `
-      <button ${action.enabled ? "" : "disabled"} onclick="createCaseFromBuilderRow('${row.rowId}')">
+      <button class="btn btn--primary" ${action.enabled ? "" : "disabled"} onclick="createCaseFromBuilderRow('${row.rowId}')">
         ${action.label}
       </button>
     `;
@@ -119,7 +119,7 @@ function getActionHtml(row) {
     return `<span>—</span>`;
   }
 
-  return `<button disabled>${action.label}</button>`;
+  return `<button class="btn btn--secondary" disabled>${action.label}</button>`;
 }
 
 function renderCheckboxList(container, items, getValue, getLabel) {
@@ -330,7 +330,7 @@ async function renderCasesBuilder() {
   document.getElementById("groupFilter").onchange = loadCaseBuilderRows;
   document.getElementById("payerFilter").oninput = loadCaseBuilderRows;
   document.getElementById("assetFilter").oninput = loadCaseBuilderRows;
-  document.getElementById("refreshBtn").onclick = loadCaseBuilderRows;
+  // document.getElementById("refreshBtn").onclick = loadCaseBuilderRows;
 
   const cutModeToggle = document.getElementById("cutModeToggle");
   if (cutModeToggle) {
@@ -362,7 +362,7 @@ function renderCaseBuilderTable() {
   caseBuilderRows.forEach(row => {
     const action = getCaseAction(row);
     const canSelect = action.code === "CREATE_CASE" && action.enabled;
-
+        // <td>${row.groupName}</td>
     tbody.innerHTML += `
       <tr>
         <td>
@@ -375,7 +375,7 @@ function renderCaseBuilderTable() {
         </td>
         <td>${row.idPayer}</td>
         <td>${row.idAsset}</td>
-        <td>${row.groupName}</td>
+
         <td>${row.debtsCount}</td>
         <td ondblclick="showDebtDetails('${row.rowId}', 'gvia')">${formatCurrency(row.gviaDebt)}</td>
         <td ondblclick="showDebtDetails('${row.rowId}', 'achifa')">

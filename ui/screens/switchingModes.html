@@ -1,6 +1,6 @@
-<h2>העברת מצבים</h2>
+﻿<h2>העברת מצבים</h2>
 
-<div class="filters-bar">
+<div class="filters-bar muni-filters">
   <label>
     <b>מסלול</b>
     <select id="routeFilter"></select>
@@ -12,7 +12,7 @@
   </label>
 </div>
 
-<div class="filters-bar">
+<div class="filters-bar muni-filters">
   <label>
     <b>מצב נוכחי</b>
     <select id="statusFilter" disabled></select>
@@ -23,15 +23,15 @@
     <select id="newStatusSelect" disabled></select>
   </label>
 
-  <button id="selectAllCasesBtn" onclick="selectAllSwitchingCases()" disabled>
+  <button id="selectAllCasesBtn" class="btn btn--secondary" onclick="selectAllSwitchingCases()" disabled>
     סימון הכל
   </button>
 
-  <button id="clearSelectedCasesBtn" onclick="clearSelectedSwitchingCases()" disabled>
+  <button id="clearSelectedCasesBtn" class="btn btn--secondary" onclick="clearSelectedSwitchingCases()" disabled>
     בטל סימון
   </button>
 
-  <button id="changeStatusBtn" onclick="changeCaseStatus()" disabled>
+  <button id="changeStatusBtn" class="btn btn--primary" onclick="changeCaseStatus()" disabled>
     שינוי מצב לתיקים המסומנים
   </button>
 </div>
@@ -40,19 +40,21 @@
   <span>נבחרו <b id="selectedCasesCount">0</b> תיקים</span>
 </div>
 
-<table class="table table--switch table--striped table--hover">
-  <thead>
-    <tr>
-      <th>בחירה</th>
-      <th>מספר תיק</th>
-      <th>מסלול</th>
-      <th>קבוצה</th>
-      <th>סטטוס נוכחי</th>
-      <th>קידום למצב הבא</th>
-      <th>החרגה</th>
-      <th>סגירה</th>
-      <th>מעבר לתיק</th>
-    </tr>
-  </thead>
-  <tbody id="casesTable"></tbody>
-</table>
+<div class="table-scroll" dir="rtl">
+  <table class="table table--switch table--striped table--hover">
+    <thead>
+      <tr>
+        <th>בחירה</th>
+        <th>מספר תיק</th>
+        <th>מסלול</th>
+        <th>קבוצה</th>
+        <th>סטטוס נוכחי</th>
+        <th>קידום למצב הבא</th>
+        <th>החרגה</th>
+        <th>סגירה</th>
+        <th>מעבר לתיק</th>
+      </tr>
+    </thead>
+    <tbody id="casesTable"></tbody>
+  </table>
+</div>
