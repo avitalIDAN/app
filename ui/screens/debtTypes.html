@@ -1,0 +1,107 @@
+<div class="table-screen">
+  <h2>סוגי חיוב</h2>
+
+  <div class="filters-bar">
+    <label>
+      <b>סוג חיוב מקורי בגבייה</b>
+      <select id="newOriginalDebtTypeSelect"></select>
+    </label>
+
+    <label>
+      <b>שנה</b>
+      <input id="newDebtTypeYearInput" type="number" min="2000" max="2100" placeholder="לדוגמה 2026">
+    </label>
+
+    <label>
+      <b>קוד באכיפה</b>
+      <input id="newEnforcementCodePreview" type="text" readonly>
+    </label>
+
+    <label>
+      <b>שם באכיפה</b>
+      <input id="newDebtTypeNameInput" type="text" placeholder="אם יישאר ריק, ייווצר שם אוטומטי">
+    </label>
+
+    <button id="addDebtTypeBtn" class="btn btn--primary" onclick="addDebtType()">
+      הוספה
+    </button>
+  </div>
+
+  <h3>פעולות עזר</h3>
+
+  <!-- <div class="filters-bar">
+    <label>
+      <b>סוג חיוב להעתקה</b>
+      <select id="copyDebtTypeSelect"></select>
+    </label>
+
+    <label>
+      <b>שנה חדשה</b>
+      <input id="copyDebtTypeYearInput" type="number" min="2000" max="2100" placeholder="לדוגמה 2026">
+    </label>
+
+    <button id="copyDebtTypeBtn" class="btn btn--primary" onclick="copyDebtTypeToYear()">
+      העתק לשנה נוספת
+    </button>
+  </div> -->
+
+
+  <div class="filters-bar">
+    <label>
+        <b>שנת מקור</b>
+        <input id="copySourceYearInput" type="number" min="2000" max="2100" placeholder="לדוגמה 2025">
+    </label>
+
+    <label>
+        <b>שנת יעד</b>
+        <input id="copyTargetYearInput" type="number" min="2000" max="2100" placeholder="לדוגמה 2026">
+    </label>
+
+    <label class="inline-check">
+        <input id="copyOnlyActiveDebtTypes" type="checkbox">
+        <b>העתק רק סוגי חיוב פעילים</b>
+    </label>
+    <button id="copyDebtTypesYearBtn" class="btn btn--primary" onclick="copyDebtTypesToYear()">
+        העתק את כל סוגי החיוב לשנה נוספת
+    </button>
+    </div>
+
+  <div class="filters-bar">
+    <label>
+      <b>סוג חיוב מקורי</b>
+      <select id="rangeOriginalDebtTypeSelect"></select>
+    </label>
+
+    <label>
+      <b>משנה</b>
+      <input id="rangeFromYearInput" type="number" min="2000" max="2100" placeholder="2024">
+    </label>
+
+    <label>
+      <b>עד שנה</b>
+      <input id="rangeToYearInput" type="number" min="2000" max="2100" placeholder="2026">
+    </label>
+
+    <button id="addDebtTypesRangeBtn" class="btn btn--primary" onclick="addDebtTypesForYears()">
+      הוסף סוג חיוב בין שנים
+    </button>
+  </div>
+
+  <div class="table-scroll" dir="rtl">
+    <table class="table table--route table--striped table--hover">
+      <thead>
+        <tr>
+          <th>מזהה</th>
+          <th>קוד מקורי בגבייה</th>
+          <th>סוג חיוב מקורי</th>
+          <th>שנה</th>
+          <th>קוד באכיפה</th>
+          <th>שם באכיפה</th>
+          <th>פעיל</th>
+          <th>פעולות</th>
+        </tr>
+      </thead>
+      <tbody id="debtTypesTable"></tbody>
+    </table>
+  </div>
+</div>

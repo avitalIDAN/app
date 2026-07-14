@@ -9,8 +9,9 @@ const screenControllers = {
   switchingModes: { onEnter: renderSwitchingModes },
   groups: { onEnter: renderGroups },
   foreclosureCaseBuilder: { onEnter: renderForeclosureCaseBuilder },
-foreclosureProcess: { onEnter: renderForeclosureProcess },
-foreclosureApproval: { onEnter: renderForeclosureApproval }
+  foreclosureProcess: { onEnter: renderForeclosureProcess },
+  foreclosureApproval: { onEnter: renderForeclosureApproval },
+  debtTypes: { onEnter: renderDebtTypes },
 };
 
 function canViewScreen(screenName) {

@@ -261,12 +261,12 @@ async function renderSwitchingCasesTable() {
       <td>${caseItem.groupName || caseItem.groupId || "-"}</td>
       <td>${caseItem.statusName || "-"}</td>
       <td>
-        <button class="btn btn--secondary" ${canChangeThisCase ? "" : "disabled"} onclick="promote(${caseItem.caseId})">
+        <button class="btn btn--primary" ${canChangeThisCase ? "" : "disabled"} onclick="promote(${caseItem.caseId})">
           קידום למצב
         </button>
       </td>
       <td>
-        <button class="btn btn--secondary" ${canChangeThisCase ? "" : "disabled"} onclick="exclusion(${caseItem.caseId})">
+        <button class="btn btn--destructive" ${canChangeThisCase ? "" : "disabled"} onclick="exclusion(${caseItem.caseId})">
           החרגה
         </button>
       </td>

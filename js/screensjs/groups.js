@@ -51,7 +51,7 @@ function renderGroupsTable() {
         <td>${group.groupId}</td>
         <td>${group.name || ""}</td>
         <td>
-          <button class="btn btn--secondary" ${access.canEditGroups ? "" : "disabled"} onclick="editGroup(${group.groupId})">
+          <button class="btn btn--primary" ${access.canEditGroups ? "" : "disabled"} onclick="editGroup(${group.groupId})">
             עריכה
           </button>
         </td>
