@@ -458,7 +458,10 @@ async function changeCaseStatus() {
         caseItem.caseId,
         newStatusId,
         authService.getCurrentUsername(),
-        "שינוי מצב מרוכז"
+        "שינוי מצב מרוכז",
+        {
+          isPrimaryAction: false
+        }
       );
 
       if (result) {
@@ -471,6 +474,38 @@ async function changeCaseStatus() {
       failed++;
     }
   }
+  const currentStatusName = currentStatusId === ""
+  ? "כל המצבים"
+  : document.getElementById("statusFilter")
+      .selectedOptions[0]
+      ?.textContent
+      .trim();
+
+  const newStatusName = document.getElementById("newStatusSelect")
+    .selectedOptions[0]
+    ?.textContent
+    .trim();
+
+  await caseService.logBulkSummary({
+    actionType: "bulk_status_change",
+    description: "העברת מצבים מרוכזת",
+    beforeText:
+      `מסלול: ${routeId}, קבוצה: ${groupId}, ` +
+      `מצב קודם: ${currentStatusName || currentStatusId}`,
+    afterText:
+      `מצב חדש: ${newStatusName || newStatusId}. ` +
+      `הועברו ${changed} תיקים. נכשלו ${failed}.`,
+    screenName: "switchingModes",
+    details: [
+      { fieldName: "routeId", oldValue: "", newValue: routeId },
+      { fieldName: "groupId", oldValue: "", newValue: groupId },
+      { fieldName: "fromStatusId", oldValue: "", newValue: currentStatusId || "all" },
+      { fieldName: "toStatusId", oldValue: "", newValue: newStatusId },
+      { fieldName: "requestedCount", oldValue: "", newValue: selectedCases.length },
+      { fieldName: "changedCount", oldValue: "", newValue: changed },
+      { fieldName: "failedCount", oldValue: "", newValue: failed }
+    ]
+  });
 
   alert(`שינוי מצב בוצע ל-${changed} תיקים. נכשלו ${failed}.`);
   await refreshSwitchingModesCases();

@@ -13,7 +13,8 @@
     "afterText": "נוצר תיק 1001",
     "screenName": "cases",
     "serviceName": "CaseService",
-    "actionName": "createCase"
+    "actionName": "createCase",
+    "isPrimaryAction": true
   },
   {
     "historyId": 2,
@@ -29,7 +30,8 @@
     "afterText": "סכום חוב: 2287",
     "screenName": "cases",
     "serviceName": "DebtService",
-    "actionName": "updateDebt"
+    "actionName": "updateDebt",
+    "isPrimaryAction": true
   },
   {
     "historyId": 3,
@@ -45,6 +47,7 @@
     "afterText": "מצב חדש: מוחרג",
     "screenName": "switchingModes",
     "serviceName": "CaseService",
-    "actionName": "changeCaseStatus"
+    "actionName": "changeCaseStatus",
+    "isPrimaryAction": true
   }
 ]

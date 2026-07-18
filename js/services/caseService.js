@@ -95,7 +95,8 @@ class CaseService {
     idAsset,
     statusId = 1,
     delta = 0,
-    parentCaseId = null
+    parentCaseId = null,
+    historyOptions = {}
   }) {
     // יצירת תיק היא פעולה כפולה:
     // 1. כתיבה ל-cases
@@ -159,6 +160,7 @@ class CaseService {
           screenName: "cases",
           serviceName: "CaseService",
           actionName: "createCase",
+          isPrimaryAction: historyOptions.isPrimaryAction !== false,
           details: [
             { fieldName: "caseId", oldValue: "", newValue: caseItem.caseId },
             { fieldName: "currentStatusId", oldValue: "", newValue: caseItem.currentStatusId }
@@ -262,7 +264,8 @@ class CaseService {
     caseId,
     newStatusId,
     changedBy = authService.getCurrentUsername(),
-    note = ""
+    note = "",
+    historyOptions = {}
   ) {
     // שינוי מצב הוא פעולה כפולה:
     // 1. עדכון התיק
@@ -327,6 +330,7 @@ class CaseService {
           screenName: "switchingModes",
           serviceName: "CaseService",
           actionName: "changeCaseStatus",
+          isPrimaryAction: historyOptions.isPrimaryAction !== false,
           details: [
             {
               fieldName: "currentStatusId",
@@ -357,6 +361,32 @@ class CaseService {
 
       throw error;
     }
+  }
+
+    async logBulkSummary({
+    actionType,
+    description,
+    beforeText,
+    afterText,
+    screenName,
+    details = []
+  }) {
+    if (!window.historyService?.logAction) return null;
+
+    return await historyService.logAction({
+      actionType,
+      entityType: "bulkOperation",
+      entityId: null,
+      entityLabel: description,
+      description,
+      beforeText,
+      afterText,
+      screenName,
+      serviceName: "CaseService",
+      actionName: "logBulkSummary",
+      isPrimaryAction: true,
+      details
+    });
   }
 }
 

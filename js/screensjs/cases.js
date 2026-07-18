@@ -469,7 +469,11 @@ async function createCaseFromBuilderRow(rowId) {
     return;
   }
 
-  await debtService.addDebtsToCase(caseItem.caseId, row.debts);
+  // await debtService.addDebtsToCase(caseItem.caseId, row.debts);
+  // הוספת החובות היא חלק מיצירת התיק, ולכן אינה פעולה ראשית נפרדת.
+  await debtService.addDebtsToCase(caseItem.caseId, row.debts, {
+    isPrimaryAction: false
+  });
   await loadCaseBuilderRows();
 }
 
@@ -511,7 +515,10 @@ async function createSelectedCases() {
         routeId: row.routeId,
         groupId: row.groupId,
         idPayer: row.idPayer,
-        idAsset: row.idAsset
+        idAsset: row.idAsset,
+        historyOptions: {
+          isPrimaryAction: false
+        }
       });
 
       if (!caseItem) {
@@ -519,7 +526,9 @@ async function createSelectedCases() {
         continue;
       }
 
-      await debtService.addDebtsToCase(caseItem.caseId, row.debts);
+      await debtService.addDebtsToCase(caseItem.caseId, row.debts, {
+        isPrimaryAction: false
+      });
       created++;
     } catch (error) {
       console.error("Failed creating case", error);
@@ -527,6 +536,20 @@ async function createSelectedCases() {
     }
   }
 
+  await caseService.logBulkSummary({
+    actionType: "bulk_create_cases",
+    description: "הקמת תיקים מרוכזת",
+    beforeText:
+      `מסלול: ${rows[0].routeId}, קבוצה: ${rows[0].groupName || rows[0].groupId}, ` +
+      `נבחרו: ${rows.length}`,
+    afterText: `הוקמו ${created} תיקים. נכשלו ${failed}.`,
+    screenName: "cases",
+    details: [
+      { fieldName: "requestedCount", oldValue: "", newValue: rows.length },
+      { fieldName: "createdCount", oldValue: "", newValue: created },
+      { fieldName: "failedCount", oldValue: "", newValue: failed }
+    ]
+  });
   alert(`הוקמו ${created} תיקים. נכשלו ${failed}.`);
   await loadCaseBuilderRows();
 }

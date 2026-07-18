@@ -24,6 +24,16 @@ class HistoryService {
       .slice(0, num);
   }
 
+  async getLastPrimaryActions(num) {
+  const history = await this.getAllHistory();
+
+  return history
+    .filter(item => item.isPrimaryAction !== false)
+    .slice()
+    .sort((a, b) => new Date(b.actionDate) - new Date(a.actionDate))
+    .slice(0, num);
+  }
+  
   async logAction(action) {
     // כתיבת היסטוריה דורשת הרשאת עריכה לטבלת הכותרת.
     if (!permissionService.canEditTable("history")) {
@@ -56,7 +66,8 @@ class HistoryService {
       afterText: action.afterText || "",
       screenName: action.screenName || "",
       serviceName: action.serviceName || "",
-      actionName: action.actionName || ""
+      actionName: action.actionName || "",
+      isPrimaryAction: action.isPrimaryAction !== false
     };
 
     history.push(newHistory);

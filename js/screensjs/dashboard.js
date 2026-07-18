@@ -38,8 +38,8 @@ async function renderRecentActivity() {
     `;
     return;
   }
-
-  const lastActions = await historyService.getLastActions(5);
+  const lastActions = await historyService.getLastPrimaryActions(5);
+  // const lastActions = await historyService.getLastActions(5);
 
   if (!lastActions.length) {
     tbody.innerHTML = `
