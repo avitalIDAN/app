@@ -7,30 +7,116 @@
       הורד כקובץ PDF 📄
   </button>
 </div> -->
-
 <div class="statuses-screen">
-
   <h2>מצבים במסלול</h2>
 
-  <div class="filter-bar muni-filters">
-    <label for="routeSelect">בחר מסלול:</label>
-    <select id="routeSelect">
-      <option value="">בחר מסלול</option>
-    </select>
+  <div class="filters-bar muni-filters">
+    <label>
+      <b>מסלול</b>
+      <select id="routeSelect"></select>
+    </label>
   </div>
+
+  <div class="filters-bar muni-filters">
+    <label>
+      <b>מזהה מצב</b>
+      <input id="statusIdInput" type="number" min="0" step="1">
+    </label>
+
+    <label>
+      <b>קוד מצב</b>
+      <input id="statusCodeInput" type="text" placeholder="לדוגמה FIRST_WARNING">
+    </label>
+
+    <label>
+      <b>שם מצב</b>
+      <input id="statusNameInput" type="text" placeholder="שם מצב">
+    </label>
+
+    <label>
+      <b>מצב הבא</b>
+      <select id="nextStatusSelect"></select>
+    </label>
+
+    <label>
+      <b>סכום עמלה</b>
+      <input id="feeAmountInput" type="number" min="0" step="0.01" value="0">
+    </label>
+  </div>
+
+  <div class="filters-bar muni-filters">
+    <label>
+      <b>מזהה תבנית מכתב</b>
+      <input id="letterTemplateIdInput" type="text" placeholder="אופציונלי">
+    </label>
+
+    <label>
+      <b>סוג חיוב מקור</b>
+      <select id="defaultChargeTypeSelect"></select>
+    </label>
+
+    <label>
+      <b>סמל פעולה</b>
+      <input id="defaultActionCodeInput" type="text" placeholder="אופציונלי">
+    </label>
+
+    <label>
+      <b>הערת ברירת מחדל</b>
+      <input id="defaultNoteInput" type="text" placeholder="אופציונלי">
+    </label>
+
+    <label>
+      <input id="statusIsActiveInput" type="checkbox" checked>
+      <b>מצב פעיל</b>
+    </label>
+
+    <label>
+      <input id="statusIsClosedInput" type="checkbox">
+      <b>מצב סגירת תיק</b>
+    </label>
+
+    <button
+      id="saveStatusBtn"
+      class="btn btn--primary"
+      type="button"
+      onclick="saveStatus()"
+    >
+      הוספת מצב
+    </button>
+
+    <button
+      id="cancelStatusEditBtn"
+      class="btn btn--secondary"
+      type="button"
+      onclick="cancelStatusEdit()"
+      disabled
+    >
+      ביטול עריכה
+    </button>
+  </div>
+
   <div class="table-scroll" dir="rtl">
     <table class="table table--striped table--hover">
       <thead>
         <tr>
-          <th>קוד מצב</th>
-          <th>שם מצב</th>
-          <th>סדר</th>
+          <th>מזהה</th>
+          <th>קוד</th>
+          <th>שם</th>
+          <th>מצב הבא</th>
           <th>פעיל</th>
+          <th>סוגר תיק</th>
+          <th>עמלה</th>
+          <th>מכתב</th>
+          <th>סוג חיוב מקור</th>
+          <th>סמל פעולה</th>
+          <th>הערה</th>
+          <th>בסיסי</th>
+          <th>פעולות</th>
         </tr>
       </thead>
       <tbody id="statusesTable">
         <tr>
-          <td colspan="4">בחר מסלול להצגת מצבים</td>
+          <td colspan="13">טוען נתונים...</td>
         </tr>
       </tbody>
     </table>
