@@ -1,4 +1,31 @@
 class StatusService {
+  constructor() {
+    // מזהים קבועים של מצבי מערכת בסיסיים.
+    // הם זהים בכל המסלולים בשלב הנוכחי.
+    this.systemStatusIds = Object.freeze({
+      openCase: 1,
+      excluded: 5
+    });
+  }
+
+  getOpenCaseStatusId() {
+    return this.systemStatusIds.openCase;
+  }
+
+  getExcludedStatusId() {
+    return this.systemStatusIds.excluded;
+  }
+
+  async getClosedStatus(routeId) {
+    const statuses = await this.getAllByRoute(routeId);
+
+    // סגירה נקבעת לפי הגדרה עסקית, ולא לפי statusId קבוע.
+    return statuses.find(status =>
+      status.isClosedStatus === true &&
+      status.isActive !== false
+    ) || null;
+  }
+
   async getAll() {
     if (!permissionService.canViewTable("statuses")) {
       return [];
@@ -51,6 +78,32 @@ class StatusService {
     );
   }
 
+  
+  // async getNextStatus(statusId, routeId) {
+  //   if (!permissionService.canViewTable("statuses")) {
+  //     return null;
+  //   }
+
+  //   const statuses = await this.getAll();
+
+  //   const currentStatus = statuses.find(status =>
+  //     status.statusId == statusId &&
+  //     status.routeId == routeId
+  //   );
+
+  //   if (!currentStatus || currentStatus.nextStatusId == null) {
+  //     return null;
+  //   }
+
+  //   const nextStatus = statuses.find(status =>
+  //     status.statusId == currentStatus.nextStatusId &&
+  //     status.routeId == routeId
+  //   );
+
+  //   // מצב מושבת אינו יעד תקין לקידום.
+  //   return nextStatus?.isActive !== false ? nextStatus : null;
+  // }
+
   async getNextStatus(statusId, routeId) {
     if (!permissionService.canViewTable("statuses")) {
       return null;
@@ -58,25 +111,21 @@ class StatusService {
 
     const statuses = await this.getAll();
 
-    const current = statuses.find(status =>
+    const currentStatus = statuses.find(status =>
       status.statusId == statusId &&
       status.routeId == routeId
     );
 
-    if (!current) return null;
-
-    if (current.nextStatusId !== null && current.nextStatusId !== undefined) {
-      return statuses.find(status =>
-        status.statusId == current.nextStatusId &&
-        status.routeId == routeId
-      ) || null;
+    if (!currentStatus || currentStatus.nextStatusId == null) {
+      return null;
     }
 
-    return statuses.find(status =>
-      status.isActive &&
-      status.routeId == routeId &&
-      status.orderIndex == current.orderIndex + 1
-    ) || null;
+    const nextStatus = statuses.find(status =>
+      status.statusId == currentStatus.nextStatusId &&
+      status.routeId == routeId
+    );
+
+    return nextStatus?.isActive !== false ? nextStatus : null;
   }
 
   async getByCode(code, routeId) {

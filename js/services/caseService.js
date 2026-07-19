@@ -1,3 +1,5 @@
+const OPEN_CASE_STATUS_ID = 1;
+
 class CaseService {
   async getAllCasesHis() {
     if (!permissionService.canViewTable("caseStatusHistory")) {
@@ -73,14 +75,24 @@ class CaseService {
     return cases.length;
   }
 
+  // async getNumActiveCases() {
+  //   const cases = await this.getAllCases();
+  //   return cases.filter(c => !c.isClosed && c.currentStatusId != 0).length;
+  // }
+
+  // async getNumClosedCases() {
+  //   const cases = await this.getAllCases();
+  //   return cases.filter(c => c.isClosed || c.currentStatusId == 0).length;
+  // }
+
   async getNumActiveCases() {
     const cases = await this.getAllCases();
-    return cases.filter(c => !c.isClosed && c.currentStatusId != 0).length;
+    return cases.filter(caseItem => !caseItem.isClosed).length;
   }
 
   async getNumClosedCases() {
     const cases = await this.getAllCases();
-    return cases.filter(c => c.isClosed || c.currentStatusId == 0).length;
+    return cases.filter(caseItem => caseItem.isClosed).length;
   }
 
   async getCaseById(caseId) {
@@ -93,7 +105,7 @@ class CaseService {
     groupId,
     idPayer,
     idAsset,
-    statusId = 1,
+    // statusId = 1,
     delta = 0,
     parentCaseId = null,
     historyOptions = {}
@@ -113,12 +125,24 @@ class CaseService {
     }
 
     try {
+      const statusId = statusService.getOpenCaseStatusId();
+      const status = await statusService.getById(statusId, routeId);
+      if (!status) {
+        throw new Error("לא נמצא מצב פתיחת תיק עבור המסלול שנבחר");
+      }
+      if (status.isActive === false) {
+        throw new Error("מצב פתיחת תיק מושבת ולכן לא ניתן להקים תיק");
+      }
+      if (status.isClosedStatus === true) {
+        throw new Error("לא ניתן להקים תיק במצב סגור");
+      }
+
       const cases = await localDbService.getAll("cases");
       const now = new Date().toISOString();
       const nextKey = localDbService.getNextId(cases, "key");
       const nextCaseId = localDbService.getNextId(cases, "caseId");
       const username = authService.getCurrentUsername();
-      const status = await statusService.getById(statusId, routeId);
+      // const status = await statusService.getById(statusId, routeId);
 
       const caseItem = {
         key: nextKey,
@@ -133,8 +157,8 @@ class CaseService {
         createdBy: username,
         createdAt: now,
         updatedAt: now,
-        isClosed: Number(statusId) === 0,
-        closedAt: Number(statusId) === 0 ? now : null,
+        isClosed: false,
+        closedAt: null,
         delta,
         parentCaseId
       };
@@ -273,9 +297,11 @@ class CaseService {
     note = "",
     historyOptions = {}
   ) {
-    // שינוי מצב הוא פעולה כפולה:
-    // 1. עדכון התיק
-    // 2. הוספת רשומה להיסטוריית מצבים
+    const {
+      isPrimaryAction = true,
+      bulkOperationId = null
+    } = historyOptions;
+
     if (
       !permissionService.canEditTable("cases") ||
       !permissionService.canEditTable("caseStatusHistory")
@@ -285,7 +311,7 @@ class CaseService {
 
     try {
       const cases = await localDbService.getAll("cases");
-      const index = cases.findIndex(c => c.caseId == caseId);
+      const index = cases.findIndex(caseItem => caseItem.caseId == caseId);
 
       if (index === -1) {
         throw new Error("Case not found");
@@ -293,21 +319,37 @@ class CaseService {
 
       const oldCase = { ...cases[index] };
       const routeId = oldCase.routeId;
+
+      // הגנה גם על תיקים ישנים שבהם isClosed טרם עודכן,
+      // באמצעות בדיקת המצב הנוכחי.??
+      const oldStatus = await statusService.getById(
+        oldCase.currentStatusId,
+        routeId
+      );
+
+      if (oldCase.isClosed || oldStatus?.isClosedStatus === true) {
+        throw new Error("לא ניתן להעביר תיק סגור למצב אחר");
+      }
+
       const newStatus = await statusService.getById(newStatusId, routeId);
 
       if (!newStatus) {
         throw new Error(`Status not found: ${newStatusId}`);
       }
 
+      if (newStatus.isActive === false) {
+        throw new Error("לא ניתן להעביר תיק למצב מושבת");
+      }
+
       const now = new Date().toISOString();
-      const isClosed = Number(newStatusId) === 0;
+      const isClosed = newStatus.isClosedStatus === true;
 
       cases[index] = {
         ...cases[index],
         currentStatusId: Number(newStatusId),
         updatedAt: now,
         isClosed,
-        closedAt: isClosed ? now : cases[index].closedAt
+        closedAt: isClosed ? now : null
       };
 
       localDbService.warnMemoryOnly("cases", "update");
@@ -323,32 +365,42 @@ class CaseService {
       });
 
       if (window.historyService?.logAction) {
-        const oldStatus = await statusService.getById(oldCase.currentStatusId, routeId);
-
         await historyService.logAction({
           actionType: "status_change",
           entityType: "case",
           entityId: cases[index].caseId,
           entityLabel: `תיק ${cases[index].caseId}`,
           description: "מעבר מצב",
-          beforeText: `מצב קודם: ${oldStatus ? (oldStatus.statusName || oldStatus.name) : oldCase.currentStatusId}`,
+          beforeText: `מצב קודם: ${
+            oldStatus
+              ? (oldStatus.statusName || oldStatus.name)
+              : oldCase.currentStatusId
+          }`,
           afterText: `מצב חדש: ${newStatus.statusName || newStatus.name}`,
           screenName: "switchingModes",
           serviceName: "CaseService",
           actionName: "changeCaseStatus",
-          isPrimaryAction: historyOptions.isPrimaryAction !== false,
+          isPrimaryAction,
+          bulkOperationId,
           details: [
             {
               fieldName: "currentStatusId",
               oldValue: oldCase.currentStatusId,
               newValue: Number(newStatusId)
+            },
+            {
+              fieldName: "isClosed",
+              oldValue: oldCase.isClosed === true,
+              newValue: isClosed
             }
           ]
         });
       }
 
       const enrichedCases = await this.getAllCases();
-      return enrichedCases.find(c => c.caseId == caseId) || cases[index];
+
+      return enrichedCases.find(caseItem => caseItem.caseId == caseId)
+        || cases[index];
     } catch (error) {
       if (window.errorLogService?.logException) {
         try {
@@ -368,7 +420,6 @@ class CaseService {
       throw error;
     }
   }
-
     async logBulkSummary({
     bulkOperationId,
     actionType,

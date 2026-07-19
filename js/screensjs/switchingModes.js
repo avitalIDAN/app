@@ -219,7 +219,7 @@ async function refreshSwitchingCases() {
     statusId: statusId || null
   });
 
-  renderSwitchingCasesTable();
+  await renderSwitchingCasesTable();
 }
 
 async function renderSwitchingCasesTable() {
@@ -237,14 +237,44 @@ async function renderSwitchingCasesTable() {
   }
 
   for (const caseItem of switchingModesCases) {
-    const isClosed = caseItem.isClosed || caseItem.currentStatusId == 0;
-    const isExcluded = caseItem.currentStatusId == 5;
-    const isFinal = isClosed || isExcluded;
+    const isClosed = caseItem.isClosed === true;
 
-    const canChangeThisCase = switchingModesAccess.canEditCases && !isFinal;
-    const canCloseThisCase = switchingModesAccess.canEditCases && !isClosed;
-    const canOpenCase = switchingModesAccess.canOpenCaseScreen && switchingModesAccess.canViewCases;
+    const isExcluded =
+      Number(caseItem.currentStatusId) === statusService.getExcludedStatusId();
 
+    const nextStatus = isClosed || isExcluded
+      ? null
+      : await statusService.getNextStatus(
+          caseItem.currentStatusId,
+          caseItem.routeId
+        );
+
+    // קידום אפשרי רק אם יש מצב הבא.
+    const canPromoteThisCase =
+      switchingModesAccess.canEditCases &&
+      !isClosed &&
+      !isExcluded &&
+      nextStatus !== null;
+
+    // גם תיק מוחרג ניתן לסגירה.
+    const canCloseThisCase =
+      switchingModesAccess.canEditCases &&
+      !isClosed;
+
+    // אין אפשרות להחריג תיק שכבר מוחרג.
+    const canExcludeThisCase =
+      switchingModesAccess.canEditCases &&
+      !isClosed &&
+      !isExcluded;
+
+    // תיק מוחרג יכול להיבחר לשינוי מצב גורף ולהחזרה למצב רגיל.
+    const canBulkChangeThisCase =
+      switchingModesAccess.canEditCases &&
+      !isClosed;
+
+    const canOpenCase =
+      switchingModesAccess.canOpenCaseScreen &&
+      switchingModesAccess.canViewCases;
     const tr = document.createElement("tr");
 
     tr.innerHTML = `
@@ -253,7 +283,7 @@ async function renderSwitchingCasesTable() {
           type="checkbox"
           class="switching-case-checkbox"
           data-case-id="${caseItem.caseId}"
-          ${canChangeThisCase ? "" : "disabled"}
+          ${canBulkChangeThisCase ? "" : "disabled"}
         >
       </td>
       <td>${caseItem.caseId}</td>
@@ -261,12 +291,12 @@ async function renderSwitchingCasesTable() {
       <td>${caseItem.groupName || caseItem.groupId || "-"}</td>
       <td>${caseItem.statusName || "-"}</td>
       <td>
-        <button class="btn btn--primary" ${canChangeThisCase ? "" : "disabled"} onclick="promote(${caseItem.caseId})">
+        <button class="btn btn--primary" ${canPromoteThisCase ? "" : "disabled"} onclick="promote(${caseItem.caseId})">
           קידום למצב
         </button>
       </td>
       <td>
-        <button class="btn btn--destructive" ${canChangeThisCase ? "" : "disabled"} onclick="exclusion(${caseItem.caseId})">
+        <button class="btn btn--destructive" ${canExcludeThisCase ? "" : "disabled"} onclick="exclusion(${caseItem.caseId})">
           החרגה
         </button>
       </td>
@@ -371,7 +401,7 @@ async function exclusion(caseId) {
 
   await caseService.changeCaseStatus(
     caseItem.caseId,
-    await getExcludedStatusId(caseItem.routeId),
+    statusService.getExcludedStatusId(),
     authService.getCurrentUsername(),
     "החרגת תיק"
   );
@@ -392,9 +422,18 @@ async function closeCase(caseId) {
     return;
   }
 
+const closedStatus = await statusService.getClosedStatus(
+  caseItem.routeId
+);
+
+  if (!closedStatus) {
+    alert("לא מוגדר מצב סגור פעיל למסלול זה");
+    return;
+  }
+
   await caseService.changeCaseStatus(
     caseItem.caseId,
-    0,
+    closedStatus.statusId,
     authService.getCurrentUsername(),
     "סגירת תיק"
   );
@@ -402,10 +441,10 @@ async function closeCase(caseId) {
   await refreshSwitchingModesCases();
 }
 
-async function getExcludedStatusId(routeId) {
-  const excludedStatus = await statusService.getByCode("EXCLUDED", routeId);
-  return excludedStatus ? excludedStatus.statusId : 5;
-}
+// async function getExcludedStatusId(routeId) {
+//   const excludedStatus = await statusService.getByCode("EXCLUDED", routeId);
+//   return excludedStatus ? excludedStatus.statusId : 5;
+// }
 
 async function changeCaseStatus() {
   if (!canEditSwitchingModes()) {
