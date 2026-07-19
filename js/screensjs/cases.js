@@ -470,7 +470,7 @@ async function createCaseFromBuilderRow(rowId) {
   }
 
   // await debtService.addDebtsToCase(caseItem.caseId, row.debts);
-  // הוספת החובות היא חלק מיצירת התיק, ולכן אינה פעולה ראשית נפרדת.
+  // הוספת החובות היא חלק מיצירת התיק, ולכן אינה פעולה ראשית נפרדת??.
   await debtService.addDebtsToCase(caseItem.caseId, row.debts, {
     isPrimaryAction: false
   });
@@ -508,7 +508,7 @@ async function createSelectedCases() {
 
   let created = 0;
   let failed = 0;
-
+  const bulkOperationId = historyService.createBulkOperationId("OPENCASE");
   for (const row of rows) {
     try {
       const caseItem = await caseService.createCase({
@@ -517,7 +517,8 @@ async function createSelectedCases() {
         idPayer: row.idPayer,
         idAsset: row.idAsset,
         historyOptions: {
-          isPrimaryAction: false
+          isPrimaryAction: false,
+          bulkOperationId
         }
       });
 
@@ -527,7 +528,8 @@ async function createSelectedCases() {
       }
 
       await debtService.addDebtsToCase(caseItem.caseId, row.debts, {
-        isPrimaryAction: false
+        isPrimaryAction: false,
+        bulkOperationId
       });
       created++;
     } catch (error) {

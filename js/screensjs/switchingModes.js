@@ -451,6 +451,7 @@ async function changeCaseStatus() {
 
   let changed = 0;
   let failed = 0;
+  const bulkOperationId = historyService.createBulkOperationId("STATUSCHANGE");
 
   for (const caseItem of selectedCases) {
     try {
@@ -460,7 +461,8 @@ async function changeCaseStatus() {
         authService.getCurrentUsername(),
         "שינוי מצב מרוכז",
         {
-          isPrimaryAction: false
+          isPrimaryAction: false,
+          bulkOperationId
         }
       );
 

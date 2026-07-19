@@ -98,6 +98,10 @@ class CaseService {
     parentCaseId = null,
     historyOptions = {}
   }) {
+    const {
+      isPrimaryAction = true,
+      bulkOperationId = null
+    } = historyOptions;
     // יצירת תיק היא פעולה כפולה:
     // 1. כתיבה ל-cases
     // 2. כתיבה ל-caseStatusHistory עבור מצב פתיחה
@@ -160,7 +164,9 @@ class CaseService {
           screenName: "cases",
           serviceName: "CaseService",
           actionName: "createCase",
-          isPrimaryAction: historyOptions.isPrimaryAction !== false,
+          isPrimaryAction,
+          bulkOperationId,
+          // isPrimaryAction: historyOptions.isPrimaryAction !== false,
           details: [
             { fieldName: "caseId", oldValue: "", newValue: caseItem.caseId },
             { fieldName: "currentStatusId", oldValue: "", newValue: caseItem.currentStatusId }
@@ -364,6 +370,7 @@ class CaseService {
   }
 
     async logBulkSummary({
+    bulkOperationId,
     actionType,
     description,
     beforeText,
@@ -385,6 +392,7 @@ class CaseService {
       serviceName: "CaseService",
       actionName: "logBulkSummary",
       isPrimaryAction: true,
+      bulkOperationId,
       details
     });
   }

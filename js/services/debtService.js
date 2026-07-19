@@ -246,7 +246,7 @@ class DebtService {
       });
   }
 
-  async addDebtsToCase(caseId, gviaDebts, { isPrimaryAction = true } = {}) {
+  async addDebtsToCase(caseId, gviaDebts, { isPrimaryAction = true, bulkOperationId = null } = {}) {
     // כתיבה ל-hovachifa: אם אין הרשאת עריכה, לא מבצעים פעולה.
     // בשלב הזה חסימת הרשאה אינה נרשמת כשגיאה, כדי לא להציף את errorLog.
     if (!permissionService.canEditTable("hovachifa")) {
@@ -281,6 +281,7 @@ class DebtService {
         await historyService.logAction({
           actionType: "create",
           isPrimaryAction,
+          bulkOperationId,
           entityType: "caseDebt",
           entityId: caseId,
           entityLabel: `תיק ${caseId}`,

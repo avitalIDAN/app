@@ -33,7 +33,7 @@ class HistoryService {
     .sort((a, b) => new Date(b.actionDate) - new Date(a.actionDate))
     .slice(0, num);
   }
-  
+
   async logAction(action) {
     // כתיבת היסטוריה דורשת הרשאת עריכה לטבלת הכותרת.
     if (!permissionService.canEditTable("history")) {
@@ -67,6 +67,7 @@ class HistoryService {
       screenName: action.screenName || "",
       serviceName: action.serviceName || "",
       actionName: action.actionName || "",
+      bulkOperationId: action.bulkOperationId || null,
       isPrimaryAction: action.isPrimaryAction !== false
     };
 
@@ -86,6 +87,28 @@ class HistoryService {
 
     localDbService.warnMemoryOnly("history", "insert");
     return newHistory;
+  }
+
+
+  createBulkOperationId(actionCode) {
+    const now = new Date();
+
+    const date = [
+      now.getFullYear(),
+      String(now.getMonth() + 1).padStart(2, "0"),
+      String(now.getDate()).padStart(2, "0")
+    ].join("");
+
+    const time = [
+      String(now.getHours()).padStart(2, "0"),
+      String(now.getMinutes()).padStart(2, "0"),
+      String(now.getSeconds()).padStart(2, "0")
+    ].join("");
+
+    // מקטין מאוד אפשרות להתנגשות בין שתי פעולות באותה שנייה.
+    const uniquePart = String(Date.now()).slice(-6);
+
+    return `BULK-${actionCode.toUpperCase()}-${date}-${time}-${uniquePart}`;
   }
 }
 
