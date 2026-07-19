@@ -9,6 +9,8 @@ class LocalDbService {
 
       cases: "data/internalDB/cases.json",
       caseStatusHistory: "data/internalDB/caseStatusHistory.json",
+      foreclosureCases: "data/internalDB/foreclosureCases.json",
+      foreclosureRequests: "data/internalDB/foreclosureRequests.json",
 
       routes: "data/internalDB/routes.json",
       statuses: "data/internalDB/statuses.json",

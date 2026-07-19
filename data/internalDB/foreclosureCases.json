@@ -1,0 +1,4 @@
+[
+  { "foreclosureId": 1, "caseId": 1001, "source": "מצב עיקול", "status": "ממתין ליצירת עיקול", "clientType": "ת.ז.", "clientNumber": "123456789", "lastName": "כהן", "firstName": "דנה", "address": "הרצל 10", "city": "תל אביב", "department": "גבייה", "createdAt": "2026-07-18T08:30:00", "createdBy": "admin" },
+  { "foreclosureId": 2, "caseId": 1002, "source": "פתיחה ידנית", "status": "עיקול פעיל", "clientType": "חברה", "clientNumber": "512345678", "lastName": "אופק בע\"מ", "firstName": "", "address": "העצמאות 4", "city": "חיפה", "department": "ארנונה", "createdAt": "2026-07-17T09:15:00", "createdBy": "admin" }
+]

@@ -1,0 +1,3 @@
+[
+  { "requestId": 1, "foreclosureId": 2, "caseId": 1002, "actionType": "ביטול עיקול", "bank": "בנק לאומי", "amount": 12500, "status": "ממתין לחיתום", "requestedBy": "admin", "requestedAt": "2026-07-18T10:00:00", "signedBy": null, "signedAt": null }
+]

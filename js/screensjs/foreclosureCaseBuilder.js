@@ -1,40 +1,37 @@
-﻿const demoForeclosureCases = [
-  { caseId: 1001, idPayer: 1, idAsset: 101, routeName: "אכיפה רגילה", groupName: "ארנונה ומים", statusName: "עיקולי", hasForeclosureCase: false },
-  { caseId: 1002, idPayer: 2, idAsset: 201, routeName: "אכיפה רגילה", groupName: "שילוט", statusName: "עיקולי", hasForeclosureCase: false },
-  { caseId: 1003, idPayer: 3, idAsset: 301, routeName: "אכיפה מהירה", groupName: "ארנונה ומים", statusName: "עיקולי", hasForeclosureCase: true }
-];
-
-function renderForeclosureCaseBuilder() {
+async function renderForeclosureCaseBuilder() {
+  const [eligibleCases, manualCases] = await Promise.all([
+    foreclosureService.getEligibleCases(), foreclosureService.getEligibleCases(true)
+  ]);
+  const canEdit = foreclosureService.canEdit("foreclosureCaseBuilder");
   const tbody = document.getElementById("foreclosureCaseBuilderTable");
-  const canEdit = permissionService.canEditScreen("foreclosureCaseBuilder");
+  const manualSelect = document.getElementById("manualForeclosureCase");
 
-  const rows = demoForeclosureCases.filter(item => !item.hasForeclosureCase);
-
-  if (!rows.length) {
-    tbody.innerHTML = `<tr><td colspan="7">לא נמצאו תיקים לפתיחת תיק עיקול</td></tr>`;
+  manualSelect.innerHTML = `<option value="">בחירת תיק</option>${manualCases.map(item =>
+    `<option value="${item.caseId}">תיק ${item.caseId} — ${item.statusName || "ללא מצב"}</option>`).join("")}`;
+  manualSelect.disabled = !canEdit;
+  if (!eligibleCases.length) {
+    tbody.innerHTML = `<tr><td colspan="7">לא נמצאו תיקים במצב עיקול לפתיחת תיק עיקול</td></tr>`;
     return;
   }
-
-  tbody.innerHTML = rows.map(item => `
-    <tr>
-      <td>${item.caseId}</td>
-      <td>${item.idPayer}</td>
-      <td>${item.idAsset}</td>
-      <td>${item.routeName}</td>
-      <td>${item.groupName}</td>
-      <td>${item.statusName}</td>
-      <td>
-        <button class="btn btn--secondary" ${canEdit ? "" : "disabled"} onclick="openForeclosureCase(${item.caseId})">
-          פתיחת תיק עיקול
-        </button>
-      </td>
-    </tr>
-  `).join("");
+  tbody.innerHTML = eligibleCases.map(item => `
+    <tr><td>${item.caseId}</td><td>${item.idPayer}</td><td>${item.idAsset}</td><td>${item.routeName}</td><td>${item.groupName}</td><td>${item.statusName}</td>
+    <td><button class="btn btn--secondary" ${canEdit ? "" : "disabled"} onclick="openForeclosureCase(${item.caseId}, 'מצב עיקול')">פתיחת תיק עיקול</button></td></tr>`).join("");
 }
 
-function openForeclosureCase(caseId) {
-  alert(`נפתחה בקשת פתיחת תיק עיקול עבור תיק ${caseId}. בהמשך הפעולה תירשם בטבלת תיקי עיקול.`);
+async function openForeclosureCase(caseId, source) {
+  try {
+    await foreclosureService.openForeclosureCase(caseId, source);
+    alert(`נפתח תיק עיקול עבור תיק ${caseId}. אפשר להוסיף עיקול במסך תהליך עיקול.`);
+    renderForeclosureCaseBuilder();
+  } catch (error) { alert(error.message); }
+}
+
+function openManualForeclosureCase() {
+  const caseId = document.getElementById("manualForeclosureCase").value;
+  if (!caseId) { alert("יש לבחור תיק"); return; }
+  openForeclosureCase(caseId, "פתיחה ידנית");
 }
 
 window.renderForeclosureCaseBuilder = renderForeclosureCaseBuilder;
 window.openForeclosureCase = openForeclosureCase;
+window.openManualForeclosureCase = openManualForeclosureCase;

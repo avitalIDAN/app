@@ -2,7 +2,13 @@
   <h2>ביצוע חיתום</h2>
 
   <div class="case-builder-summary">
-    <span>בקשות פעולה שממתינות לאישור לפני ביצוע בפועל</span>
+    <span>בדקי את השורות לפני החיתום. הפעולה מדמה הכנת קובץ ושליחה לבנק.</span>
+  </div>
+
+  <div class="foreclosure-signing-bar">
+    <label for="foreclosureSignerId">תעודת זהות של בעלת הכרטיס החותם</label>
+    <input id="foreclosureSignerId" inputmode="numeric" />
+    <button class="btn btn--destructive" type="button" onclick="signAllForeclosureRequests()">הכנת קובץ וחתימה</button>
   </div>
 
   <div class="table-scroll" dir="rtl">
@@ -13,9 +19,10 @@
             <th>תיק עיקול</th>
             <th>מספר תיק</th>
             <th>סוג פעולה</th>
+            <th>בנק</th>
+            <th>סכום</th>
             <th>מבקש</th>
             <th>סטטוס</th>
-            <th>חיתום</th>
         </tr>
         </thead>
         <tbody id="foreclosureApprovalTable"></tbody>

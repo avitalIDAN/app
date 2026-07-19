@@ -1401,6 +1401,74 @@ button:disabled {
   opacity: 0.55;
 }
 
+/* מודול עיקולים */
+.foreclosure-manual-open,
+.foreclosure-signing-bar,
+.foreclosure-form-fields,
+.foreclosure-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+  margin: 18px 0;
+}
+
+.foreclosure-manual-open label,
+.foreclosure-signing-bar label,
+.foreclosure-form-fields label {
+  display: grid;
+  gap: 6px;
+  color: var(--ink-800);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.foreclosure-manual-open select,
+.foreclosure-signing-bar input,
+.foreclosure-form-fields select,
+.foreclosure-form-fields input {
+  min-height: 42px;
+  min-width: 220px;
+  padding: 8px 12px;
+  border: 1px solid var(--ink-300);
+  border-radius: var(--radius);
+  background: #fff;
+  color: var(--ink-900);
+  font: inherit;
+}
+
+.foreclosure-request-panel {
+  margin: 18px 0;
+  padding: 18px;
+  border: 2px solid var(--table-rose-700);
+  border-radius: var(--radius);
+  background: #fff;
+}
+
+.foreclosure-request-panel h3,
+.foreclosure-request-panel p {
+  margin: 0 0 8px;
+}
+
+@media (max-width: 900px) {
+  .foreclosure-manual-open,
+  .foreclosure-signing-bar,
+  .foreclosure-form-fields,
+  .foreclosure-form-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .foreclosure-manual-open select,
+  .foreclosure-signing-bar input,
+  .foreclosure-form-fields select,
+  .foreclosure-form-fields input {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
 .mobile-menu-toggle {
   display: none;
 }
