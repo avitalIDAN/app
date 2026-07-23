@@ -1449,6 +1449,27 @@ button:disabled {
   min-width: 680px;
 }
 
+.permissions-comparison--same td {
+  background: var(--muni-teal-50);
+}
+
+.permissions-comparison--different td {
+  background: var(--ink-50);
+}
+
+.permission-result {
+  display: inline-block;
+  padding: 5px 9px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.permission-result--same {
+  background: var(--muni-teal-600);
+  color: #fff;
+}
+
 @media (max-width: 1100px) {
   .permissions-layout {
     grid-template-columns: 1fr;

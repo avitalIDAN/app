@@ -54,28 +54,7 @@
     <section class="permissions-panel" aria-labelledby="comparisonTitle">
       <h3 id="comparisonTitle">השוואה וניהול תפקידים</h3>
       <div class="permissions-subsection">
-        <h4>השוואת הרשאות</h4>
-        <div class="filters-bar">
-          <label>השווה מול
-            <select id="comparisonType" onchange="refreshComparisonTargets()">
-              <option value="user">משתמש</option>
-              <option value="role">תפקיד</option>
-            </select>
-          </label>
-          <label>יעד להשוואה
-            <select id="comparisonTarget" onchange="renderPermissionsComparison()"></select>
-          </label>
-        </div>
-        <div class="table-scroll">
-          <table class="table table--hover permissions-table">
-            <thead><tr><th>סוג</th><th>משאב</th><th>משתמש נבחר</th><th>יעד להשוואה</th><th>תוצאה</th></tr></thead>
-            <tbody id="permissionsComparisonTable"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="permissions-subsection">
-        <h4>תפקידים</h4>
+        <h4>הקמת תפקיד ועריכתו</h4>
         <div class="filters-bar">
           <label>שם תפקיד
             <input id="roleNameInput" type="text" placeholder="תפקיד מותאם אישית">
@@ -92,6 +71,31 @@
           <label class="permission-checkbox"><input id="roleIsActive" type="checkbox"> תפקיד פעיל</label>
           <button id="saveRoleBtn" class="btn btn--secondary" type="button" onclick="saveSelectedRole()">שמירת תפקיד</button>
         </div>
+      </div>
+
+      <div class="permissions-subsection">
+        <h4>הרשאות להשוואה</h4>
+        <div class="filters-bar">
+          <label>השווה מול
+            <select id="comparisonType" onchange="refreshComparisonTargets()">
+              <option value="user">משתמש</option>
+              <option value="role">תפקיד</option>
+            </select>
+          </label>
+          <label>יעד להשוואה
+            <select id="comparisonTarget" onchange="renderPermissionsComparison()"></select>
+          </label>
+        </div>
+        <div class="table-scroll">
+          <table class="table table--hover permissions-table">
+            <thead><tr><th>סוג</th><th>משאב</th><th>צפייה</th><th>עריכה</th><th>תוצאה</th></tr></thead>
+            <tbody id="permissionsComparisonTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="permissions-subsection">
+        <h4>הרשאות התפקיד לעריכה</h4>
         <div class="filters-bar">
           <label>סוג משאב
             <select id="rolePermissionType" onchange="refreshRolePermissionResources()">

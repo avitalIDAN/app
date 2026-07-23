@@ -55,8 +55,24 @@ function togglePermissionFields(typeSelectId, resourceSelectId) {
   document.getElementById(`${prefix}CanEdit`).disabled = !isScreen;
 }
 
-function refreshUserPermissionResources() { populateResourceSelect("userPermissionType", "userPermissionResource"); }
-function refreshRolePermissionResources() { populateResourceSelect("rolePermissionType", "rolePermissionResource"); }
+function resetPermissionControls(prefix) {
+  const type = document.getElementById(`${prefix}PermissionType`).value;
+  const isScreen = type === "screen";
+  document.getElementById(`${prefix}CanView`).checked = isScreen;
+  document.getElementById(`${prefix}CanEdit`).checked = false;
+  document.getElementById(`${prefix}BlockView`).checked = false;
+  document.getElementById(`${prefix}BlockEdit`).checked = !isScreen;
+}
+
+function refreshUserPermissionResources() {
+  resetPermissionControls("user");
+  populateResourceSelect("userPermissionType", "userPermissionResource");
+}
+
+function refreshRolePermissionResources() {
+  resetPermissionControls("role");
+  populateResourceSelect("rolePermissionType", "rolePermissionResource");
+}
 
 function getPermissionFromControls(prefix) {
   return {
@@ -135,16 +151,36 @@ async function renderPermissionsComparison() {
   const targetId = document.getElementById("comparisonTarget").value;
   const userPermissions = await userPermissionsService.getUserPermissions(userId);
   const targetPermissions = targetType === "user" ? await userPermissionsService.getUserPermissions(targetId) : await userPermissionsService.getRolePermissions(targetId);
-  const rows = [];
-  ["screen", "table"].forEach(type => userPermissionsService.getResources(type).forEach(([name, label]) => {
+  const comparisonResources = [];
+  targetPermissions.forEach(permission => {
+    const key = `${permission.resourceType}:${permission.resourceName}`;
+    if (!comparisonResources.some(item => item.key === key)) {
+      comparisonResources.push({ key, type: permission.resourceType, name: permission.resourceName, label: userPermissionsService.getResourceLabel(permission.resourceType, permission.resourceName) });
+    }
+  });
+  const rows = comparisonResources.map(({ type, name, label }) => {
     const userAccess = userPermissionsService.getEffectiveAccess(userPermissions, type, name);
     const targetAccess = userPermissionsService.getEffectiveAccess(targetPermissions, type, name);
-    const userText = type === "screen" ? `צפייה: ${userAccess.canView ? "כן" : "לא"}, עריכה: ${userAccess.canEdit ? "כן" : "לא"}` : `צפייה: ${userAccess.canView ? "מותר" : "חסום"}, עריכה: ${userAccess.canEdit ? "מותר" : "חסום"}`;
-    const targetText = type === "screen" ? `צפייה: ${targetAccess.canView ? "כן" : "לא"}, עריכה: ${targetAccess.canEdit ? "כן" : "לא"}` : `צפייה: ${targetAccess.canView ? "מותר" : "חסום"}, עריכה: ${targetAccess.canEdit ? "מותר" : "חסום"}`;
     const same = userAccess.canView === targetAccess.canView && userAccess.canEdit === targetAccess.canEdit;
-    rows.push(`<tr><td>${type === "screen" ? "מסך" : "טבלה"}</td><td>${escapePermissionsHtml(label)}</td><td>${userText}</td><td>${targetText}</td><td>${same ? "זהה" : "שונה"}</td></tr>`);
-  }));
-  document.getElementById("permissionsComparisonTable").innerHTML = rows.join("");
+    const flags = type === "screen"
+      ? { view: targetAccess.canView ? "מורשה" : "לא מורשה", edit: targetAccess.canEdit ? "מורשה" : "לא מורשה" }
+      : { view: targetAccess.canView ? "מותר" : "חסום", edit: targetAccess.canEdit ? "מותר" : "חסום" };
+    return { same, html: `<tr class="${same ? "permissions-comparison--same" : "permissions-comparison--different"}"><td>${type === "screen" ? "מסך" : "טבלה"}</td><td>${escapePermissionsHtml(label)}</td><td>${flags.view}</td><td>${flags.edit}</td><td>${same ? '<span class="permission-result permission-result--same">קיימת</span>' : `<button class="btn btn--primary" type="button" ${getUserPermissionsScreenAccess().canManage ? "" : "disabled"} onclick="addComparisonPermission('${type}', '${name}')">הוספת הרשאה</button>`}</td></tr>` };
+  }).sort((a, b) => Number(b.same) - Number(a.same));
+  document.getElementById("permissionsComparisonTable").innerHTML = rows.length ? rows.map(row => row.html).join("") : `<tr><td colspan="5">ליעד שנבחר אין הרשאות מוגדרות</td></tr>`;
+}
+
+async function addComparisonPermission(resourceType, resourceName) {
+  try {
+    const targetType = document.getElementById("comparisonType").value;
+    const targetId = document.getElementById("comparisonTarget").value;
+    const targetPermissions = targetType === "user" ? await userPermissionsService.getUserPermissions(targetId) : await userPermissionsService.getRolePermissions(targetId);
+    const matchingPermissions = targetPermissions.filter(permission => permission.resourceType === resourceType && permission.resourceName === resourceName);
+    for (const permission of matchingPermissions) {
+      await userPermissionsService.addUserPermission(document.getElementById("permissionsUserSelect").value, permission);
+    }
+    await onPermissionsUserChange();
+  } catch (error) { alert(error.message); }
 }
 
 function onRoleEditorChange() {
@@ -216,8 +252,13 @@ function updateUserPermissionsControls() {
   if (role?.isSystemRole) {
     ["roleNameInput", "roleDescriptionInput", "roleIsActive", "saveRoleBtn", "rolePermissionType", "rolePermissionResource", "roleCanView", "roleCanEdit", "roleBlockView", "roleBlockEdit", "addRolePermissionBtn"].forEach(id => document.getElementById(id).disabled = true);
   }
-  if (canManage && !role?.isSystemRole) {
+  // הרשאות משתמש אינן תלויות בתפקיד הנבחר לעריכה.
+  if (canManage) {
     togglePermissionFields("userPermissionType", "userPermissionResource");
+  }
+
+  // הרשאות תפקיד נעולות רק כאשר מדובר בתפקיד מובנה.
+  if (canManage && !role?.isSystemRole) {
     togglePermissionFields("rolePermissionType", "rolePermissionResource");
   }
   renderSelectedUserPermissions();
@@ -232,6 +273,7 @@ window.deleteSelectedUserPermission = deleteSelectedUserPermission;
 window.applySelectedRole = applySelectedRole;
 window.refreshComparisonTargets = refreshComparisonTargets;
 window.renderPermissionsComparison = renderPermissionsComparison;
+window.addComparisonPermission = addComparisonPermission;
 window.onRoleEditorChange = onRoleEditorChange;
 window.refreshRolePermissionResources = refreshRolePermissionResources;
 window.createPermissionRole = createPermissionRole;
