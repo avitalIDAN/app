@@ -62,10 +62,39 @@ class UserPermissionsService {
     this.assertCanManage();
     const normalized = this.normalizePermission(permission);
     this.validatePermission(normalized);
+
+    const existingPermissions = await this.getUserPermissions(userId);
+    if (existingPermissions.some(item =>
+      item.resourceType === normalized.resourceType &&
+      item.resourceName === normalized.resourceName
+    )) {
+      throw new Error("ההרשאה כבר קיימת למשתמש - ניתן לבצע עריכה");
+    }
+
     return await this.runAction("addUserPermission", "הרשאת משתמש", userId, async () => {
       const created = await localDbService.insert("userPermissions", { userId: Number(userId), ...normalized, sourceRoleId: null, isManualOverride: true }, "userPermissionId");
       await this.refreshPermissionCache();
       return created;
+    });
+  }
+
+  async updateUserPermission(userPermissionId, permission) {
+    this.assertCanManage();
+    const normalized = this.normalizePermission(permission);
+    this.validatePermission(normalized);
+
+    return await this.runAction("updateUserPermission", "הרשאת משתמש", userPermissionId, async () => {
+      const existing = await localDbService.getById("userPermissions", "userPermissionId", userPermissionId);
+      if (!existing) throw new Error("רשומת ההרשאה לא נמצאה");
+
+      const updated = await localDbService.update("userPermissions", "userPermissionId", userPermissionId, {
+        ...normalized,
+        sourceRoleId: null,
+        isManualOverride: true
+      });
+
+      await this.refreshPermissionCache();
+      return updated;
     });
   }
 

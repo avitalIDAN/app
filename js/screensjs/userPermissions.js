@@ -2,6 +2,7 @@ let permissionsUsers = [];
 let permissionsRoles = [];
 let selectedUserPermissionRows = [];
 let selectedRolePermissionRows = [];
+let editingUserPermissionId = null;
 
 function escapePermissionsHtml(value) {
   return String(value ?? "").replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
@@ -106,10 +107,50 @@ function renderSelectedUserPermissions() {
     return;
   }
   tbody.innerHTML = selectedUserPermissionRows.map(permission => {
+    const isEditing = editingUserPermissionId == permission.userPermissionId;
     const flags = renderPermissionFlags(permission);
+    const normalized = userPermissionsService.normalizePermission(permission);
     const source = permission.isManualOverride ? "ידני" : (permissionsRoles.find(role => role.roleId == permission.sourceRoleId)?.roleName || "תפקיד");
-    return `<tr><td>${permission.resourceType === "screen" ? "מסך" : "טבלה"}</td><td>${escapePermissionsHtml(userPermissionsService.getResourceLabel(permission.resourceType, permission.resourceName))}</td><td>${flags.view}</td><td>${flags.edit}</td><td>${escapePermissionsHtml(source)}</td><td><button class="btn btn--destructive" type="button" ${canManage ? "" : "disabled"} onclick="deleteSelectedUserPermission(${permission.userPermissionId})">הסרה</button></td></tr>`;
+    const viewCell = isEditing
+      ? permission.resourceType === "screen"
+        ? `<label class="permission-checkbox"><input id="editPermissionView-${permission.userPermissionId}" type="checkbox" ${normalized.canView ? "checked" : ""}> מורשה</label>`
+        : `<label class="permission-checkbox"><input id="editPermissionBlockView-${permission.userPermissionId}" type="checkbox" ${normalized.blockView ? "checked" : ""}> חסום</label>`
+      : flags.view;
+    const editCell = isEditing
+      ? permission.resourceType === "screen"
+        ? `<label class="permission-checkbox"><input id="editPermissionEdit-${permission.userPermissionId}" type="checkbox" ${normalized.canEdit ? "checked" : ""}> מורשה</label>`
+        : `<label class="permission-checkbox"><input id="editPermissionBlockEdit-${permission.userPermissionId}" type="checkbox" ${normalized.blockEdit ? "checked" : ""}> חסום</label>`
+      : flags.edit;
+
+    return `<tr><td>${permission.resourceType === "screen" ? "מסך" : "טבלה"}</td><td>${escapePermissionsHtml(userPermissionsService.getResourceLabel(permission.resourceType, permission.resourceName))}</td><td>${viewCell}</td><td>${editCell}</td><td>${escapePermissionsHtml(source)}</td><td><button class="btn btn--primary" type="button" ${canManage ? "" : "disabled"} onclick="${isEditing ? `saveSelectedUserPermission(${permission.userPermissionId})` : `editSelectedUserPermission(${permission.userPermissionId})`}">${isEditing ? "שמירה" : "עריכה"}</button> <button class="btn btn--destructive" type="button" ${canManage ? "" : "disabled"} onclick="deleteSelectedUserPermission(${permission.userPermissionId})">הסרה</button></td></tr>`;
   }).join("");
+}
+
+function editSelectedUserPermission(userPermissionId) {
+  editingUserPermissionId = userPermissionId;
+  renderSelectedUserPermissions();
+}
+
+async function saveSelectedUserPermission(userPermissionId) {
+  try {
+    const permission = selectedUserPermissionRows.find(item => item.userPermissionId == userPermissionId);
+    if (!permission) return;
+
+    const isScreen = permission.resourceType === "screen";
+    await userPermissionsService.updateUserPermission(userPermissionId, {
+      resourceType: permission.resourceType,
+      resourceName: permission.resourceName,
+      canView: isScreen ? document.getElementById(`editPermissionView-${userPermissionId}`).checked : false,
+      canEdit: isScreen ? document.getElementById(`editPermissionEdit-${userPermissionId}`).checked : false,
+      blockView: !isScreen ? document.getElementById(`editPermissionBlockView-${userPermissionId}`).checked : false,
+      blockEdit: !isScreen ? document.getElementById(`editPermissionBlockEdit-${userPermissionId}`).checked : false
+    });
+
+    editingUserPermissionId = null;
+    await onPermissionsUserChange();
+  } catch (error) {
+    alert(error.message);
+  }
 }
 
 async function addSelectedUserPermission() {
@@ -269,6 +310,8 @@ window.renderUserPermissions = renderUserPermissions;
 window.onPermissionsUserChange = onPermissionsUserChange;
 window.refreshUserPermissionResources = refreshUserPermissionResources;
 window.addSelectedUserPermission = addSelectedUserPermission;
+window.editSelectedUserPermission = editSelectedUserPermission;
+window.saveSelectedUserPermission = saveSelectedUserPermission;
 window.deleteSelectedUserPermission = deleteSelectedUserPermission;
 window.applySelectedRole = applySelectedRole;
 window.refreshComparisonTargets = refreshComparisonTargets;
