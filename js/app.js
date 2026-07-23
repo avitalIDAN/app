@@ -12,6 +12,7 @@ const screenControllers = {
   foreclosureProcess: { onEnter: renderForeclosureProcess },
   foreclosureApproval: { onEnter: renderForeclosureApproval },
   debtTypes: { onEnter: renderDebtTypes },
+  userPermissions: { onEnter: renderUserPermissions },
 };
 
 function canViewScreen(screenName) {

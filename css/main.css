@@ -1401,6 +1401,60 @@ button:disabled {
   opacity: 0.55;
 }
 
+/* מסך הרשאות משתמשים */
+.permissions-layout {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.permissions-panel,
+.permissions-subsection {
+  min-width: 0;
+}
+
+.permissions-panel {
+  padding: 18px;
+  border: 2px solid var(--table-rose-700);
+  border-radius: var(--radius);
+  background: #fff;
+}
+
+.permissions-panel h3,
+.permissions-subsection h4 {
+  margin-top: 0;
+}
+
+.permissions-subsection + .permissions-subsection {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--table-rose-500);
+}
+
+.permission-checkbox {
+  display: flex !important;
+  align-items: center;
+  min-height: 42px;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.permissions-note,
+.permissions-message {
+  color: var(--ink-700);
+  font-size: 14px;
+}
+
+.permissions-table {
+  min-width: 680px;
+}
+
+@media (max-width: 1100px) {
+  .permissions-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* מודול עיקולים */
 .foreclosure-manual-open,
 .foreclosure-signing-bar,

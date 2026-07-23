@@ -1,0 +1,120 @@
+<div class="table-screen user-permissions-screen">
+  <h2>הרשאות משתמשים</h2>
+  <p id="userPermissionsAccessMessage" class="permissions-message"></p>
+
+  <div class="permissions-layout">
+    <section class="permissions-panel" aria-labelledby="selectedUserTitle">
+      <h3 id="selectedUserTitle">הרשאות משתמש</h3>
+      <div class="filters-bar">
+        <label>משתמש
+          <select id="permissionsUserSelect" onchange="onPermissionsUserChange()"></select>
+        </label>
+      </div>
+
+      <div class="permissions-subsection">
+        <h4>הוספת הרשאה ידנית</h4>
+        <div class="filters-bar">
+          <label>סוג משאב
+            <select id="userPermissionType" onchange="refreshUserPermissionResources()">
+              <option value="screen">מסך</option>
+              <option value="table">טבלה</option>
+            </select>
+          </label>
+          <label>משאב
+            <select id="userPermissionResource"></select>
+          </label>
+          <label class="permission-checkbox"><input id="userCanView" type="checkbox" checked> צפייה</label>
+          <label class="permission-checkbox"><input id="userCanEdit" type="checkbox"> עריכה</label>
+          <label class="permission-checkbox"><input id="userBlockView" type="checkbox"> חסום צפייה</label>
+          <label class="permission-checkbox"><input id="userBlockEdit" type="checkbox"> חסום עריכה</label>
+          <button id="addUserPermissionBtn" class="btn btn--primary" type="button" onclick="addSelectedUserPermission()">הוספת הרשאה</button>
+        </div>
+      </div>
+
+      <div class="permissions-subsection">
+        <h4>החלת תפקיד</h4>
+        <div class="filters-bar">
+          <label>תפקיד
+            <select id="applyRoleSelect"></select>
+          </label>
+          <button id="addRoleToUserBtn" class="btn btn--secondary" type="button" onclick="applySelectedRole('add')">הוספת תפקיד</button>
+          <button id="replaceRoleForUserBtn" class="btn btn--destructive" type="button" onclick="applySelectedRole('replace')">החלפת תפקיד</button>
+        </div>
+        <p class="permissions-note">שינוי תפקיד בעתיד אינו משנה הרשאות שכבר הועתקו למשתמשים.</p>
+      </div>
+
+      <div class="table-scroll">
+        <table class="table table--hover permissions-table">
+          <thead><tr><th>סוג</th><th>משאב</th><th>צפייה</th><th>עריכה</th><th>מקור</th><th>פעולה</th></tr></thead>
+          <tbody id="selectedUserPermissionsTable"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="permissions-panel" aria-labelledby="comparisonTitle">
+      <h3 id="comparisonTitle">השוואה וניהול תפקידים</h3>
+      <div class="permissions-subsection">
+        <h4>השוואת הרשאות</h4>
+        <div class="filters-bar">
+          <label>השווה מול
+            <select id="comparisonType" onchange="refreshComparisonTargets()">
+              <option value="user">משתמש</option>
+              <option value="role">תפקיד</option>
+            </select>
+          </label>
+          <label>יעד להשוואה
+            <select id="comparisonTarget" onchange="renderPermissionsComparison()"></select>
+          </label>
+        </div>
+        <div class="table-scroll">
+          <table class="table table--hover permissions-table">
+            <thead><tr><th>סוג</th><th>משאב</th><th>משתמש נבחר</th><th>יעד להשוואה</th><th>תוצאה</th></tr></thead>
+            <tbody id="permissionsComparisonTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="permissions-subsection">
+        <h4>תפקידים</h4>
+        <div class="filters-bar">
+          <label>שם תפקיד
+            <input id="roleNameInput" type="text" placeholder="תפקיד מותאם אישית">
+          </label>
+          <label>תיאור
+            <input id="roleDescriptionInput" type="text" placeholder="תיאור קצר">
+          </label>
+          <button id="createRoleBtn" class="btn btn--primary" type="button" onclick="createPermissionRole()">יצירת תפקיד</button>
+        </div>
+        <div class="filters-bar">
+          <label>תפקיד לעריכה
+            <select id="roleEditorSelect" onchange="onRoleEditorChange()"></select>
+          </label>
+          <label class="permission-checkbox"><input id="roleIsActive" type="checkbox"> תפקיד פעיל</label>
+          <button id="saveRoleBtn" class="btn btn--secondary" type="button" onclick="saveSelectedRole()">שמירת תפקיד</button>
+        </div>
+        <div class="filters-bar">
+          <label>סוג משאב
+            <select id="rolePermissionType" onchange="refreshRolePermissionResources()">
+              <option value="screen">מסך</option>
+              <option value="table">טבלה</option>
+            </select>
+          </label>
+          <label>משאב
+            <select id="rolePermissionResource"></select>
+          </label>
+          <label class="permission-checkbox"><input id="roleCanView" type="checkbox" checked> צפייה</label>
+          <label class="permission-checkbox"><input id="roleCanEdit" type="checkbox"> עריכה</label>
+          <label class="permission-checkbox"><input id="roleBlockView" type="checkbox"> חסום צפייה</label>
+          <label class="permission-checkbox"><input id="roleBlockEdit" type="checkbox"> חסום עריכה</label>
+          <button id="addRolePermissionBtn" class="btn btn--secondary" type="button" onclick="addSelectedRolePermission()">הוספת הרשאת תפקיד</button>
+        </div>
+        <div class="table-scroll">
+          <table class="table table--hover permissions-table">
+            <thead><tr><th>סוג</th><th>משאב</th><th>צפייה</th><th>עריכה</th><th>פעולה</th></tr></thead>
+            <tbody id="selectedRolePermissionsTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
